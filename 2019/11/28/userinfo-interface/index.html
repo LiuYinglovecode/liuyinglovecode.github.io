@@ -51,15 +51,15 @@
   };
 </script>
 
-  <meta name="description" content="接口一般需要写4个文件：controller + model + service + serviceImpl + DAO1. controller  一般由@RequestMapping和@ResponseBody构成 123456@RequestMapping(value = &quot;路径&quot;, method = RequestMethod.GET, produces = &quot;名称&#x2F;json;charse">
+  <meta name="description" content="接口一般需要写5个文件：controller + model + service + serviceImpl + DAO1. controller  一般由@RequestMapping和@ResponseBody构成 123456@RequestMapping(value = &quot;路径&quot;, method = RequestMethod.GET, produces = &quot;名称&#x2F;json;charse">
 <meta name="keywords" content="DAO,service,controller">
 <meta property="og:type" content="article">
 <meta property="og:title" content="userinfo_interface">
 <meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;11&#x2F;28&#x2F;userinfo-interface&#x2F;index.html">
 <meta property="og:site_name" content="liuying">
-<meta property="og:description" content="接口一般需要写4个文件：controller + model + service + serviceImpl + DAO1. controller  一般由@RequestMapping和@ResponseBody构成 123456@RequestMapping(value = &quot;路径&quot;, method = RequestMethod.GET, produces = &quot;名称&#x2F;json;charse">
+<meta property="og:description" content="接口一般需要写5个文件：controller + model + service + serviceImpl + DAO1. controller  一般由@RequestMapping和@ResponseBody构成 123456@RequestMapping(value = &quot;路径&quot;, method = RequestMethod.GET, produces = &quot;名称&#x2F;json;charse">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-11-28T06:59:47.008Z">
+<meta property="og:updated_time" content="2019-11-28T11:21:43.814Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://yoursite.com/2019/11/28/userinfo-interface/">
@@ -202,7 +202,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2019-11-28 08:51:48 / Modified: 14:59:47" itemprop="dateCreated datePublished" datetime="2019-11-28T08:51:48+08:00">2019-11-28</time>
+              <time title="Created: 2019-11-28 08:51:48 / Modified: 19:21:43" itemprop="dateCreated datePublished" datetime="2019-11-28T08:51:48+08:00">2019-11-28</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -227,7 +227,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><h2 id="一般需要写4个文件：controller-model-service-serviceImpl-DAO"><a href="#一般需要写4个文件：controller-model-service-serviceImpl-DAO" class="headerlink" title="一般需要写4个文件：controller + model + service + serviceImpl + DAO"></a>一般需要写4个文件：controller + model + service + serviceImpl + DAO</h2><h3 id="1-controller"><a href="#1-controller" class="headerlink" title="1. controller"></a>1. controller</h3><p>  一般由@RequestMapping和@ResponseBody构成</p>
+        <h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><h2 id="一般需要写5个文件：controller-model-service-serviceImpl-DAO"><a href="#一般需要写5个文件：controller-model-service-serviceImpl-DAO" class="headerlink" title="一般需要写5个文件：controller + model + service + serviceImpl + DAO"></a>一般需要写5个文件：controller + model + service + serviceImpl + DAO</h2><h3 id="1-controller"><a href="#1-controller" class="headerlink" title="1. controller"></a>1. controller</h3><p>  一般由@RequestMapping和@ResponseBody构成</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@RequestMapping(value = <span class="string">"路径"</span>, method = RequestMethod.GET, produces = <span class="string">"名称/json;charset=utf-8"</span>)</span><br><span class="line">  @ResponseBody</span><br><span class="line">  public ApiResult appUserList(@RequestParam(value = <span class="string">"入参"</span>,defaultValue = <span class="string">""</span>) 入参类型 入参) <span class="comment">#多个入参并列添加</span></span><br><span class="line">  &#123;ApiResult apiResult = new ApiResult();</span><br><span class="line">  PageList&lt;模型model&gt; result = 对应的service.appUserList(入参之间逗号相隔);</span><br><span class="line">  <span class="built_in">return</span> GenericApiResultUtil.getGenericOKResult(result);&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="2-model"><a href="#2-model" class="headerlink" title="2. model"></a>2. model</h3><p>   就是指定数据库的表名以及各栏位的名称，其次是一些get,set方法，模板:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">@SqlTable(name = <span class="string">"表名"</span>)</span><br><span class="line">public class model名称(即该java文件名称) &#123;</span><br><span class="line">  @SqlColumn(name = <span class="string">"栏位名"</span>)</span><br><span class="line">  private <span class="built_in">type</span> name;</span><br><span class="line">  public long get栏位名() &#123;</span><br><span class="line">      <span class="built_in">return</span> 栏位名;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public UserInfoCache <span class="built_in">set</span>栏位名(<span class="built_in">type</span> 栏位名) &#123;</span><br><span class="line">      this.栏位名 = 栏位名;</span><br><span class="line">      <span class="built_in">return</span> this;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -263,6 +263,9 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
+                <a href="/2019/11/28/http/" rel="prev" title="http">
+                  http <i class="fa fa-chevron-right"></i>
+                </a>
             </div>
           </div>
       </footer>
@@ -301,7 +304,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#接口"><span class="nav-number">1.</span> <span class="nav-text">接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一般需要写4个文件：controller-model-service-serviceImpl-DAO"><span class="nav-number">2.</span> <span class="nav-text">一般需要写4个文件：controller + model + service + serviceImpl + DAO</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-controller"><span class="nav-number">2.1.</span> <span class="nav-text">1. controller</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-model"><span class="nav-number">2.2.</span> <span class="nav-text">2. model</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-service"><span class="nav-number">2.3.</span> <span class="nav-text">3. service</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-serviceImpl"><span class="nav-number">2.4.</span> <span class="nav-text">4. serviceImpl</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-DAO"><span class="nav-number">2.5.</span> <span class="nav-text">5. DAO</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#接口"><span class="nav-number">1.</span> <span class="nav-text">接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一般需要写5个文件：controller-model-service-serviceImpl-DAO"><span class="nav-number">2.</span> <span class="nav-text">一般需要写5个文件：controller + model + service + serviceImpl + DAO</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-controller"><span class="nav-number">2.1.</span> <span class="nav-text">1. controller</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-model"><span class="nav-number">2.2.</span> <span class="nav-text">2. model</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-service"><span class="nav-number">2.3.</span> <span class="nav-text">3. service</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-serviceImpl"><span class="nav-number">2.4.</span> <span class="nav-text">4. serviceImpl</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-DAO"><span class="nav-number">2.5.</span> <span class="nav-text">5. DAO</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -317,7 +320,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
