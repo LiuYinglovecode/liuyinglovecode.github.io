@@ -176,6 +176,100 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/12/rege/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="嘤嘤嘤">
+      <meta itemprop="description" content="热爱编程，光学工程硕士，马拉松群众等级三级运动员，雅思7分。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="liuying">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/12/12/rege/" class="post-title-link" itemprop="url">userinfo_interface</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-12-12 02:51:48" itemprop="dateCreated datePublished" datetime="2019-12-12T02:51:48+08:00">2019-12-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-12-13 09:10:12" itemprop="dateModified" datetime="2019-12-13T09:10:12+08:00">2019-12-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/go/" itemprop="url" rel="index">
+                    <span itemprop="name">go</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Go-inputs-verification"><a href="#Go-inputs-verification" class="headerlink" title="Go inputs verification"></a>Go inputs verification</h2><h3 id="1-Numbers"><a href="#1-Numbers" class="headerlink" title="1. Numbers"></a>1. Numbers</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">getint, err := strconv.Atoi(r.Form.Get(<span class="string">"num"</span>))</span><br><span class="line"><span class="keyword">if</span> err != nil &#123;</span><br><span class="line">  // error occurs when convert to number, it may not a Number</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// check range of number</span><br><span class="line"><span class="keyword">if</span> getint &gt; 100 &#123;</span><br><span class="line">  // too big</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">or</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> m, _ := regexp.MatchString(<span class="string">"^[0-9]+$"</span>, r.Form.Get(<span class="string">"num"</span>)); !m &#123;</span><br><span class="line">  <span class="built_in">return</span> flase</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-Chinese"><a href="#2-Chinese" class="headerlink" title="2. Chinese"></a>2. Chinese</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> m, _ := rangexp.MatchString(<span class="string">"^[\\x&#123;4e00&#125;-\\x&#123;9fa5&#125;]+$"</span>, r.Form.Get(<span class="string">"Chinesecharactor"</span>)); !m &#123;</span><br><span class="line">  <span class="built_in">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-Letters"><a href="#3-Letters" class="headerlink" title="3. Letters"></a>3. Letters</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> m, _ := rangexp.MatchString(<span class="string">"^[a-zA-Z]+$"</span>, r.Form.Get(<span class="string">"englishletter"</span>)); !m &#123;</span><br><span class="line">  <span class="built_in">return</span> flase</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4-E-mail"><a href="#4-E-mail" class="headerlink" title="4. E-mail"></a>4. E-mail</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> m, _ := regexp.MatchString(`^([\w\.\_]&#123;2,10&#125;)`,r.Form.Get(<span class="string">"mail"</span>)); !m &#123;</span><br><span class="line">  fmt.Println(<span class="string">"no"</span>)</span><br><span class="line">&#125;<span class="keyword">else</span> &#123;</span><br><span class="line">  fmt.Println(<span class="string">"yes"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="5-Drop-down-List"><a href="#5-Drop-down-List" class="headerlink" title="5. Drop down List"></a>5. Drop down List</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;select name=<span class="string">"fruit"</span>&gt;</span><br><span class="line">&lt;option value=<span class="string">"apple"</span>&gt;apple&lt;/option&gt;</span><br><span class="line">&lt;option value=<span class="string">"pear"</span>&gt;pear&lt;/option&gt;</span><br><span class="line">&lt;option value=<span class="string">"banana"</span>&gt;banana&lt;/option&gt;</span><br><span class="line">&lt;/select&gt;</span><br></pre></td></tr></table></figure>
+<p>and use the following strategy to sanitize our input:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">slice := []string&#123;<span class="string">"apple"</span>, <span class="string">"pear"</span>, <span class="string">"banana"</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> _, v := range slice &#123;</span><br><span class="line">  <span class="keyword">if</span> v == r.Form.Get(<span class="string">"fruit"</span>) &#123;</span><br><span class="line">    <span class="built_in">return</span> <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">return</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-Radio-buttons"><a href="#6-Radio-buttons" class="headerlink" title="6. Radio buttons"></a>6. Radio buttons</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;input <span class="built_in">type</span> = <span class="string">"radio"</span> name=<span class="string">"gender"</span> value=<span class="string">"1"</span>&gt;Male</span><br><span class="line">&lt;input <span class="built_in">type</span> = <span class="string">"radio"</span> name=<span class="string">"gender"</span> value=<span class="string">"2"</span>&gt;Female</span><br></pre></td></tr></table></figure>
+<p>use the following code to validate the input:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">slice := []int&#123;1,2&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> _, v := range slice &#123;</span><br><span class="line">  <span class="keyword">if</span> v == r.Form.Get(<span class="string">"gender"</span>) &#123;</span><br><span class="line">    <span class="built_in">return</span> <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">return</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+<h3 id="7-Check-boxes"><a href="#7-Check-boxes" class="headerlink" title="7. Check boxes"></a>7. Check boxes</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;input <span class="built_in">type</span>=<span class="string">"checkbox"</span> name = <span class="string">"interest"</span> value = <span class="string">"football"</span>&gt;football</span><br><span class="line">&lt;input <span class="built_in">type</span>=<span class="string">"checkbox"</span> name=<span class="string">"interest"</span> value=<span class="string">"basketball"</span>&gt;Basketball</span><br><span class="line">&lt;input <span class="built_in">type</span>=<span class="string">"checkbox"</span> name=<span class="string">"interest"</span> value=<span class="string">"tennis"</span>&gt;Tennis</span><br></pre></td></tr></table></figure>
+<p>In this case, the sanitization is a little bit different to validating the button and check box inputs since here we get a slice from the check boxes.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">slice :=[]string&#123;<span class="string">"football"</span>,<span class="string">"basketball"</span>,<span class="string">"tennis"</span>&#125;</span><br><span class="line">a := Slice_diff(r.Form[<span class="string">"interest"</span>],slice)</span><br><span class="line"><span class="keyword">if</span> a == nil &#123;</span><br><span class="line">  <span class="built_in">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">return</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="8-Date-and-time"><a href="#8-Date-and-time" class="headerlink" title="8. Date and time"></a>8. Date and time</h3><p>Suppose you want users to input valid dates or times. Go has the time package for converting year, month and day to their corresponding times. After that, it’s easy to check it.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">t := time.Date(2019, time.December, 10, 23, 0, 0, 0, time.UTC)</span><br><span class="line">fmt.Printf(<span class="string">"Go launched at %s\n"</span>, t.Local())</span><br></pre></td></tr></table></figure>
+<p>After you have the time, you can use the time package for more operations, depending on needs.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/28/http/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -443,16 +537,16 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">categories</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
