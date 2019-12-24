@@ -77,28 +77,6 @@
   </entry>
   
   <entry>
-    <title>http</title>
-    <link href="http://yoursite.com/2019/11/28/http/"/>
-    <id>http://yoursite.com/2019/11/28/http/</id>
-    <published>2019-11-28T08:50:28.287Z</published>
-    <updated>2019-11-28T11:20:00.553Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="HTTP请求包"><a href="#HTTP请求包" class="headerlink" title="HTTP请求包"></a>HTTP请求包</h2><p>Request包分为3部分，依次为Request line,Request header, body.<br>HTTP协议与服务器交互的请求方法：GET,POST,PUT,DELETE.查增改删。</p><h3 id="fiddler"><a href="#fiddler" class="headerlink" title="fiddler"></a>fiddler</h3><p>GET方法<br><img src="https://raw.githubusercontent.com/astaxie/build-web-application-with-golang/master/zh/images/3.1.http.png" alt=""></p><p>POST方法<br><img src="https://raw.githubusercontent.com/astaxie/build-web-application-with-golang/master/zh/images/3.1.httpPOST.png" alt=""></p><h3 id="HTTP响应包（服务器信息）"><a href="#HTTP响应包（服务器信息）" class="headerlink" title="HTTP响应包（服务器信息）"></a>HTTP响应包（服务器信息）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 OK//状态行</span><br><span class="line">Server: nginx/1.0.8//服务器使用的WEB软件名及版本</span><br><span class="line">Date:Date: Tue, 30 Oct 2012 04:14:25 GMT//发送时间</span><br><span class="line">Content-Type: text/html//服务器发送信息的类型</span><br><span class="line">Transfer-Encoding: chunked//表示发送HTTP包是分段发的</span><br><span class="line">Connection: keep-alive//保持连接状态</span><br><span class="line">Content-Length: 90//主体内容长度</span><br><span class="line">//空行 用来分割消息头和主体</span><br><span class="line">&lt;!DOCTYPE html PUBLIC <span class="string">"-//W3C//DTD XHTML 1.0 Transitional//EN"</span>... //消息体</span><br></pre></td></tr></table></figure><p>Response包中的第一行叫做状态行，由HTTP协议版本号， 状态码， 状态消息 三部分组成。</p><p>状态码用来告诉HTTP客户端,HTTP服务器是否产生了预期的Response。HTTP/1.1协议中定义了5类状态码， 状态码由三位数字组成，第一个数字定义了响应的类别</p><ol><li>1XX 提示信息 - 表示请求已被成功接收，继续处理</li><li>2XX 成功 - 表示请求已被成功接收，理解，接受</li><li>3XX 重定向 - 要完成请求必须进行更进一步的处理</li><li>4XX 客户端错误 - 请求有语法错误或请求无法实现</li><li>5XX 服务器端错误 - 服务器未能实现合法的请求</li></ol><h3 id="HTTP协议是无状态的和Connection-keep-alive的区别"><a href="#HTTP协议是无状态的和Connection-keep-alive的区别" class="headerlink" title="HTTP协议是无状态的和Connection: keep-alive的区别"></a>HTTP协议是无状态的和Connection: keep-alive的区别</h3><p>无状态是指协议对于事务处理没有记忆能力，服务器不知道客户端是什么状态。从另一方面讲，打开一个服务器上的网页和你之前打开这个服务器上的网页之间没有任何联系。</p><p>HTTP是一个无状态的面向连接的协议，无状态不代表HTTP不能保持TCP连接，更不能代表HTTP使用的是UDP协议（面对无连接）。</p><p>从HTTP/1.1起，默认都开启了Keep-Alive保持连接特性，简单地说，当一个网页打开完成后，客户端和服务器之间用于传输HTTP数据的TCP连接不会关闭，如果客户端再次访问这个服务器上的网页，会继续使用这一条已经建立的TCP连接。</p><p>Keep-Alive不会永久保持连接，它有一个保持时间，可以在不同服务器软件（如Apache）中设置这个时间。</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h2 id=&quot;HTTP请求包&quot;&gt;&lt;a href=&quot;#HTTP请求包&quot; class=&quot;headerlink&quot; title=&quot;HTTP请求包&quot;&gt;&lt;/a&gt;HTTP请求包&lt;/h2&gt;&lt;p&gt;Request包分为3部分，依次为Request line,Request header, body
-      
-    
-    </summary>
-    
-    
-    
-  </entry>
-  
-  <entry>
     <title>userinfo_interface</title>
     <link href="http://yoursite.com/2019/11/28/userinfo-interface/"/>
     <id>http://yoursite.com/2019/11/28/userinfo-interface/</id>
@@ -147,6 +125,36 @@
     </summary>
     
     
+    
+  </entry>
+  
+  <entry>
+    <title>userinfo_interface</title>
+    <link href="http://yoursite.com/2019/09/28/http/"/>
+    <id>http://yoursite.com/2019/09/28/http/</id>
+    <published>2019-09-27T22:31:09.000Z</published>
+    <updated>2019-12-24T00:50:17.913Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="HTTP请求包"><a href="#HTTP请求包" class="headerlink" title="HTTP请求包"></a>HTTP请求包</h2><p>Request包分为3部分，依次为Request line,Request header, body.<br>HTTP协议与服务器交互的请求方法：GET,POST,PUT,DELETE.查增改删。</p><h3 id="fiddler"><a href="#fiddler" class="headerlink" title="fiddler"></a>fiddler</h3><p>GET方法<br><img src="https://raw.githubusercontent.com/astaxie/build-web-application-with-golang/master/zh/images/3.1.http.png" alt=""></p><p>POST方法<br><img src="https://raw.githubusercontent.com/astaxie/build-web-application-with-golang/master/zh/images/3.1.httpPOST.png" alt=""></p><h3 id="HTTP响应包（服务器信息）"><a href="#HTTP响应包（服务器信息）" class="headerlink" title="HTTP响应包（服务器信息）"></a>HTTP响应包（服务器信息）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 OK//状态行</span><br><span class="line">Server: nginx/1.0.8//服务器使用的WEB软件名及版本</span><br><span class="line">Date:Date: Tue, 30 Oct 2012 04:14:25 GMT//发送时间</span><br><span class="line">Content-Type: text/html//服务器发送信息的类型</span><br><span class="line">Transfer-Encoding: chunked//表示发送HTTP包是分段发的</span><br><span class="line">Connection: keep-alive//保持连接状态</span><br><span class="line">Content-Length: 90//主体内容长度</span><br><span class="line">//空行 用来分割消息头和主体</span><br><span class="line">&lt;!DOCTYPE html PUBLIC <span class="string">"-//W3C//DTD XHTML 1.0 Transitional//EN"</span>... //消息体</span><br></pre></td></tr></table></figure><p>Response包中的第一行叫做状态行，由HTTP协议版本号， 状态码， 状态消息 三部分组成。</p><p>状态码用来告诉HTTP客户端,HTTP服务器是否产生了预期的Response。HTTP/1.1协议中定义了5类状态码， 状态码由三位数字组成，第一个数字定义了响应的类别</p><ol><li>1XX 提示信息 - 表示请求已被成功接收，继续处理</li><li>2XX 成功 - 表示请求已被成功接收，理解，接受</li><li>3XX 重定向 - 要完成请求必须进行更进一步的处理</li><li>4XX 客户端错误 - 请求有语法错误或请求无法实现</li><li>5XX 服务器端错误 - 服务器未能实现合法的请求</li></ol><h3 id="HTTP协议是无状态的和Connection-keep-alive的区别"><a href="#HTTP协议是无状态的和Connection-keep-alive的区别" class="headerlink" title="HTTP协议是无状态的和Connection: keep-alive的区别"></a>HTTP协议是无状态的和Connection: keep-alive的区别</h3><p>无状态是指协议对于事务处理没有记忆能力，服务器不知道客户端是什么状态。从另一方面讲，打开一个服务器上的网页和你之前打开这个服务器上的网页之间没有任何联系。</p><p>HTTP是一个无状态的面向连接的协议，无状态不代表HTTP不能保持TCP连接，更不能代表HTTP使用的是UDP协议（面对无连接）。</p><p>从HTTP/1.1起，默认都开启了Keep-Alive保持连接特性，简单地说，当一个网页打开完成后，客户端和服务器之间用于传输HTTP数据的TCP连接不会关闭，如果客户端再次访问这个服务器上的网页，会继续使用这一条已经建立的TCP连接。</p><p>Keep-Alive不会永久保持连接，它有一个保持时间，可以在不同服务器软件（如Apache）中设置这个时间。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;HTTP请求包&quot;&gt;&lt;a href=&quot;#HTTP请求包&quot; class=&quot;headerlink&quot; title=&quot;HTTP请求包&quot;&gt;&lt;/a&gt;HTTP请求包&lt;/h2&gt;&lt;p&gt;Request包分为3部分，依次为Request line,Request header, body
+      
+    
+    </summary>
+    
+    
+      <category term="web" scheme="http://yoursite.com/categories/web/"/>
+    
+    
+      <category term="GET" scheme="http://yoursite.com/tags/GET/"/>
+    
+      <category term="POST" scheme="http://yoursite.com/tags/POST/"/>
+    
+      <category term="HTTP" scheme="http://yoursite.com/tags/HTTP/"/>
     
   </entry>
   
