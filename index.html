@@ -233,10 +233,14 @@
 
       
           <h2 id="Convert-excelfiles-to-docx-by-python-script"><a href="#Convert-excelfiles-to-docx-by-python-script" class="headerlink" title="Convert excelfiles to docx by python script"></a>Convert excelfiles to docx by python script</h2><h3 id="1-dump-your-mysql-database-by-sql-command"><a href="#1-dump-your-mysql-database-by-sql-command" class="headerlink" title="1. dump your mysql database by sql command"></a>1. dump your mysql database by sql command</h3><p>open sql file paste the content in the navicatformyssql, then export the filtered contents to xlsx format</p>
-<h3 id="2-Convert-excel"><a href="#2-Convert-excel" class="headerlink" title="2. Convert excel"></a>2. Convert excel</h3><p>using vs studio run the python script, convert it to md.</p>
-<h3 id="3-Convert-md"><a href="#3-Convert-md" class="headerlink" title="3. Convert md"></a>3. Convert md</h3><p>open cmd, navigate the target location of your excel files, run:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pandoc xxx.md -o yyy.docx</span><br></pre></td></tr></table></figure>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/12/12/convertexceltodocx/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -312,25 +316,14 @@
 
       
           <h2 id="Go-inputs-verification"><a href="#Go-inputs-verification" class="headerlink" title="Go inputs verification"></a>Go inputs verification</h2><h3 id="1-Numbers"><a href="#1-Numbers" class="headerlink" title="1. Numbers"></a>1. Numbers</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">getint, err := strconv.Atoi(r.Form.Get(&quot;num&quot;))</span><br><span class="line">if err != nil &#123;</span><br><span class="line">  // error occurs when convert to number, it may not a Number</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// check range of number</span><br><span class="line">if getint &gt; 100 &#123;</span><br><span class="line">  // too big</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">or</span><br><span class="line"></span><br><span class="line">if m, _ := regexp.MatchString(&quot;^[0-9]+$&quot;, r.Form.Get(&quot;num&quot;)); !m &#123;</span><br><span class="line">  return flase</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-Chinese"><a href="#2-Chinese" class="headerlink" title="2. Chinese"></a>2. Chinese</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if m, _ := rangexp.MatchString(&quot;^[\\x&#123;4e00&#125;-\\x&#123;9fa5&#125;]+$&quot;, r.Form.Get(&quot;Chinesecharactor&quot;)); !m &#123;</span><br><span class="line">  return false</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="3-Letters"><a href="#3-Letters" class="headerlink" title="3. Letters"></a>3. Letters</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if m, _ := rangexp.MatchString(&quot;^[a-zA-Z]+$&quot;, r.Form.Get(&quot;englishletter&quot;)); !m &#123;</span><br><span class="line">  return flase</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="4-E-mail"><a href="#4-E-mail" class="headerlink" title="4. E-mail"></a>4. E-mail</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if m, _ := regexp.MatchString(`^([\w\.\_]&#123;2,10&#125;)`,r.Form.Get(&quot;mail&quot;)); !m &#123;</span><br><span class="line">  fmt.Println(&quot;no&quot;)</span><br><span class="line">&#125;else &#123;</span><br><span class="line">  fmt.Println(&quot;yes&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="5-Drop-down-List"><a href="#5-Drop-down-List" class="headerlink" title="5. Drop down List"></a>5. Drop down List</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;select name=&quot;fruit&quot;&gt;</span><br><span class="line">&lt;option value=&quot;apple&quot;&gt;apple&lt;/option&gt;</span><br><span class="line">&lt;option value=&quot;pear&quot;&gt;pear&lt;/option&gt;</span><br><span class="line">&lt;option value=&quot;banana&quot;&gt;banana&lt;/option&gt;</span><br><span class="line">&lt;/select&gt;</span><br></pre></td></tr></table></figure>
-<p>and use the following strategy to sanitize our input:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">slice := []string&#123;&quot;apple&quot;, &quot;pear&quot;, &quot;banana&quot;&#125;</span><br><span class="line"></span><br><span class="line">for _, v := range slice &#123;</span><br><span class="line">  if v == r.Form.Get(&quot;fruit&quot;) &#123;</span><br><span class="line">    return true</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">return false</span><br></pre></td></tr></table></figure>
-
-<h3 id="6-Radio-buttons"><a href="#6-Radio-buttons" class="headerlink" title="6. Radio buttons"></a>6. Radio buttons</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;input type = &quot;radio&quot; name=&quot;gender&quot; value=&quot;1&quot;&gt;Male</span><br><span class="line">&lt;input type = &quot;radio&quot; name=&quot;gender&quot; value=&quot;2&quot;&gt;Female</span><br></pre></td></tr></table></figure>
-<p>use the following code to validate the input:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">slice := []int&#123;1,2&#125;</span><br><span class="line"></span><br><span class="line">for _, v := range slice &#123;</span><br><span class="line">  if v == r.Form.Get(&quot;gender&quot;) &#123;</span><br><span class="line">    return true</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">return false</span><br></pre></td></tr></table></figure>
-<h3 id="7-Check-boxes"><a href="#7-Check-boxes" class="headerlink" title="7. Check boxes"></a>7. Check boxes</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;input type=&quot;checkbox&quot; name = &quot;interest&quot; value = &quot;football&quot;&gt;football</span><br><span class="line">&lt;input type=&quot;checkbox&quot; name=&quot;interest&quot; value=&quot;basketball&quot;&gt;Basketball</span><br><span class="line">&lt;input type=&quot;checkbox&quot; name=&quot;interest&quot; value=&quot;tennis&quot;&gt;Tennis</span><br></pre></td></tr></table></figure>
-<p>In this case, the sanitization is a little bit different to validating the button and check box inputs since here we get a slice from the check boxes.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">slice :=[]string&#123;&quot;football&quot;,&quot;basketball&quot;,&quot;tennis&quot;&#125;</span><br><span class="line">a := Slice_diff(r.Form[&quot;interest&quot;],slice)</span><br><span class="line">if a == nil &#123;</span><br><span class="line">  return true</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">return false</span><br></pre></td></tr></table></figure>
-
-<h3 id="8-Date-and-time"><a href="#8-Date-and-time" class="headerlink" title="8. Date and time"></a>8. Date and time</h3><p>Suppose you want users to input valid dates or times. Go has the time package for converting year, month and day to their corresponding times. After that, it’s easy to check it.</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">t := time.Date(2019, time.December, 10, 23, 0, 0, 0, time.UTC)</span><br><span class="line">fmt.Printf(<span class="string">"Go launched at %s\n"</span>, t.Local())</span><br></pre></td></tr></table></figure>
-<p>After you have the time, you can use the time package for more operations, depending on needs.</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/12/11/rege/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -399,17 +392,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><h2 id="一般需要写5个文件：controller-model-service-serviceImpl-DAO"><a href="#一般需要写5个文件：controller-model-service-serviceImpl-DAO" class="headerlink" title="一般需要写5个文件：controller + model + service + serviceImpl + DAO"></a>一般需要写5个文件：controller + model + service + serviceImpl + DAO</h2><h3 id="1-controller"><a href="#1-controller" class="headerlink" title="1. controller"></a>1. controller</h3><p>  一般由@RequestMapping和@ResponseBody构成</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@RequestMapping(value = <span class="string">"路径"</span>, method = RequestMethod.GET, produces = <span class="string">"名称/json;charset=utf-8"</span>)</span><br><span class="line">  @ResponseBody</span><br><span class="line">  public ApiResult appUserList(@RequestParam(value = <span class="string">"入参"</span>,defaultValue = <span class="string">""</span>) 入参类型 入参) <span class="comment">#多个入参并列添加</span></span><br><span class="line">  &#123;ApiResult apiResult = new ApiResult();</span><br><span class="line">  PageList&lt;模型model&gt; result = 对应的service.appUserList(入参之间逗号相隔);</span><br><span class="line">  <span class="built_in">return</span> GenericApiResultUtil.getGenericOKResult(result);&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="2-model"><a href="#2-model" class="headerlink" title="2. model"></a>2. model</h3><p>   就是指定数据库的表名以及各栏位的名称，其次是一些get,set方法，模板:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">@SqlTable(name = <span class="string">"表名"</span>)</span><br><span class="line">public class model名称(即该java文件名称) &#123;</span><br><span class="line">  @SqlColumn(name = <span class="string">"栏位名"</span>)</span><br><span class="line">  private <span class="built_in">type</span> name;</span><br><span class="line">  public long get栏位名() &#123;</span><br><span class="line">      <span class="built_in">return</span> 栏位名;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public UserInfoCache <span class="built_in">set</span>栏位名(<span class="built_in">type</span> 栏位名) &#123;</span><br><span class="line">      this.栏位名 = 栏位名;</span><br><span class="line">      <span class="built_in">return</span> this;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="3-service"><a href="#3-service" class="headerlink" title="3. service"></a>3. service</h3><p>  这里指service文件夹里的service.java文件(public interface)和service文件夹里嵌套的文件夹impl里的serviceImpl.java文件。<br>  interface模板：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">  public interface service名称 &#123;</span><br><span class="line">  List&lt;类型&gt; 接口名();</span><br><span class="line">  void 接口名(model名称 方法);</span><br><span class="line">  PageList&lt;model类名&gt; 对应controller(参数类型 参数);</span><br><span class="line">  int 接口名(参数类型 参数);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="4-serviceImpl"><a href="#4-serviceImpl" class="headerlink" title="4. serviceImpl"></a>4. serviceImpl</h3><p>  是service的执行，其模板：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@Service</span><br><span class="line">@Transactional(propagation = Propagation.REQUIRED)</span><br><span class="line">public class service名称Impl implements service名称 &#123;</span><br><span class="line">  private final UserInfoCacheDao userInfoCacheDao; <span class="comment"># DAO层的撰写</span></span><br><span class="line">  public service名称Impl(UserInfoCacheDao userInfoCacheDao)</span><br><span class="line">  &#123;this.userInfoCacheDao = userInfoCacheDao;&#125;</span><br><span class="line">  @Override</span><br><span class="line">  public PageList&lt;model&gt; 对应controller(参数类型 参数)</span><br><span class="line">  &#123;<span class="built_in">return</span> model名称Dao.接口名(参数类型 参数);&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="5-DAO"><a href="#5-DAO" class="headerlink" title="5. DAO"></a>5. DAO</h3><p>结构模型：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">public class yournameDao extends baseDao&lt;modelname&gt;&#123;</span><br><span class="line">public PageList&lt;modelname&gt; impl中方法的返回值(参数类型 参数)</span><br><span class="line">&#123;String selectSql = <span class="string">"yoursql "</span>; <span class="comment"># 封号前要有空格</span></span><br><span class="line">SqlBuider whereBuilder = new SqlBuilder();</span><br><span class="line">whereBuilder.append(<span class="string">"where ...space "</span>).args(参数);</span><br><span class="line">SqlBuilder limitBuilder = new SqlBuilder();</span><br><span class="line">limitBuilder.append(<span class="string">"limit ?, ?"</span>).args((page - 1) * size, size);</span><br><span class="line">String whereSql = whereBuilder.toString();</span><br><span class="line">String countSql = <span class="string">"yoursql"</span> + whereBuilder.toString();</span><br><span class="line">List&lt;yourmodel&gt; list = ...querryForBeanList(selectSql + whereSql + limitBuilder.toString(), classname.class);</span><br><span class="line">int total = ...querryForObject(countSql, Integer.class);</span><br><span class="line">PageList&lt;yourmodel&gt; PageList = new PageList&lt;&gt;();</span><br><span class="line">pageList.setList(list)</span><br><span class="line">pageList.setTotal(total)</span><br><span class="line"><span class="built_in">return</span> pageList;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+          <h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><h2 id="一般需要写5个文件：controller-model-service-serviceImpl-DAO"><a href="#一般需要写5个文件：controller-model-service-serviceImpl-DAO" class="headerlink" title="一般需要写5个文件：controller + model + service + serviceImpl + DAO"></a>一般需要写5个文件：controller + model + service + serviceImpl + DAO</h2><h3 id="1-controller"><a href="#1-controller" class="headerlink" title="1. controller"></a>1. controller</h3><p>  一般由@RequestMapping和@ResponseBody构成</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@RequestMapping(value = <span class="string">"路径"</span>, method = RequestMethod.GET, produces = <span class="string">"名称/json;charset=utf-8"</span>)</span><br><span class="line">  @ResponseBody</span><br><span class="line">  public ApiResult appUserList(@RequestParam(value = <span class="string">"入参"</span>,defaultValue = <span class="string">""</span>) 入参类型 入参) <span class="comment">#多个入参并列添加</span></span><br><span class="line">  &#123;ApiResult apiResult = new ApiResult();</span><br><span class="line">  PageList&lt;模型model&gt; result = 对应的service.appUserList(入参之间逗号相隔);</span><br><span class="line">  <span class="built_in">return</span> GenericApiResultUtil.getGenericOKResult(result);&#125;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/11/28/userinfo-interface/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -467,19 +458,14 @@
 
       
           <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/11/06/hello-world/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -554,24 +540,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="HTTP请求包"><a href="#HTTP请求包" class="headerlink" title="HTTP请求包"></a>HTTP请求包</h2><p>Request包分为3部分，依次为Request line,Request header, body.<br>HTTP协议与服务器交互的请求方法：GET,POST,PUT,DELETE.查增改删。</p>
-<h3 id="fiddler"><a href="#fiddler" class="headerlink" title="fiddler"></a>fiddler</h3><p>GET方法<br><img src="https://raw.githubusercontent.com/astaxie/build-web-application-with-golang/master/zh/images/3.1.http.png" alt=""></p>
-<p>POST方法<br><img src="https://raw.githubusercontent.com/astaxie/build-web-application-with-golang/master/zh/images/3.1.httpPOST.png" alt=""></p>
-<h3 id="HTTP响应包（服务器信息）"><a href="#HTTP响应包（服务器信息）" class="headerlink" title="HTTP响应包（服务器信息）"></a>HTTP响应包（服务器信息）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 OK						//状态行</span><br><span class="line">Server: nginx/1.0.8					//服务器使用的WEB软件名及版本</span><br><span class="line">Date:Date: Tue, 30 Oct 2012 04:14:25 GMT		//发送时间</span><br><span class="line">Content-Type: text/html				//服务器发送信息的类型</span><br><span class="line">Transfer-Encoding: chunked			//表示发送HTTP包是分段发的</span><br><span class="line">Connection: keep-alive				//保持连接状态</span><br><span class="line">Content-Length: 90					//主体内容长度</span><br><span class="line">//空行 用来分割消息头和主体</span><br><span class="line">&lt;!DOCTYPE html PUBLIC <span class="string">"-//W3C//DTD XHTML 1.0 Transitional//EN"</span>... //消息体</span><br></pre></td></tr></table></figure>
-<p>Response包中的第一行叫做状态行，由HTTP协议版本号， 状态码， 状态消息 三部分组成。</p>
-<p>状态码用来告诉HTTP客户端,HTTP服务器是否产生了预期的Response。HTTP/1.1协议中定义了5类状态码， 状态码由三位数字组成，第一个数字定义了响应的类别</p>
-<ol>
-<li>1XX 提示信息 - 表示请求已被成功接收，继续处理</li>
-<li>2XX 成功 - 表示请求已被成功接收，理解，接受</li>
-<li>3XX 重定向 - 要完成请求必须进行更进一步的处理</li>
-<li>4XX 客户端错误 - 请求有语法错误或请求无法实现</li>
-<li>5XX 服务器端错误 - 服务器未能实现合法的请求</li>
-</ol>
-<h3 id="HTTP协议是无状态的和Connection-keep-alive的区别"><a href="#HTTP协议是无状态的和Connection-keep-alive的区别" class="headerlink" title="HTTP协议是无状态的和Connection: keep-alive的区别"></a>HTTP协议是无状态的和Connection: keep-alive的区别</h3><p>无状态是指协议对于事务处理没有记忆能力，服务器不知道客户端是什么状态。从另一方面讲，打开一个服务器上的网页和你之前打开这个服务器上的网页之间没有任何联系。</p>
-<p>HTTP是一个无状态的面向连接的协议，无状态不代表HTTP不能保持TCP连接，更不能代表HTTP使用的是UDP协议（面对无连接）。</p>
-<p>从HTTP/1.1起，默认都开启了Keep-Alive保持连接特性，简单地说，当一个网页打开完成后，客户端和服务器之间用于传输HTTP数据的TCP连接不会关闭，如果客户端再次访问这个服务器上的网页，会继续使用这一条已经建立的TCP连接。</p>
-<p>Keep-Alive不会永久保持连接，它有一个保持时间，可以在不同服务器软件（如Apache）中设置这个时间。</p>
-
+          <h2 id="HTTP请求包"><a href="#HTTP请求包" class="headerlink" title="HTTP请求包"></a>HTTP请求包</h2><p>Request包分为3部分，依次为Request line,Request header, body.<br>HTTP协议与服务器交互的请求方法：GET,POST,PUT,DELETE.查增改删。</p><h3 id="fiddler"><a href="#fiddler" class="headerlink" title="fiddler"></a>fiddler</h3><p>GET方法<br><img src="https://raw.githubusercontent.com/astaxie/build-web-application-with-golang/master/zh/images/3.1.http.png" alt></p><p>POST方法<br><img src="https://raw.githubusercontent.com/astaxie/build-web-application-with-golang/master/zh/images/3.1.httpPOST.png" alt></p><h3 id="HTTP响应包（服务器信息）"><a href="#HTTP响应包（服务器信息）" class="headerlink" title="HTTP响应包（服务器信息）"></a>HTTP响应包（服务器信息）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 OK						//状态行</span><br><span class="line">Server: nginx/1.0.8					//服务器使用的WEB软件名及版本</span><br><span class="line">Date:Date: Tue, 30 Oct 2012 04:14:25 GMT		//发送时间</span><br><span class="line">Content-Type: text/html				//服务器发送信息的类型</span><br><span class="line">Transfer-Encoding: chunked			//表示发送HTTP包是分段发的</span><br><span class="line">Connection: keep-alive				//保持连接状态</span><br><span class="line">Content-Length: 90					//主体内容长度</span><br><span class="line">//空行 用来分割消息头和主体</span><br><span class="line">&lt;!DOCTYPE html PUBLIC <span class="string">"-//W3C//DTD XHTML 1.0 Transitional//EN"</span>... //消息体</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/09/28/http/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
