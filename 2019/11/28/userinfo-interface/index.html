@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.0.0">
+<meta name="generator" content="Hexo 4.2.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
@@ -51,15 +51,19 @@
   };
 </script>
 
-  <meta name="description" content="接口一般需要写5个文件：controller + model + service + serviceImpl + DAO1. controller  一般由@RequestMapping和@ResponseBody构成123456@RequestMapping(value = &quot;路径&quot;, method = RequestMethod.GET, produces = &quot;名称&#x2F;json;charset">
-<meta name="keywords" content="DAO,service,controller">
+  <meta name="description" content="接口一般需要写5个文件：controller + model + service + serviceImpl + DAO1. controller  一般由@RequestMapping和@ResponseBody构成 123456@RequestMapping(value &#x3D; &quot;路径&quot;, method &#x3D; RequestMethod.GET, produces &#x3D; &quot;名称&#x2F;json;charse">
 <meta property="og:type" content="article">
 <meta property="og:title" content="userinfo_interface">
-<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;11&#x2F;28&#x2F;userinfo-interface&#x2F;index.html">
+<meta property="og:url" content="http://yoursite.com/2019/11/28/userinfo-interface/index.html">
 <meta property="og:site_name" content="liuying">
-<meta property="og:description" content="接口一般需要写5个文件：controller + model + service + serviceImpl + DAO1. controller  一般由@RequestMapping和@ResponseBody构成123456@RequestMapping(value = &quot;路径&quot;, method = RequestMethod.GET, produces = &quot;名称&#x2F;json;charset">
-<meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-11-28T11:21:43.814Z">
+<meta property="og:description" content="接口一般需要写5个文件：controller + model + service + serviceImpl + DAO1. controller  一般由@RequestMapping和@ResponseBody构成 123456@RequestMapping(value &#x3D; &quot;路径&quot;, method &#x3D; RequestMethod.GET, produces &#x3D; &quot;名称&#x2F;json;charse">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-11-28T00:51:48.000Z">
+<meta property="article:modified_time" content="2019-11-28T11:21:43.814Z">
+<meta property="article:author" content="嘤嘤嘤">
+<meta property="article:tag" content="DAO">
+<meta property="article:tag" content="service">
+<meta property="article:tag" content="controller">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://yoursite.com/2019/11/28/userinfo-interface/">
@@ -124,7 +128,7 @@
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
-        <p class="site-subtitle">一个古典音乐爱好者</p>
+        <p class="site-subtitle">classic music fan</p>
   </div>
 
   <div class="site-nav-toggle">
@@ -183,7 +187,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="嘤嘤嘤">
-      <meta itemprop="description" content="热爱编程，光学工程硕士，马拉松群众等级三级运动员，雅思7分。">
+      <meta itemprop="description" content="coding,marathon athlete,IELTS7。">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -227,17 +231,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><h2 id="一般需要写5个文件：controller-model-service-serviceImpl-DAO"><a href="#一般需要写5个文件：controller-model-service-serviceImpl-DAO" class="headerlink" title="一般需要写5个文件：controller + model + service + serviceImpl + DAO"></a>一般需要写5个文件：controller + model + service + serviceImpl + DAO</h2><h3 id="1-controller"><a href="#1-controller" class="headerlink" title="1. controller"></a>1. controller</h3><p>  一般由@RequestMapping和@ResponseBody构成</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@RequestMapping(value = <span class="string">"路径"</span>, method = RequestMethod.GET, produces = <span class="string">"名称/json;charset=utf-8"</span>)</span><br><span class="line">  @ResponseBody</span><br><span class="line">  public ApiResult appUserList(@RequestParam(value = <span class="string">"入参"</span>,defaultValue = <span class="string">""</span>) 入参类型 入参) <span class="comment">#多个入参并列添加</span></span><br><span class="line">  &#123;ApiResult apiResult = new ApiResult();</span><br><span class="line">  PageList&lt;模型model&gt; result = 对应的service.appUserList(入参之间逗号相隔);</span><br><span class="line">  <span class="built_in">return</span> GenericApiResultUtil.getGenericOKResult(result);&#125;</span><br></pre></td></tr></table></figure><a id="more"></a>
-
+        <html><head></head><body></body></html><html><head></head><body><h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><h2 id="一般需要写5个文件：controller-model-service-serviceImpl-DAO"><a href="#一般需要写5个文件：controller-model-service-serviceImpl-DAO" class="headerlink" title="一般需要写5个文件：controller + model + service + serviceImpl + DAO"></a>一般需要写5个文件：controller + model + service + serviceImpl + DAO</h2><h3 id="1-controller"><a href="#1-controller" class="headerlink" title="1. controller"></a>1. controller</h3><p>  一般由@RequestMapping和@ResponseBody构成</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@RequestMapping(value = <span class="string">"路径"</span>, method = RequestMethod.GET, produces = <span class="string">"名称/json;charset=utf-8"</span>)</span><br><span class="line">  @ResponseBody</span><br><span class="line">  public ApiResult appUserList(@RequestParam(value = <span class="string">"入参"</span>,defaultValue = <span class="string">""</span>) 入参类型 入参) <span class="comment">#多个入参并列添加</span></span><br><span class="line">  {ApiResult apiResult = new ApiResult();</span><br><span class="line">  PageList<模型model> result = 对应的service.appUserList(入参之间逗号相隔);</span><br><span class="line">  <span class="built_in">return</span> GenericApiResultUtil.getGenericOKResult(result);}</span><br></pre></td></tr></tbody></table></figure>
 <h3 id="2-model"><a href="#2-model" class="headerlink" title="2. model"></a>2. model</h3><p>   就是指定数据库的表名以及各栏位的名称，其次是一些get,set方法，模板:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">@SqlTable(name = <span class="string">"表名"</span>)</span><br><span class="line">public class model名称(即该java文件名称) &#123;</span><br><span class="line">  @SqlColumn(name = <span class="string">"栏位名"</span>)</span><br><span class="line">  private <span class="built_in">type</span> name;</span><br><span class="line">  public long get栏位名() &#123;</span><br><span class="line">      <span class="built_in">return</span> 栏位名;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public UserInfoCache <span class="built_in">set</span>栏位名(<span class="built_in">type</span> 栏位名) &#123;</span><br><span class="line">      this.栏位名 = 栏位名;</span><br><span class="line">      <span class="built_in">return</span> this;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">@SqlTable(name = <span class="string">"表名"</span>)</span><br><span class="line">public class model名称(即该java文件名称) {</span><br><span class="line">  @SqlColumn(name = <span class="string">"栏位名"</span>)</span><br><span class="line">  private <span class="built_in">type</span> name;</span><br><span class="line">  public long get栏位名() {</span><br><span class="line">      <span class="built_in">return</span> 栏位名;</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  public UserInfoCache <span class="built_in">set</span>栏位名(<span class="built_in">type</span> 栏位名) {</span><br><span class="line">      this.栏位名 = 栏位名;</span><br><span class="line">      <span class="built_in">return</span> this;</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
 <h3 id="3-service"><a href="#3-service" class="headerlink" title="3. service"></a>3. service</h3><p>  这里指service文件夹里的service.java文件(public interface)和service文件夹里嵌套的文件夹impl里的serviceImpl.java文件。<br>  interface模板：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">  public interface service名称 &#123;</span><br><span class="line">  List&lt;类型&gt; 接口名();</span><br><span class="line">  void 接口名(model名称 方法);</span><br><span class="line">  PageList&lt;model类名&gt; 对应controller(参数类型 参数);</span><br><span class="line">  int 接口名(参数类型 参数);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">  public interface service名称 {</span><br><span class="line">  List<类型> 接口名();</span><br><span class="line">  void 接口名(model名称 方法);</span><br><span class="line">  PageList<model类名> 对应controller(参数类型 参数);</span><br><span class="line">  int 接口名(参数类型 参数);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
 <h3 id="4-serviceImpl"><a href="#4-serviceImpl" class="headerlink" title="4. serviceImpl"></a>4. serviceImpl</h3><p>  是service的执行，其模板：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@Service</span><br><span class="line">@Transactional(propagation = Propagation.REQUIRED)</span><br><span class="line">public class service名称Impl implements service名称 &#123;</span><br><span class="line">  private final UserInfoCacheDao userInfoCacheDao; <span class="comment"># DAO层的撰写</span></span><br><span class="line">  public service名称Impl(UserInfoCacheDao userInfoCacheDao)</span><br><span class="line">  &#123;this.userInfoCacheDao = userInfoCacheDao;&#125;</span><br><span class="line">  @Override</span><br><span class="line">  public PageList&lt;model&gt; 对应controller(参数类型 参数)</span><br><span class="line">  &#123;<span class="built_in">return</span> model名称Dao.接口名(参数类型 参数);&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@Service</span><br><span class="line">@Transactional(propagation = Propagation.REQUIRED)</span><br><span class="line">public class service名称Impl implements service名称 {</span><br><span class="line">  private final UserInfoCacheDao userInfoCacheDao; <span class="comment"># DAO层的撰写</span></span><br><span class="line">  public service名称Impl(UserInfoCacheDao userInfoCacheDao)</span><br><span class="line">  {this.userInfoCacheDao = userInfoCacheDao;}</span><br><span class="line">  @Override</span><br><span class="line">  public PageList<model> 对应controller(参数类型 参数)</span><br><span class="line">  {<span class="built_in">return</span> model名称Dao.接口名(参数类型 参数);}</span><br></pre></td></tr></tbody></table></figure>
 <h3 id="5-DAO"><a href="#5-DAO" class="headerlink" title="5. DAO"></a>5. DAO</h3><p>结构模型：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">public class yournameDao extends baseDao&lt;modelname&gt;&#123;</span><br><span class="line">public PageList&lt;modelname&gt; impl中方法的返回值(参数类型 参数)</span><br><span class="line">&#123;String selectSql = <span class="string">"yoursql "</span>; <span class="comment"># 封号前要有空格</span></span><br><span class="line">SqlBuider whereBuilder = new SqlBuilder();</span><br><span class="line">whereBuilder.append(<span class="string">"where ...space "</span>).args(参数);</span><br><span class="line">SqlBuilder limitBuilder = new SqlBuilder();</span><br><span class="line">limitBuilder.append(<span class="string">"limit ?, ?"</span>).args((page - 1) * size, size);</span><br><span class="line">String whereSql = whereBuilder.toString();</span><br><span class="line">String countSql = <span class="string">"yoursql"</span> + whereBuilder.toString();</span><br><span class="line">List&lt;yourmodel&gt; list = ...querryForBeanList(selectSql + whereSql + limitBuilder.toString(), classname.class);</span><br><span class="line">int total = ...querryForObject(countSql, Integer.class);</span><br><span class="line">PageList&lt;yourmodel&gt; PageList = new PageList&lt;&gt;();</span><br><span class="line">pageList.setList(list)</span><br><span class="line">pageList.setTotal(total)</span><br><span class="line"><span class="built_in">return</span> pageList;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">public class yournameDao extends baseDao<modelname>{</span><br><span class="line">public PageList<modelname> impl中方法的返回值(参数类型 参数)</span><br><span class="line">{String selectSql = <span class="string">"yoursql "</span>; <span class="comment"># 封号前要有空格</span></span><br><span class="line">SqlBuider whereBuilder = new SqlBuilder();</span><br><span class="line">whereBuilder.append(<span class="string">"where ...space "</span>).args(参数);</span><br><span class="line">SqlBuilder limitBuilder = new SqlBuilder();</span><br><span class="line">limitBuilder.append(<span class="string">"limit ?, ?"</span>).args((page - 1) * size, size);</span><br><span class="line">String whereSql = whereBuilder.toString();</span><br><span class="line">String countSql = <span class="string">"yoursql"</span> + whereBuilder.toString();</span><br><span class="line">List<yourmodel> list = ...querryForBeanList(selectSql + whereSql + limitBuilder.toString(), classname.class);</span><br><span class="line">int total = ...querryForObject(countSql, Integer.class);</span><br><span class="line">PageList<yourmodel> PageList = new PageList<>();</span><br><span class="line">pageList.setList(list)</span><br><span class="line">pageList.setTotal(total)</span><br><span class="line"><span class="built_in">return</span> pageList;</span><br><span class="line">}</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+</body></html>
     </div>
 
     
@@ -263,6 +267,9 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
+                <a href="/2019/12/11/rege/" rel="prev" title="regexp">
+                  regexp <i class="fa fa-chevron-right"></i>
+                </a>
             </div>
           </div>
       </footer>
@@ -310,23 +317,23 @@
   <img class="site-author-image" itemprop="image" alt="嘤嘤嘤"
     src="/images/avatar.gif">
   <p class="site-author-name" itemprop="name">嘤嘤嘤</p>
-  <div class="site-description" itemprop="description">热爱编程，光学工程硕士，马拉松群众等级三级运动员，雅思7分。</div>
+  <div class="site-description" itemprop="description">coding,marathon athlete,IELTS7。</div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">5</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">categories</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -362,7 +369,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">嘤嘤嘤</span>
 </div>
-  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v4.0.0
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v4.2.0
   </div>
   <span class="post-meta-divider">|</span>
   <div class="theme-info">Theme – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.5.0
@@ -392,9 +399,19 @@
   <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
-<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
 <script src="/js/schemes/pisces.js"></script>
-<script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
   <script>
 var pjax = new Pjax({
   selectors: [
