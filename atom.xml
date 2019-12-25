@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-12-24T00:42:25.857Z</updated>
+  <updated>2019-12-25T11:12:29.834Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -17,11 +17,11 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>userinfo_interface</title>
+    <title>convertexceltodocx</title>
     <link href="http://yoursite.com/2019/12/12/convertexceltodocx/"/>
     <id>http://yoursite.com/2019/12/12/convertexceltodocx/</id>
     <published>2019-12-11T18:51:48.000Z</published>
-    <updated>2019-12-24T00:42:25.857Z</updated>
+    <updated>2019-12-25T11:12:29.834Z</updated>
     
     <content type="html"><![CDATA[<html><head></head><body></body></html><html><head></head><body><h2 id="Convert-excelfiles-to-docx-by-python-script"><a href="#Convert-excelfiles-to-docx-by-python-script" class="headerlink" title="Convert excelfiles to docx by python script"></a>Convert excelfiles to docx by python script</h2><h3 id="1-dump-your-mysql-database-by-sql-command"><a href="#1-dump-your-mysql-database-by-sql-command" class="headerlink" title="1. dump your mysql database by sql command"></a>1. dump your mysql database by sql command</h3><p>open sql file paste the content in the navicatformyssql, then export the filtered contents to xlsx format</p><h3 id="2-Convert-excel"><a href="#2-Convert-excel" class="headerlink" title="2. Convert excel"></a>2. Convert excel</h3><p>using vs studio run the python script, convert it to md.</p><h3 id="3-Convert-md"><a href="#3-Convert-md" class="headerlink" title="3. Convert md"></a>3. Convert md</h3><p>open cmd, navigate the target location of your excel files, run:</p><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pandoc xxx.md -o yyy.docx</span><br></pre></td></tr></tbody></table></figure></body></html>]]></content>
     
