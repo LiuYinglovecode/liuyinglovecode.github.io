@@ -3,9 +3,7 @@
   <entry>
     <title>create cli by cobra</title>
     <url>/2019/12/30/cobra/</url>
-    <content><![CDATA[<html><head></head><body></body></html><html><head></head><body><div align="center"><img alt="cobra.png" src="assets/cobra.png"></div>
-
-
+    <content><![CDATA[<html><head></head><body></body></html><html><head></head><body><p><img src="../../images/cobra.png" alt="Alt text"></p>
 <h3 id="install"><a href="#install" class="headerlink" title="install"></a>install</h3><p>cd to ../golang.org/x</p>
 <figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/golang/text</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/golang/sys</span><br></pre></td></tr></tbody></table></figure>
 <p>download github.com/spf13/cobra/cobra<br>cd to its dir<br>then open cmd & type </p>
