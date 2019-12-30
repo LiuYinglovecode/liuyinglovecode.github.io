@@ -212,6 +212,125 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/30/cobra/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="嘤嘤嘤">
+      <meta itemprop="description" content="coding,marathon athlete,IELTS7。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="liuying">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/12/30/cobra/" class="post-title-link" itemprop="url">create cli by cobra</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2019-12-30 01:37:20 / Modified: 15:14:13" itemprop="dateCreated datePublished" datetime="2019-12-30T01:37:20+08:00">2019-12-30</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/golang/" itemprop="url" rel="index">
+                    <span itemprop="name">golang</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <html><head></head><body></body></html><html><head></head><body><div align="center"><img alt="cobra.png" src="assets/cobra.png"></div>
+
+
+<h3 id="install"><a href="#install" class="headerlink" title="install"></a>install</h3><p>cd to ../golang.org/x</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/golang/text</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/golang/sys</span><br></pre></td></tr></tbody></table></figure>
+<p>download github.com/spf13/cobra/cobra<br>cd to its dir<br>then open cmd & type </p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go install github.com/spf13/cobra/cobra</span><br></pre></td></tr></tbody></table></figure>
+<p>then use it:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cobra init mycalc</span><br></pre></td></tr></tbody></table></figure>
+<p>Cobra-based application structure:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">▾ appName/</span><br><span class="line">    ▾ cmd/</span><br><span class="line">        root.go</span><br><span class="line">    main.go</span><br><span class="line">``` </span><br><span class="line">cobra main.go structure:</span><br><span class="line">``` bash</span><br><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">  <span class="string">"mycalc/cmd"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func <span class="function"><span class="title">main</span></span>() {</span><br><span class="line">  cmd.Execute()</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p>when you run it, it will reports error:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">G:\go-work\bin\mycalc>go run main.go</span><br><span class="line">main.go:18:8: cannot find package <span class="string">"go-work/bin/my-calc/cmd"</span> <span class="keyword">in</span> any of:</span><br><span class="line">        c:\go\src\go-work\bin\my-calc\cmd (from <span class="variable">$GOROOT</span>)</span><br><span class="line">        G:\go-work\src\go-work\bin\my-calc\cmd (from <span class="variable">$GOPATH</span>)</span><br></pre></td></tr></tbody></table></figure>
+<p>⚠️so you copy the whole package to $GOPATH, then </p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">G:\go-work\bin\mycalc>go install mycalc</span><br><span class="line">G:\go-work\bin\mycalc>go run main.go</span><br><span class="line">Hello CLI</span><br><span class="line"></span><br><span class="line">G:\go-work\bin>mycalc</span><br><span class="line">Hello CLI</span><br></pre></td></tr></tbody></table></figure>
+<p>the command in root.go is called rootCmd.</p>
+<h3 id="the-cli-flow"><a href="#the-cli-flow" class="headerlink" title="the cli flow"></a>the cli flow</h3><ol>
+<li>edit root.go<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">func <span class="function"><span class="title">init</span></span>() {</span><br><span class="line">     fmt.Println(<span class="string">"inside init"</span>)</span><br><span class="line">     cobra.OnInitialize(initConfig)</span><br><span class="line">...</span><br></pre></td></tr></tbody></table></figure></li>
+<li>edit main.go<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">func <span class="function"><span class="title">main</span></span>() {</span><br><span class="line">     fmt.Println(<span class="string">"inside main"</span>)</span><br><span class="line">     cmd.Execute()</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+and it will shows this:<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">G:\go-work\bin>mycalc</span><br><span class="line">inside init</span><br><span class="line">inside main</span><br><span class="line">inside initConfig</span><br><span class="line">inside initConfig</span><br><span class="line">Hello CLI</span><br></pre></td></tr></tbody></table></figure>
+Should notice two types of flags: Persistent flags & Local flags</li>
+</ol>
+<h3 id="add-cli"><a href="#add-cli" class="headerlink" title="add cli:"></a>add cli:</h3><ol>
+<li>add num<br>create a command named add, navigate to the project <figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">G:\go-work\src\mycalc>cobra add add</span><br><span class="line">add created at G:\go-work\src\mycalc</span><br></pre></td></tr></tbody></table></figure>
+rebuild the binary using go install mycalc and run mycalc add.<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">G:\go-work\src\mycalc>go install mycalc</span><br></pre></td></tr></tbody></table></figure>
+
+</li>
+</ol>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">G:\go-work\bin>mycalc add</span><br><span class="line">add called</span><br></pre></td></tr></tbody></table></figure>
+<ol start="2">
+<li>modify it to add a series of numbers<br>to add numbers, fisrt have to convert the string into int then returan the result.<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">import (</span><br><span class="line">    ...</span><br><span class="line">    <span class="string">"strconv"</span></span><br><span class="line">)</span><br></pre></td></tr></tbody></table></figure></li>
+<li>inside the add.go, create a new addInt function.<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">func addInt(args []string) {</span><br><span class="line">    var sum int</span><br><span class="line">    // the first <span class="built_in">return</span> value is index of args, we can omit it using _ </span><br><span class="line">    <span class="keyword">for</span> _, ival := range args {</span><br><span class="line">    // strconv is the library used <span class="keyword">for</span> <span class="built_in">type</span> conversion, <span class="keyword">for</span> string</span><br><span class="line">    // to int conversion Atio method is udes.</span><br><span class="line">        itemp, err := strconv.Atoi(ival)</span><br><span class="line">        <span class="keyword">if</span> err != nil {</span><br><span class="line">            fmt.Println(err)</span><br><span class="line">        }</span><br><span class="line">        sum = sum + itemp</span><br><span class="line">    }</span><br><span class="line">    fmt.Printf(<span class="string">"Addition of numbers %s is %d, args, sum)</span></span><br><span class="line"><span class="string">}</span></span><br></pre></td></tr></tbody></table></figure></li>
+<li>update RUN func<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">addInt(args)</span><br><span class="line">...</span><br></pre></td></tr></tbody></table></figure></li>
+<li>rebuild<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">G:\go-work\bin>mycalc add a bc 8</span><br><span class="line">strconv.Atoi: parsing <span class="string">"a"</span>: invalid syntax</span><br><span class="line">strconv.Atoi: parsing <span class="string">"bc"</span>: invalid syntax</span><br><span class="line">Addition of numbers [a bc 8] is 8</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="achieve-float-calc-by-using-flag"><a href="#achieve-float-calc-by-using-flag" class="headerlink" title="achieve float calc by using flag"></a>achieve float calc by using flag</h3></li>
+<li>create a local flag in init</li>
+</ol>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//add.go</span><br><span class="line">func <span class="function"><span class="title">init</span></span>() {</span><br><span class="line">    rootCmd.AddCommand(addCmd)</span><br><span class="line">    addCmd.Flags().BoolP(<span class="string">"float"</span>, <span class="string">"f"</span>,<span class="literal">false</span>,<span class="string">"Add Floating Numbers"</span>)</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<ol start="2">
+<li>create a addFloat func in add.go<br>//add.go<br>func addFloat(args []string) {<br> var sum float64<br> for _, fval := range args {<pre><code>ftemp, err := strconv.ParseFloat(fval,64)
+if err != nil {
+    fmt.Println(err)
+}
+sum = sum + ftemp</code></pre> }<br> fmt.Printf(“sum of floating nums %s is %f”, args,sum)<br>}<figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">3. create a addFloat func in addCmd RUN func</span><br><span class="line">``` bash</span><br><span class="line">// add.go</span><br><span class="line">// addCmd</span><br><span class="line">Run: func(cmd *cobra.Command, args []string) {</span><br><span class="line">    // get the flag value, its default value is false</span><br><span class="line">    fstatus, _ := cmd.Flags().GetBool("float")</span><br><span class="line">    if fstatus {</span><br><span class="line">        addFloat(args)</span><br><span class="line">    } else {</span><br><span class="line">        addInt(args)</span><br><span class="line">    }</span><br><span class="line">},</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="select-even-numbers-amp-add-them"><a href="#select-even-numbers-amp-add-them" class="headerlink" title="select even numbers & add them"></a>select even numbers & add them</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cobra add even</span><br></pre></td></tr></tbody></table></figure></li>
+<li>init in even.go<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//even.go</span><br><span class="line">func <span class="function"><span class="title">init</span></span>() {</span><br><span class="line">    addCmd.AddCommand(evenCmd)</span><br><span class="line">...</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></li>
+<li>update evenCmd struct variable’s RUN method<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">//even.go</span><br><span class="line">Run: func(cmd *bobra.Command, args []string) {</span><br><span class="line"></span><br><span class="line">    var evenSum int</span><br><span class="line">    <span class="keyword">for</span> _, ival := range args {</span><br><span class="line">        itemp, _ := strconv.Atoi(ival)</span><br><span class="line">        <span class="keyword">if</span> itemp%2 == 0 {</span><br><span class="line">            evenSum = evenSum + itemp</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">    fmt.Printf(<span class="string">"the even addition of %s is %d"</span>, args, evenSum)</span><br><span class="line">},</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="select-old-numbers-amp-add-them"><a href="#select-old-numbers-amp-add-them" class="headerlink" title="select old numbers & add them"></a>select old numbers & add them</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//odd.go</span><br><span class="line">...</span><br><span class="line"><span class="keyword">if</span> itemp%2 != 0 </span><br><span class="line">...</span><br></pre></td></tr></tbody></table></figure>
+</li>
+</ol>
+</body></html>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/12/convertexceltodocx/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -534,6 +653,83 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/06/checknginxjindocker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="嘤嘤嘤">
+      <meta itemprop="description" content="coding,marathon athlete,IELTS7。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="liuying">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/06/checknginxjindocker/" class="post-title-link" itemprop="url">check nginx error log</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-11-06 08:25:15" itemprop="dateCreated datePublished" datetime="2019-11-06T08:25:15+08:00">2019-11-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-12-30 15:17:03" itemprop="dateModified" datetime="2019-12-30T15:17:03+08:00">2019-12-30</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/nginx/" itemprop="url" rel="index">
+                    <span itemprop="name">nginx</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <html><head></head><body></body></html><html><head></head><body><h3 id="check-error-log"><a href="#check-error-log" class="headerlink" title="check error log"></a>check error log</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ docker <span class="built_in">exec</span> -it mirrorname bash</span><br><span class="line"><span class="built_in">cd</span> /var/<span class="built_in">log</span>/nginx/</span><br><span class="line">/var/<span class="built_in">log</span>/nginx<span class="comment">#</span></span><br><span class="line">cat error.log</span><br></pre></td></tr></tbody></table></figure>
+
+</body></html>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/28/http/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -669,20 +865,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">7</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
