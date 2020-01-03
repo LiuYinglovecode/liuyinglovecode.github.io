@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-12-30T07:31:46.780Z</updated>
+  <updated>2020-01-03T01:05:10.751Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,36 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>create cli by cobra</title>
+    <link href="http://yoursite.com/2020/01/03/WSL-Docker/"/>
+    <id>http://yoursite.com/2020/01/03/WSL-Docker/</id>
+    <published>2020-01-03T01:04:21.000Z</published>
+    <updated>2020-01-03T01:05:10.751Z</updated>
+    
+    <content type="html"><![CDATA[<html><head></head><body></body></html><html><head></head><body><h3 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p  mkdir -p  ~/apache/www ~/apache/logs ~/apache/conf</span><br><span class="line">$ <span class="built_in">cd</span> apache</span><br><span class="line">~/apache$ touch Dockerfile</span><br><span class="line">~/apache$ vi Dockerfile</span><br><span class="line">~/apache$ touch httpd-foreground</span><br><span class="line">~/apache$ vi httpd-foreground</span><br><span class="line">~/apache$ chmod +x httpd-foreground</span><br><span class="line">...service docker start</span><br><span class="line">...service docker status</span><br><span class="line">~/apache$ docker build -t httpdliuying .</span><br></pre></td></tr></tbody></table></figure><p>Then you’ll get this error: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?</p><h3 id="SSH"><a href="#SSH" class="headerlink" title="SSH"></a>SSH</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak</span></span><br><span class="line"><span class="comment"># sudo vim /etc/ssh/sshd_config</span></span><br><span class="line"><span class="comment"># sudo service ssh start</span></span><br><span class="line"> * Starting OpenBSD Secure Shell server sshd                                                                                                     /etc/ssh/sshd_config: line 12: Bad configuration option: service</span><br><span class="line"> /etc/ssh/sshd_config: line 13: Bad configuration option: service</span><br><span class="line"> /etc/ssh/sshd_config: terminating, 2 bad configuration options</span><br><span class="line"></span><br><span class="line"> [fail]</span><br><span class="line"><span class="comment"># sudo service ssh status</span></span><br><span class="line"> * sshd is not running</span><br></pre></td></tr></tbody></table></figure><p> Then, you should uninstall it & reinstall it:<br> </p><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># sudo apt-get purge openssh-server</span></span><br><span class="line"><span class="comment"># sudo apt-get install openssh-server</span></span><br><span class="line"><span class="comment"># sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak</span></span><br><span class="line"><span class="comment"># sudo vim /etc/ssh/sshd_config</span></span><br><span class="line"><span class="comment"># sudo service ssh start</span></span><br><span class="line"> * Starting OpenBSD Secure Shell server sshd                                                                                                     [ OK ]</span><br><span class="line"><span class="comment"># sudo service ssh status</span></span><br><span class="line"> * sshd is running</span><br><span class="line"><span class="comment"># sudo systemctl enable ssh</span></span><br><span class="line">Synchronizing state of ssh.service with SysV service script with /lib/systemd/systemd-sysv-install.</span><br><span class="line">Executing: /lib/systemd/systemd-sysv-install <span class="built_in">enable</span> ssh</span><br><span class="line"> ...</span><br></pre></td></tr></tbody></table></figure><p></p></body></html>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;/body&gt;&lt;/html&gt;&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;h3 id=&quot;Apache&quot;&gt;&lt;a href=&quot;#Apache&quot; class=&quot;headerlink&quot; title=&quot;Apache&quot;&gt;&lt;/a&gt;Apac
+      
+    
+    </summary>
+    
+    
+      <category term="WSL" scheme="http://yoursite.com/categories/WSL/"/>
+    
+    
+      <category term="WSL" scheme="http://yoursite.com/tags/WSL/"/>
+    
+      <category term="SSH" scheme="http://yoursite.com/tags/SSH/"/>
+    
+      <category term="apache" scheme="http://yoursite.com/tags/apache/"/>
+    
+  </entry>
   
   <entry>
     <title>create cli by cobra</title>

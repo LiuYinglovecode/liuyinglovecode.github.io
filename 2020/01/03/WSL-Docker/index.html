@@ -51,17 +51,22 @@
   };
 </script>
 
-  <meta name="description" content="coding,marathon athlete,IELTS7。">
-<meta property="og:type" content="website">
-<meta property="og:title" content="liuying">
-<meta property="og:url" content="http://yoursite.com/tags/docker/index.html">
+  <meta name="description" content="Apache12345678910$ mkdir -p  mkdir -p  ~&#x2F;apache&#x2F;www ~&#x2F;apache&#x2F;logs ~&#x2F;apache&#x2F;conf$ cd apache~&#x2F;apache$ touch Dockerfile~&#x2F;apache$ vi Dockerfile~&#x2F;apache$ touch httpd-foreground~&#x2F;apache$ vi httpd-foreground">
+<meta property="og:type" content="article">
+<meta property="og:title" content="create cli by cobra">
+<meta property="og:url" content="http://yoursite.com/2020/01/03/WSL-Docker/index.html">
 <meta property="og:site_name" content="liuying">
-<meta property="og:description" content="coding,marathon athlete,IELTS7。">
+<meta property="og:description" content="Apache12345678910$ mkdir -p  mkdir -p  ~&#x2F;apache&#x2F;www ~&#x2F;apache&#x2F;logs ~&#x2F;apache&#x2F;conf$ cd apache~&#x2F;apache$ touch Dockerfile~&#x2F;apache$ vi Dockerfile~&#x2F;apache$ touch httpd-foreground~&#x2F;apache$ vi httpd-foreground">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-01-03T01:04:21.000Z">
+<meta property="article:modified_time" content="2020-01-03T01:05:10.751Z">
 <meta property="article:author" content="嘤嘤嘤">
+<meta property="article:tag" content="WSL">
+<meta property="article:tag" content="SSH">
+<meta property="article:tag" content="apache">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/tags/docker/">
+<link rel="canonical" href="http://yoursite.com/2020/01/03/WSL-Docker/">
 
 
 <script id="page-configurations">
@@ -69,13 +74,13 @@
   CONFIG.page = {
     sidebar: "",
     isHome: false,
-    isPost: false,
+    isPost: true,
     isPage: false,
     isArchive: false
   };
 </script>
 
-  <title>Tag: docker | liuying</title>
+  <title>create cli by cobra | liuying</title>
   
 
 
@@ -207,50 +212,100 @@
           <div class="content">
             
 
+  <div class="posts-expand">
+      
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h1 class="collection-header">docker
-          <small>Tag</small>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/03/WSL-Docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="嘤嘤嘤">
+      <meta itemprop="description" content="coding,marathon athlete,IELTS7。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="liuying">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          create cli by cobra
         </h1>
-      </div>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-01-03 09:04:21 / Modified: 09:05:10" itemprop="dateCreated datePublished" datetime="2020-01-03T09:04:21+08:00">2020-01-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/WSL/" itemprop="url" rel="index">
+                    <span itemprop="name">WSL</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <h1 class="collection-header">2019</h1>
+        <html><head></head><body></body></html><html><head></head><body><h3 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p  mkdir -p  ~/apache/www ~/apache/logs ~/apache/conf</span><br><span class="line">$ <span class="built_in">cd</span> apache</span><br><span class="line">~/apache$ touch Dockerfile</span><br><span class="line">~/apache$ vi Dockerfile</span><br><span class="line">~/apache$ touch httpd-foreground</span><br><span class="line">~/apache$ vi httpd-foreground</span><br><span class="line">~/apache$ chmod +x httpd-foreground</span><br><span class="line">...service docker start</span><br><span class="line">...service docker status</span><br><span class="line">~/apache$ docker build -t httpdliuying .</span><br></pre></td></tr></tbody></table></figure>
+<p>Then you’ll get this error: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?</p>
+<h3 id="SSH"><a href="#SSH" class="headerlink" title="SSH"></a>SSH</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak</span></span><br><span class="line"><span class="comment"># sudo vim /etc/ssh/sshd_config</span></span><br><span class="line"><span class="comment"># sudo service ssh start</span></span><br><span class="line"> * Starting OpenBSD Secure Shell server sshd                                                                                                     /etc/ssh/sshd_config: line 12: Bad configuration option: service</span><br><span class="line"> /etc/ssh/sshd_config: line 13: Bad configuration option: service</span><br><span class="line"> /etc/ssh/sshd_config: terminating, 2 bad configuration options</span><br><span class="line"></span><br><span class="line"> [fail]</span><br><span class="line"><span class="comment"># sudo service ssh status</span></span><br><span class="line"> * sshd is not running</span><br></pre></td></tr></tbody></table></figure>
+<p> Then, you should uninstall it & reinstall it:<br> </p><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># sudo apt-get purge openssh-server</span></span><br><span class="line"><span class="comment"># sudo apt-get install openssh-server</span></span><br><span class="line"><span class="comment"># sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak</span></span><br><span class="line"><span class="comment"># sudo vim /etc/ssh/sshd_config</span></span><br><span class="line"><span class="comment"># sudo service ssh start</span></span><br><span class="line"> * Starting OpenBSD Secure Shell server sshd                                                                                                     [ OK ]</span><br><span class="line"><span class="comment"># sudo service ssh status</span></span><br><span class="line"> * sshd is running</span><br><span class="line"><span class="comment"># sudo systemctl enable ssh</span></span><br><span class="line">Synchronizing state of ssh.service with SysV service script with /lib/systemd/systemd-sysv-install.</span><br><span class="line">Executing: /lib/systemd/systemd-sysv-install <span class="built_in">enable</span> ssh</span><br><span class="line"> ...</span><br></pre></td></tr></tbody></table></figure><p></p>
+</body></html>
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2019-11-06T08:25:15+08:00"
-              content="2019-11-06">
-          11-06
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/WSL/" rel="tag"># WSL</a>
+              <a href="/tags/SSH/" rel="tag"># SSH</a>
+              <a href="/tags/apache/" rel="tag"># apache</a>
+          </div>
 
-      <h2 class="post-title">
-          <a class="post-title-link" href="/2019/11/06/checknginxjindocker/" itemprop="url">
-            <span itemprop="name">check nginx error log</span>
-          </a>
-      </h2>
+        
 
-    </header>
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2019/12/30/cobra/" rel="next" title="create cli by cobra">
+                  <i class="fa fa-chevron-left"></i> create cli by cobra
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+            </div>
+          </div>
+      </footer>
+    
   </article>
+  
+  
+  
 
-    </div>
   </div>
-  
-  
-  
-
-  
-
 
 
           </div>
@@ -279,6 +334,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Apache"><span class="nav-number">1.</span> <span class="nav-text">Apache</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SSH"><span class="nav-number">2.</span> <span class="nav-text">SSH</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
