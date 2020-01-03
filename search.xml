@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>create cli by cobra</title>
+    <title>configure apache in docker while docker is in WSL</title>
     <url>/2020/01/03/WSL-Docker/</url>
     <content><![CDATA[<html><head></head><body></body></html><html><head></head><body><h3 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h3><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">$ mkdir -p  mkdir -p  ~/apache/www ~/apache/logs ~/apache/conf</span><br><span class="line">$ <span class="built_in">cd</span> apache</span><br><span class="line">~/apache$ touch Dockerfile</span><br><span class="line">~/apache$ vi Dockerfile</span><br><span class="line">~/apache$ touch httpd-foreground</span><br><span class="line">~/apache$ vi httpd-foreground</span><br><span class="line">~/apache$ chmod +x httpd-foreground</span><br><span class="line">...service docker start</span><br><span class="line">...service docker status</span><br><span class="line">~/apache$ docker build -t httpdliuying .</span><br></pre></td></tr></tbody></table></figure>
 <p>Then you’ll get this error: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?</p>
@@ -73,9 +73,9 @@ sum = sum + ftemp</code></pre> }<br> fmt.Printf(“sum of floating nums %s is %f
         <category>golang</category>
       </categories>
       <tags>
+        <tag>go</tag>
         <tag>cobra</tag>
         <tag>cli</tag>
-        <tag>go</tag>
       </tags>
   </entry>
   <entry>
@@ -122,8 +122,8 @@ sum = sum + ftemp</code></pre> }<br> fmt.Printf(“sum of floating nums %s is %f
         <category>go</category>
       </categories>
       <tags>
-        <tag>go</tag>
         <tag>rege</tag>
+        <tag>go</tag>
         <tag>verification</tag>
       </tags>
   </entry>
