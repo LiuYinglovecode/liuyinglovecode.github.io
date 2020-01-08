@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>upgrade mysql</title>
+    <url>/2020/01/08/mysqlupgrade/</url>
+    <content><![CDATA[<html><head></head><body></body></html><html><head></head><body><h3 id="mysql-upgrade-from-5-6-to-8-0-18"><a href="#mysql-upgrade-from-5-6-to-8-0-18" class="headerlink" title="mysql upgrade(from 5.6 to 8.0.18)"></a>mysql upgrade(from 5.6 to 8.0.18)</h3><ol>
+<li>find installation location</li>
+</ol>
+<ul>
+<li>open cmd type mysql,and then<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">show variables like <span class="string">"%char%"</span>;</span><br><span class="line">+--------------------------+---------------------------------------------------------+</span><br><span class="line">| Variable_name            | Value                                                   |</span><br><span class="line">+--------------------------+---------------------------------------------------------+</span><br><span class="line">| character_set_client     | gbk                                                     |</span><br><span class="line">| character_set_connection | gbk                                                     |</span><br><span class="line">| character_set_database   | latin1                                                  |</span><br><span class="line">| character_set_filesystem | binary                                                  |</span><br><span class="line">| character_set_results    | gbk                                                     |</span><br><span class="line">| character_set_server     | latin1                                                  |</span><br><span class="line">| character_set_system     | utf8                                                    |</span><br><span class="line">| character_sets_dir       | D:\Program Files\MySQL\MySQL Server 5.6\share\charsets\ |</span><br><span class="line">+--------------------------+---------------------------------------------------------+</span><br></pre></td></tr></tbody></table></figure></li>
+</ul>
+<ol start="2">
+<li>remove old version service<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">D:\Program Files\MySQL\MySQL Server 5.6\bin>mysqld --remove mysql</span><br><span class="line">Failed to remove the service because the service is running</span><br><span class="line">Stop the service and try again</span><br><span class="line">D:\Program Files\MySQL\MySQL Server 5.6\bin>net stop mysql</span><br><span class="line">MySQL 服务正在停止.</span><br><span class="line">MySQL 服务已成功停止。</span><br><span class="line">D:\Program Files\MySQL\MySQL Server 5.6\bin>mysqld --remove mysql</span><br><span class="line">Service successfully removed.</span><br></pre></td></tr></tbody></table></figure></li>
+<li>install new<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">D:\Program Files\MySQL\MySQL Server 8.0.18\bin>mysqld --install mysql</span><br><span class="line">Service successfully installed.</span><br><span class="line">D:\Program Files\MySQL\MySQL Server 8.0.18\bin>mysqld --initialize-insecure</span><br><span class="line"><span class="comment"># then a new fold data is created</span></span><br><span class="line">D:\Program Files\MySQL\MySQL Server 8.0.18\bin>net start mysql</span><br><span class="line">mysql 服务正在启动 .</span><br><span class="line">mysql 服务已经启动成功。</span><br></pre></td></tr></tbody></table></figure></li>
+<li>upgrade<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">D:\Program Files\MySQL\MySQL Server 8.0.18\bin>mysql_upgrade -uroot -p123</span><br><span class="line">mysql_upgrade: [Warning] Using a password on the <span class="built_in">command</span> line interface can be insecure.</span><br><span class="line">The mysql_upgrade client is now deprecated. The actions executed by the upgrade client are now <span class="keyword">done</span> by the server.</span><br><span class="line">To upgrade, please start the new MySQL binary with the older data directory. Repairing user tables is <span class="keyword">done</span> automatically. Restart is not required after upgrade.</span><br><span class="line">The upgrade process automatically starts on running a new MySQL binary with an older data directory. To avoid accidental upgrades, please use the --upgrade=NONE option with the MySQL binary. The option --upgrade=FORCE is also provided to run the server upgrade sequence on demand.</span><br><span class="line">It may be possible that the server upgrade fails due to a number of reasons. In that <span class="keyword">case</span>, the upgrade sequence will run again during the next MySQL server start. If the server upgrade fails repeatedly, the server can be started with the --upgrade=MINIMAL option to start the server without executing the upgrade sequence, thus allowing users to manually rectify the problem.</span><br><span class="line"></span><br><span class="line">D:\Program Files\MySQL\MySQL Server 8.0.18\bin>net stop mysql</span><br><span class="line">...</span><br><span class="line">D:\Program Files\MySQL\MySQL Server 8.0.18\bin>net start mysql</span><br><span class="line">...</span><br></pre></td></tr></tbody></table></figure></li>
+<li>use<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">C:\Users\user>mysql -u root -p</span><br><span class="line">Enter password:</span><br><span class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</span><br><span class="line">Your MySQL connection id is 9</span><br><span class="line">Server version: 8.0.18 MySQL Community Server - GPL</span><br></pre></td></tr></tbody></table></figure></li>
+</ol>
+</body></html>]]></content>
+      <categories>
+        <category>sql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>configure apache in docker while docker is in WSL</title>
     <url>/2020/01/03/WSL-Docker/</url>
     <content><![CDATA[<html><head></head><body></body></html><html><head></head><body><h3 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h3><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">$ mkdir -p  mkdir -p  ~/apache/www ~/apache/logs ~/apache/conf</span><br><span class="line">$ <span class="built_in">cd</span> apache</span><br><span class="line">~/apache$ touch Dockerfile</span><br><span class="line">~/apache$ vi Dockerfile</span><br><span class="line">~/apache$ touch httpd-foreground</span><br><span class="line">~/apache$ vi httpd-foreground</span><br><span class="line">~/apache$ chmod +x httpd-foreground</span><br><span class="line">...service docker start</span><br><span class="line">...service docker status</span><br><span class="line">~/apache$ docker build -t httpdliuying .</span><br></pre></td></tr></tbody></table></figure>
 <p>Then you’ll get this error: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?</p>
-<h3 id="SSH"><a href="#SSH" class="headerlink" title="SSH"></a>SSH</h3><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="comment"># sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak</span></span><br><span class="line"><span class="comment"># sudo vim /etc/ssh/sshd_config</span></span><br><span class="line"><span class="comment"># sudo service ssh start</span></span><br><span class="line"> * Starting OpenBSD Secure Shell server sshd                                                                                                     /etc/ssh/sshd_config: line 12: Bad configuration option: service</span><br><span class="line"> /etc/ssh/sshd_config: line 13: Bad configuration option: service</span><br><span class="line"> /etc/ssh/sshd_config: terminating, 2 bad configuration options</span><br><span class="line"></span><br><span class="line"> [fail]</span><br><span class="line"><span class="comment"># sudo service ssh status</span></span><br><span class="line"> * sshd is not running</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="SSH"><a href="#SSH" class="headerlink" title="SSH"></a>SSH</h3><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"> sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak</span><br><span class="line"> sudo vim /etc/ssh/sshd_config</span><br><span class="line"> sudo service ssh start <span class="comment"># excute it when you login Xftp 6</span></span><br><span class="line"> * Starting OpenBSD Secure Shell server sshd                                                                                                     /etc/ssh/sshd_config: line 12: Bad configuration option: service</span><br><span class="line"> /etc/ssh/sshd_config: line 13: Bad configuration option: service</span><br><span class="line"> /etc/ssh/sshd_config: terminating, 2 bad configuration options</span><br><span class="line"></span><br><span class="line"> [fail]</span><br><span class="line"><span class="comment"># sudo service ssh status</span></span><br><span class="line"> * sshd is not running</span><br></pre></td></tr></tbody></table></figure>
 <p> Then, you should uninstall it & reinstall it:<br> </p><figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="comment"># sudo apt-get purge openssh-server</span></span><br><span class="line"><span class="comment"># sudo apt-get install openssh-server</span></span><br><span class="line"><span class="comment"># sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak</span></span><br><span class="line"><span class="comment"># sudo vim /etc/ssh/sshd_config</span></span><br><span class="line"><span class="comment"># sudo service ssh start</span></span><br><span class="line"> * Starting OpenBSD Secure Shell server sshd                                                                                                     [ OK ]</span><br><span class="line"><span class="comment"># sudo service ssh status</span></span><br><span class="line"> * sshd is running</span><br><span class="line"><span class="comment"># sudo systemctl enable ssh</span></span><br><span class="line">Synchronizing state of ssh.service with SysV service script with /lib/systemd/systemd-sysv-install.</span><br><span class="line">Executing: /lib/systemd/systemd-sysv-install <span class="built_in">enable</span> ssh</span><br><span class="line"> ...</span><br></pre></td></tr></tbody></table></figure><p></p>
 </body></html>]]></content>
       <categories>
@@ -73,9 +96,9 @@ sum = sum + ftemp</code></pre> }<br> fmt.Printf(“sum of floating nums %s is %f
         <category>golang</category>
       </categories>
       <tags>
+        <tag>go</tag>
         <tag>cobra</tag>
         <tag>cli</tag>
-        <tag>go</tag>
       </tags>
   </entry>
   <entry>
@@ -122,8 +145,8 @@ sum = sum + ftemp</code></pre> }<br> fmt.Printf(“sum of floating nums %s is %f
         <category>go</category>
       </categories>
       <tags>
-        <tag>go</tag>
         <tag>rege</tag>
+        <tag>go</tag>
         <tag>verification</tag>
       </tags>
   </entry>
