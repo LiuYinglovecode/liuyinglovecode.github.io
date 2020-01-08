@@ -69,11 +69,11 @@
       <category term="golang" scheme="http://yoursite.com/categories/golang/"/>
     
     
-      <category term="go" scheme="http://yoursite.com/tags/go/"/>
-    
       <category term="cobra" scheme="http://yoursite.com/tags/cobra/"/>
     
       <category term="cli" scheme="http://yoursite.com/tags/cli/"/>
+    
+      <category term="go" scheme="http://yoursite.com/tags/go/"/>
     
   </entry>
   
@@ -129,9 +129,9 @@
       <category term="go" scheme="http://yoursite.com/categories/go/"/>
     
     
-      <category term="rege" scheme="http://yoursite.com/tags/rege/"/>
-    
       <category term="go" scheme="http://yoursite.com/tags/go/"/>
+    
+      <category term="rege" scheme="http://yoursite.com/tags/rege/"/>
     
       <category term="verification" scheme="http://yoursite.com/tags/verification/"/>
     
@@ -194,9 +194,9 @@
     <link href="http://yoursite.com/2019/11/06/checknginxjindocker/"/>
     <id>http://yoursite.com/2019/11/06/checknginxjindocker/</id>
     <published>2019-11-06T00:25:15.000Z</published>
-    <updated>2019-12-30T07:17:03.367Z</updated>
+    <updated>2020-01-07T08:23:53.604Z</updated>
     
-    <content type="html"><![CDATA[<html><head></head><body></body></html><html><head></head><body><h3 id="check-error-log"><a href="#check-error-log" class="headerlink" title="check error log"></a>check error log</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ docker <span class="built_in">exec</span> -it mirrorname bash</span><br><span class="line"><span class="built_in">cd</span> /var/<span class="built_in">log</span>/nginx/</span><br><span class="line">/var/<span class="built_in">log</span>/nginx<span class="comment">#</span></span><br><span class="line">cat error.log</span><br></pre></td></tr></tbody></table></figure></body></html>]]></content>
+    <content type="html"><![CDATA[<html><head></head><body></body></html><html><head></head><body><h3 id="check-error-log"><a href="#check-error-log" class="headerlink" title="check error log"></a>check error log</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ docker <span class="built_in">exec</span> -it mirrorname bash</span><br><span class="line"><span class="built_in">cd</span> /var/<span class="built_in">log</span>/nginx/</span><br><span class="line">/var/<span class="built_in">log</span>/nginx<span class="comment">#</span></span><br><span class="line">cat error.log</span><br></pre></td></tr></tbody></table></figure><p><img src="../../images/nginx.png" alt="Alt text"></p></body></html>]]></content>
     
     <summary type="html">
     
