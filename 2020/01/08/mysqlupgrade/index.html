@@ -59,7 +59,7 @@
 <meta property="og:description" content="mysql upgrade(from 5.6 to 8.0.18) find installation location   open cmd type mysql,and then12345678910111213show variables like &quot;%char%&quot;;+--------------------------+-----------------------------------">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-01-08T09:30:10.000Z">
-<meta property="article:modified_time" content="2020-01-08T09:38:10.519Z">
+<meta property="article:modified_time" content="2020-01-09T01:04:36.958Z">
 <meta property="article:author" content="嘤嘤嘤">
 <meta property="article:tag" content="mysql">
 <meta name="twitter:card" content="summary">
@@ -237,10 +237,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2020-01-08 17:30:10 / Modified: 17:38:10" itemprop="dateCreated datePublished" datetime="2020-01-08T17:30:10+08:00">2020-01-08</time>
+              <time title="Created: 2020-01-08 17:30:10" itemprop="dateCreated datePublished" datetime="2020-01-08T17:30:10+08:00">2020-01-08</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-01-09 09:04:36" itemprop="dateModified" datetime="2020-01-09T09:04:36+08:00">2020-01-09</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -275,6 +281,7 @@
 <li>install new<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">D:\Program Files\MySQL\MySQL Server 8.0.18\bin>mysqld --install mysql</span><br><span class="line">Service successfully installed.</span><br><span class="line">D:\Program Files\MySQL\MySQL Server 8.0.18\bin>mysqld --initialize-insecure</span><br><span class="line"><span class="comment"># then a new fold data is created</span></span><br><span class="line">D:\Program Files\MySQL\MySQL Server 8.0.18\bin>net start mysql</span><br><span class="line">mysql 服务正在启动 .</span><br><span class="line">mysql 服务已经启动成功。</span><br></pre></td></tr></tbody></table></figure></li>
 <li>upgrade<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">D:\Program Files\MySQL\MySQL Server 8.0.18\bin>mysql_upgrade -uroot -p123</span><br><span class="line">mysql_upgrade: [Warning] Using a password on the <span class="built_in">command</span> line interface can be insecure.</span><br><span class="line">The mysql_upgrade client is now deprecated. The actions executed by the upgrade client are now <span class="keyword">done</span> by the server.</span><br><span class="line">To upgrade, please start the new MySQL binary with the older data directory. Repairing user tables is <span class="keyword">done</span> automatically. Restart is not required after upgrade.</span><br><span class="line">The upgrade process automatically starts on running a new MySQL binary with an older data directory. To avoid accidental upgrades, please use the --upgrade=NONE option with the MySQL binary. The option --upgrade=FORCE is also provided to run the server upgrade sequence on demand.</span><br><span class="line">It may be possible that the server upgrade fails due to a number of reasons. In that <span class="keyword">case</span>, the upgrade sequence will run again during the next MySQL server start. If the server upgrade fails repeatedly, the server can be started with the --upgrade=MINIMAL option to start the server without executing the upgrade sequence, thus allowing users to manually rectify the problem.</span><br><span class="line"></span><br><span class="line">D:\Program Files\MySQL\MySQL Server 8.0.18\bin>net stop mysql</span><br><span class="line">...</span><br><span class="line">D:\Program Files\MySQL\MySQL Server 8.0.18\bin>net start mysql</span><br><span class="line">...</span><br></pre></td></tr></tbody></table></figure></li>
 <li>use<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\user>mysql -u root -p</span><br><span class="line">Enter password:</span><br><span class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</span><br><span class="line">Your MySQL connection id is 9</span><br><span class="line">Server version: 8.0.18 MySQL Community Server - GPL</span><br></pre></td></tr></tbody></table></figure></li>
+<li>ERROR 1045 (28000): Access denied for user ‘ODBC’@’localhost’<br>this error pop up when type just “mysql”. That’s because ODBC is the default username under win system.</li>
 </ol>
 </body></html>
     </div>
@@ -300,6 +307,9 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
+                <a href="/2020/01/13/go-get-cmd/" rel="prev" title="go get cmd">
+                  go get cmd <i class="fa fa-chevron-right"></i>
+                </a>
             </div>
           </div>
       </footer>
@@ -354,7 +364,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -367,7 +377,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-count">25</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

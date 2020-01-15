@@ -1,6 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Golang MVC structure</title>
+    <url>/2020/01/15/Golang%20MVC%20Project/</url>
+    <content><![CDATA[<html><head></head><body></body></html><html><head></head><body><h3 id="This-MVC-doesn’t-use-any-golang-web-framework"><a href="#This-MVC-doesn’t-use-any-golang-web-framework" class="headerlink" title="This MVC doesn’t use any golang web framework"></a>This MVC doesn’t use any golang web framework</h3><p>   Use http for client and server communication, MUX for routing</p>
+<ol>
+<li>structure:<br>in the G:/go-work/src/mvc-example:</li>
+</ol>
+<ul>
+<li>app/controllers<br>home.go</li>
+<li>app/models<br>types.go</li>
+<li>app/route<br>route.go</li>
+<li>app/helpers</li>
+<li>config/.env</li>
+<li>app/<br>main.go</li>
+</ul>
+<ol start="2">
+<li><p>modify & create:<br>comment on app/controllers like this:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">// <span class="string">"github.com/gorilla/mux"</span></span><br><span class="line">// <span class="string">"mvc_example/app/models"</span></span><br><span class="line">// <span class="string">"encoding/json"</span></span><br><span class="line">// <span class="built_in">log</span> <span class="string">"github.com/sirupsen/logrus"</span></span><br></pre></td></tr></tbody></table></figure>
+<p>create .env file that have key value pair of environment variable, and access that file using joho/godotenv package.add below key/value pair for test:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">site : <span class="string">"restapiexample.com"</span></span><br></pre></td></tr></tbody></table></figure>
+<p>Load the .env file into main function and access env variable using key ‘site’, that will return ‘restapiexample.com’.</p>
+</li>
+<li><p>codes</p>
+</li>
+</ol>
+<ul>
+<li>main:<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	<span class="string">"github.com/joho/godotenv"</span></span><br><span class="line">	<span class="built_in">log</span> <span class="string">"github.com/sirupsen/logrus"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"mvc_example/app/route"</span></span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func <span class="function"><span class="title">main</span></span>() {</span><br><span class="line">	log.Info(<span class="string">"Application has been started on : 8080"</span>)</span><br><span class="line">	err := godotenv.Load(os.ExpandEnv(<span class="string">"<span class="variable">$GOPATH</span>/src/mvc_example/app/config/.env"</span>))</span><br><span class="line">	<span class="keyword">if</span> err != nil {</span><br><span class="line">		log.Fatal(<span class="string">"Error loading .env file"</span>)</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	key := os.Getenv(<span class="string">"Site"</span>)</span><br><span class="line">	log.Info(key)</span><br><span class="line"></span><br><span class="line">	//creating instance of mux</span><br><span class="line">	routes := route.GetRoutes()</span><br><span class="line">	http.Handle(<span class="string">"/"</span>, routes)</span><br><span class="line">	log.Fatal(http.ListenAndServe(<span class="string">":8080"</span>, nil))</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></li>
+<li>controllers/home.go:<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">package controllers</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func Hello(w http.ResponseWriter, r *http.Request) {</span><br><span class="line">	fmt.Println(<span class="string">"Hello, I am home controller!"</span>)</span><br><span class="line">	w.WriteHeader(http.StatusOK)</span><br><span class="line">	fmt.Fprintf(w, <span class="string">"Hello, I am home controller"</span>)</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></li>
+<li>models/types.go:<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">package models</span><br><span class="line"> </span><br><span class="line"><span class="built_in">type</span> User struct {</span><br><span class="line">   Data struct {</span><br><span class="line">      ID        int    `json:<span class="string">"id"</span>`</span><br><span class="line">      FirstName string `json:<span class="string">"first_name"</span>`</span><br><span class="line">      LastName  string `json:<span class="string">"last_name"</span>`</span><br><span class="line">      Avatar    string `json:<span class="string">"avatar"</span>`</span><br><span class="line">   } `json:<span class="string">"data"</span>`</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></li>
+<li>route/route.go<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">package route</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	<span class="string">"github.com/gorilla/mux"</span></span><br><span class="line">	<span class="string">"mvc_example/app/controllers"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func GetRoutes() *mux.Router {</span><br><span class="line">	routes := mux.NewRouter().StrictSlash(<span class="literal">false</span>)</span><br><span class="line"></span><br><span class="line">	routers := routes.PathPrefix(<span class="string">"/api/v1"</span>).Subrouter()</span><br><span class="line"></span><br><span class="line">	routers.HandleFunc(<span class="string">"/hello"</span>, controllers.Hello).Methods(<span class="string">"GET"</span>)</span><br><span class="line"></span><br><span class="line">	<span class="built_in">return</span> routers</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+
+</li>
+</ul>
+<p>Access rest call using “<a href="http://localhost:8080/api/v1/hello"" target="_blank" rel="noopener">http://localhost:8080/api/v1/hello"</a></p>
+</body></html>]]></content>
+      <categories>
+        <category>golang</category>
+      </categories>
+      <tags>
+        <tag>go</tag>
+        <tag>web</tag>
+        <tag>MVC</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>go get cmd</title>
+    <url>/2020/01/13/go-get-cmd/</url>
+    <content><![CDATA[<html><head></head><body></body></html><html><head></head><body><h3 id="go-get-cmd"><a href="#go-get-cmd" class="headerlink" title="go get cmd"></a>go get cmd</h3><ol>
+<li><p>go get<br>下载导入路径指定的包及其依赖项，然后安装命名包，即执行go install命令。<br>用法：go get [-d] [-f] [-t] [-u] [-fix] [-insecure] [build flags] [packages]</p>
+</li>
+<li><p>标记名称                     描述</p>
+</li>
+</ol>
+<p>-d    让命令程序只执行下载动作，而不执行安装动作。<br>-f    仅在使用-u标记时有效,该标记会让命令程序忽略掉对已下载代码包的导入路径的检查。如下载并安装的代码包所属的项目是Fork的。<br>-fix    让命令程序在下载代码包后先执行修正动作，而后再进行编译和安装。<br>-insecure    使用非安全scheme（如HTTP）去下载指定的代码包。如果用的代码仓库（如公司内部的Gitlab）没有HTTPS支持，可以添加此标记。<br>-t    让命令程序同时下载并安装指定的代码包中的测试源码文件中依赖的代码包。<br>-u    让命令利用网络来更新已有代码包及其依赖包。默认情况下，该命令只会从网络上下载本地不存在的代码包，而不会更新已有的代码包。<br>-v    打印出被构建的代码包的名字<br>-x    打印出用到的命令<br>3. go install<br>使用：go install [-i] [build flags] [packages]。<br>和go build命令比较相似，go build命令会编译包及其依赖，生成的文件存放在当前目录下。而且go build只对main包有效，其他包不起作用。而go install对于非main包会生成静态文件放在$GOPATH/pkg目录下，文件扩展名为a。如果为main包，则会在$GOPATH/bin下生成一个和给定包名相同的可执行二进制文件。</p>
+<p>综上： go get命令会下载指定的包，并将下载的包进行编译，然后安装到特定目录。</p>
+</body></html>]]></content>
+      <categories>
+        <category>golang</category>
+      </categories>
+      <tags>
+        <tag>go get</tag>
+        <tag>cmd</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>upgrade mysql</title>
     <url>/2020/01/08/mysqlupgrade/</url>
     <content><![CDATA[<html><head></head><body></body></html><html><head></head><body><h3 id="mysql-upgrade-from-5-6-to-8-0-18"><a href="#mysql-upgrade-from-5-6-to-8-0-18" class="headerlink" title="mysql upgrade(from 5.6 to 8.0.18)"></a>mysql upgrade(from 5.6 to 8.0.18)</h3><ol>
@@ -14,6 +79,7 @@
 <li>install new<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">D:\Program Files\MySQL\MySQL Server 8.0.18\bin>mysqld --install mysql</span><br><span class="line">Service successfully installed.</span><br><span class="line">D:\Program Files\MySQL\MySQL Server 8.0.18\bin>mysqld --initialize-insecure</span><br><span class="line"><span class="comment"># then a new fold data is created</span></span><br><span class="line">D:\Program Files\MySQL\MySQL Server 8.0.18\bin>net start mysql</span><br><span class="line">mysql 服务正在启动 .</span><br><span class="line">mysql 服务已经启动成功。</span><br></pre></td></tr></tbody></table></figure></li>
 <li>upgrade<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">D:\Program Files\MySQL\MySQL Server 8.0.18\bin>mysql_upgrade -uroot -p123</span><br><span class="line">mysql_upgrade: [Warning] Using a password on the <span class="built_in">command</span> line interface can be insecure.</span><br><span class="line">The mysql_upgrade client is now deprecated. The actions executed by the upgrade client are now <span class="keyword">done</span> by the server.</span><br><span class="line">To upgrade, please start the new MySQL binary with the older data directory. Repairing user tables is <span class="keyword">done</span> automatically. Restart is not required after upgrade.</span><br><span class="line">The upgrade process automatically starts on running a new MySQL binary with an older data directory. To avoid accidental upgrades, please use the --upgrade=NONE option with the MySQL binary. The option --upgrade=FORCE is also provided to run the server upgrade sequence on demand.</span><br><span class="line">It may be possible that the server upgrade fails due to a number of reasons. In that <span class="keyword">case</span>, the upgrade sequence will run again during the next MySQL server start. If the server upgrade fails repeatedly, the server can be started with the --upgrade=MINIMAL option to start the server without executing the upgrade sequence, thus allowing users to manually rectify the problem.</span><br><span class="line"></span><br><span class="line">D:\Program Files\MySQL\MySQL Server 8.0.18\bin>net stop mysql</span><br><span class="line">...</span><br><span class="line">D:\Program Files\MySQL\MySQL Server 8.0.18\bin>net start mysql</span><br><span class="line">...</span><br></pre></td></tr></tbody></table></figure></li>
 <li>use<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">C:\Users\user>mysql -u root -p</span><br><span class="line">Enter password:</span><br><span class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</span><br><span class="line">Your MySQL connection id is 9</span><br><span class="line">Server version: 8.0.18 MySQL Community Server - GPL</span><br></pre></td></tr></tbody></table></figure></li>
+<li>ERROR 1045 (28000): Access denied for user ‘ODBC’@’localhost’<br>this error pop up when type just “mysql”. That’s because ODBC is the default username under win system.</li>
 </ol>
 </body></html>]]></content>
       <categories>
@@ -102,6 +168,18 @@ sum = sum + ftemp</code></pre> }<br> fmt.Printf(“sum of floating nums %s is %f
       </tags>
   </entry>
   <entry>
+    <title>404 Not Found</title>
+    <url>/2019/12/25/404/</url>
+    <content><![CDATA[<html><head></head><body></body></html><html><head></head><body><center>
+俺已经删除这个页面了
+你可以<a href="https://liuyinggogogo.com>" target="_blank" rel="noopener">点击此处</a>返回首页。
+</center>
+
+<blockquote class="blockquote-center">
+    LiuYing
+</blockquote></body></html>]]></content>
+  </entry>
+  <entry>
     <title>convertexceltodocx</title>
     <url>/2019/12/12/convertexceltodocx/</url>
     <content><![CDATA[<html><head></head><body></body></html><html><head></head><body><h2 id="Convert-excelfiles-to-docx-by-python-script"><a href="#Convert-excelfiles-to-docx-by-python-script" class="headerlink" title="Convert excelfiles to docx by python script"></a>Convert excelfiles to docx by python script</h2><h3 id="1-dump-your-mysql-database-by-sql-command"><a href="#1-dump-your-mysql-database-by-sql-command" class="headerlink" title="1. dump your mysql database by sql command"></a>1. dump your mysql database by sql command</h3><p>open sql file paste the content in the navicatformyssql, then export the filtered contents to xlsx format</p>
@@ -145,8 +223,8 @@ sum = sum + ftemp</code></pre> }<br> fmt.Printf(“sum of floating nums %s is %f
         <category>go</category>
       </categories>
       <tags>
-        <tag>rege</tag>
         <tag>go</tag>
+        <tag>rege</tag>
         <tag>verification</tag>
       </tags>
   </entry>
