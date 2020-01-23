@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="alternate" href="/atom.xml" title="liuying" type="application/atom+xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.5.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":true,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: true,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="01 可见性、原子性、有序性：并发的bug源头 在 32 位的机器上对 long 型变量进行加减操作存在并发隐患？  long类型64位，所以在32位的机器上，对long类型的数据操作通常需要多条指令组合出来，无法保证原子性，所以并发的时候会出问题 进程与线程进程不占有CPU。操作系统会把CPU分配给线程。分到CPU的线程就能执行。并行，是同一时刻，两个线程都在执行。并发，是同一时刻，只有一个执行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java并发编程笔记">
+<meta property="og:url" content="http://yoursite.com/2020/01/23/Java%E5%B9%B6%E5%8F%91%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="liuying">
+<meta property="og:description" content="01 可见性、原子性、有序性：并发的bug源头 在 32 位的机器上对 long 型变量进行加减操作存在并发隐患？  long类型64位，所以在32位的机器上，对long类型的数据操作通常需要多条指令组合出来，无法保证原子性，所以并发的时候会出问题 进程与线程进程不占有CPU。操作系统会把CPU分配给线程。分到CPU的线程就能执行。并行，是同一时刻，两个线程都在执行。并发，是同一时刻，只有一个执行">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/01/images/3lock.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/images/thisbalance.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/images/sharelock.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/images/solvedeadlock.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/images/notify.png">
+<meta property="article:published_time" content="2020-01-23T01:18:20.000Z">
+<meta property="article:modified_time" content="2020-01-23T02:25:39.316Z">
+<meta property="article:author" content="嘤嘤嘤">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="geekbang">
+<meta property="article:tag" content="concurrent">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/01/images/3lock.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/01/23/Java%E5%B9%B6%E5%8F%91%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Java并发编程笔记 | liuying</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">liuying</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">classic music fan</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="Searching..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/23/Java%E5%B9%B6%E5%8F%91%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="嘤嘤嘤">
+      <meta itemprop="description" content="coding,marathon athlete,IELTS7。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="liuying">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java并发编程笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-01-23 09:18:20 / Modified: 10:25:39" itemprop="dateCreated datePublished" datetime="2020-01-23T09:18:20+08:00">2020-01-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <html><head></head><body></body></html><html><head></head><body><h3 id="01-可见性、原子性、有序性：并发的bug源头"><a href="#01-可见性、原子性、有序性：并发的bug源头" class="headerlink" title="01 可见性、原子性、有序性：并发的bug源头"></a>01 可见性、原子性、有序性：并发的bug源头</h3><ol>
+<li>在 32 位的机器上对 long 型变量进行加减操作存在并发隐患？</li>
+</ol>
+<h2 id="long类型64位，所以在32位的机器上，对long类型的数据操作通常需要多条指令组合出来，无法保证原子性，所以并发的时候会出问题"><a href="#long类型64位，所以在32位的机器上，对long类型的数据操作通常需要多条指令组合出来，无法保证原子性，所以并发的时候会出问题" class="headerlink" title="long类型64位，所以在32位的机器上，对long类型的数据操作通常需要多条指令组合出来，无法保证原子性，所以并发的时候会出问题"></a>long类型64位，所以在32位的机器上，对long类型的数据操作通常需要多条指令组合出来，无法保证原子性，所以并发的时候会出问题</h2><ol start="2">
+<li>进程与线程<br>进程不占有CPU。操作系统会把CPU分配给线程。分到CPU的线程就能执行。<br>并行，是同一时刻，两个线程都在执行。并发，是同一时刻，只有一个执行，但是一个时间段内，两个线程都执行了。</li>
+</ol>
+<hr>
+<ol start="3">
+<li>volatile</li>
+</ol>
+<ul>
+<li>volatile 是一个类型修饰符。作为指令关键字，确保本条指令不会因编译器的优化而省略。</li>
+<li>volatile 的特性:(1) 保证了不同线程对这个变量进行操作时的可见性，即一个线程修改了某个变量的值，这新值对其他线程来说是立即可见的。(2) 禁止进行指令重排序。（实现有序性）(3) volatile 只能保证对单次读/写的原子性。i++ 这种操作不能保证原子性。</li>
+<li>volatile 的实现原理:(1) 变量的内存可见性是基于内存屏障（Memory Barrier）实现。内存屏障，又称内存栅栏，是一个 CPU 指令。<br>在程序运行时，为了提高执行性能，编译器和处理器会对指令进行重排序，JMM 为了保证在不同的编译器和 CPU 上有相同的结果，通过插入特定类型的内存屏障来禁止特定类型的编译器重排序和处理器重排序，插入一条内存屏障会告诉编译器和 CPU：不管什么指令都不能和这条 Memory Barrier 指令重排序。</li>
+</ul>
+<h3 id="02-Java内存模型：看Java如何解决可见性和有序性问题"><a href="#02-Java内存模型：看Java如何解决可见性和有序性问题" class="headerlink" title="02 Java内存模型：看Java如何解决可见性和有序性问题"></a>02 Java内存模型：看Java如何解决可见性和有序性问题</h3><ol>
+<li>什么是Java内存模型<br>Java 内存模型规范了 JVM 如何提供按需禁用缓存和编译优化的方法。具体来说，这些方法包括 volatile、synchronized 和 final 三个关键字，以及六项 Happens-Before 规则，这也正是本期的重点内容<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class VolatileExample {</span><br><span class="line">  int x = 0;</span><br><span class="line">  volatile boolean v = <span class="literal">false</span>;</span><br><span class="line">  public void <span class="function"><span class="title">writer</span></span>() {</span><br><span class="line">    x = 42;</span><br><span class="line">    v = <span class="literal">true</span>;</span><br><span class="line">  }</span><br><span class="line">  public void <span class="function"><span class="title">reader</span></span>() {</span><br><span class="line">    <span class="keyword">if</span> (v == <span class="literal">true</span>) {</span><br><span class="line">      // 这里x会是多少呢？</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></li>
+</ol>
+<ul>
+<li>以上例子中，线程A执行writer方法并将V=true写入内存，B执行reader方法从内存中读取变量v,如果B看到v==true，那B看到的x是多少？<br>在1.5之前可能会出现x=0，因为CPU缓存的可见性问题。1.5之后已解决。具体就是对volatile的语义进行了增强——Happens-before规则。</li>
+</ul>
+<ol start="2">
+<li>Happens-Before 规则：<br>前面一个操作的结果对后续操作是可见的。共有6项：(1) 程序的顺序性规则；（2） volatile 变量规则 （3） 传递性 （4） 管程中锁的规则：管程在java中指synchronized，指synchronized对Java里对管程的实现；<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">synchronized (this) { //此处自动加锁</span><br><span class="line">  // x是共享变量,初始值=10</span><br><span class="line">  <span class="keyword">if</span> (this.x < 12) {</span><br><span class="line">    this.x = 12; </span><br><span class="line">  }  </span><br><span class="line">} //此处自动解锁</span><br></pre></td></tr></tbody></table></figure>
+如上，管程中的锁在java里为隐式实现，在进入同步块前会自动加锁，执行完会自动释放锁，加锁和释放锁都是编译器实现的。所以结合规则 4——管程中锁的规则，可以这样理解：假设 x 的初始值是 10，线程 A 执行完代码块后 x 的值会变成 12（执行完自动释放锁），线程 B 进入代码块时，能够看到线程 A 对 x 的写操作，也就是线程 B 能够看到 x==12。这个也是符合直觉的。<br>（5） 线程start() 规则：主线程A启动子线程B后，子线程B可以看到主线程在启动子线程B前的操作。 （6） 线程join() 规则：主线程通过调用子线程B的join()并成功返回，主线程能看到子线程的操作。</li>
+</ol>
+<ul>
+<li>被忽视的final规则</li>
+<li>final 修饰变量时，初衷是告诉编译器：这个变量生而不变，可以优化。</li>
+</ul>
+<ol start="3">
+<li>有一个共享变量 abc，在一个线程里设置了 abc 的值 abc=3，思考一下，有哪些办法可以让其他线程能够看到abc==3？<br>（1） 声明共享变量abc，并使用volatile关键字修饰abc；<br>（2） 声明共享变量abc，在synchronized关键字对abc的赋值代码块加锁，由于happen-before管程锁的规则，可以使得后续线程看到abc的值。<br>（3） A线程启动后，使用A.JOIN()方法来完成运行，后续线程再启动。</li>
+</ol>
+<ul>
+<li>Java 内存模型主要分为两部分，一部分面向编写并发程序的应用开发人员，另一部分是面向 JVM 的实现人员的，也就是和编写并发程序相关的部分，这部分内容的核心就是 Happens-Before 规则。</li>
+</ul>
+<h3 id="03-互斥锁：解决原子性问题"><a href="#03-互斥锁：解决原子性问题" class="headerlink" title="03 互斥锁：解决原子性问题"></a>03 互斥锁：解决原子性问题</h3><p>如下图：<br><img src="../../images/3lock.png" alt="Alt text"></p>
+<ul>
+<li>保护资源R就得为它创建一把锁LR；</li>
+<li>针对这把锁LR，需在进出临界区时添入加锁操作和解锁操作。</li>
+</ul>
+<ol>
+<li>Java提供的锁技术：synchronized</li>
+</ol>
+<ul>
+<li><p>synchronized可以用来修饰代码块：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">class X {</span><br><span class="line">  // 修饰非静态方法</span><br><span class="line">  synchronized void <span class="function"><span class="title">foo</span></span>() {</span><br><span class="line">    // 临界区</span><br><span class="line">  }</span><br><span class="line">  // 修饰静态方法</span><br><span class="line">  synchronized static void <span class="function"><span class="title">bar</span></span>() {</span><br><span class="line">    // 临界区</span><br><span class="line">  }</span><br><span class="line">  // 修饰代码块</span><br><span class="line">  Object obj = new Object()；</span><br><span class="line">  void <span class="function"><span class="title">baz</span></span>() {</span><br><span class="line">    synchronized(obj) {</span><br><span class="line">      // 临界区</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p>上式看到修饰静态方法的时候锁定了一个obj对象。此处有一个Java隐式规则：</p>
+</li>
+<li><p>当修饰静态方法的时候，锁定的是当前类的Class对象，在上面的例子即为Class X;当修饰非静态方法的时候，锁定的是当前实例对象this。</p>
+</li>
+<li><p>synchronized 修饰静态方法相当于：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">class X {</span><br><span class="line">    //修饰静态方法</span><br><span class="line">    synchronized(X.class) static void <span class="function"><span class="title">bar</span></span>() {</span><br><span class="line">        //临界区</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p>修饰非静态方法：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">class X {</span><br><span class="line">    // 修饰非静态方法</span><br><span class="line">    synchronized(this) void <span class="function"><span class="title">foo</span></span>() {</span><br><span class="line">        //临界区</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></li>
+</ul>
+<ol start="2">
+<li>用synchronized解决count+=1 问题<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">class SafeCalc {</span><br><span class="line">    long value = 0L;</span><br><span class="line">    long <span class="function"><span class="title">get</span></span>() {</span><br><span class="line">        <span class="built_in">return</span> value;</span><br><span class="line">    }</span><br><span class="line">    synchronized void <span class="function"><span class="title">addOne</span></span>() {</span><br><span class="line">        value += 1;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></li>
+</ol>
+<ul>
+<li>addOne()方法被修饰后，无论单核&多核CPU，只有一个线程能够执行它，所以可以保证原子操作。</li>
+<li>由此引出的可见性问题，可以参考之前的Happens-Before，即前一个线程在临界区修改的共享变量（该操作在解锁之前），对后续进入临界区（该操作在加锁之后）的线程是可见的。所以多个线程同时执行addOne()方法是可以保证可见性的。</li>
+<li>get()方法可见性是无法保证的。管程中锁的规则，是只保证后续对这个锁的加锁的可见性，而get()方法并没有加锁操作，解决方案：get()方法也synchronized：<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">class SafeCalc {</span><br><span class="line">    long value = 0L;</span><br><span class="line">    synchronized long <span class="function"><span class="title">get</span></span>() {</span><br><span class="line">        <span class="built_in">return</span> value;</span><br><span class="line">    }</span><br><span class="line">    synchronized void <span class="function"><span class="title">addOne</span></span>() {</span><br><span class="line">        value += 1;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></li>
+</ul>
+<ol start="3">
+<li><p>锁与受保护资源的关系</p>
+</li>
+<li><p>下面的代码用 synchronized 修饰代码块来尝试解决并发问题，这个使用方式正确吗？有哪些问题呢？能解决可见性和原子性问题吗？</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">class SafeCalc {</span><br><span class="line">  long value = 0L;</span><br><span class="line">  long <span class="function"><span class="title">get</span></span>() {</span><br><span class="line">    synchronized (new Object()) {</span><br><span class="line">      <span class="built_in">return</span> value;</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">  void <span class="function"><span class="title">addOne</span></span>() {</span><br><span class="line">    synchronized (new Object()) {</span><br><span class="line">      value += 1;</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p>答：</p>
+</li>
+</ol>
+<ul>
+<li>加锁本质就是在锁对象的对象头中写入当前线程id，但是new object每次在内存中都是新对象，所以加锁无效。</li>
+<li>sync锁的对象monitor指针指向一个ObjectMonitor对象，所有线程加入他的entrylist里面，去cas抢锁，更改state加1拿锁，执行完代码，释放锁state减1，和aqs机制差不多，只是所有线程不阻塞，cas抢锁，没有队列，属于非公平锁。<br>wait的时候，线程进waitset休眠，等待notify唤醒</li>
+<li>两把不同的锁，不能保护临界资源。而且这种new出来只在一个地方使用的对象，其它线程不能对它解锁，这个锁会被编译器优化掉。和没有syncronized代码块效果是相同的</li>
+<li>不正确<br>使用锁保护资源时，对资源的所有操作应该使用同一个锁，这样才能起到保护的作用。<br>课后题中每个线程对资源的操作都是用的是各自的锁，不存在互斥和竞争的情况。<br>这就相当于有一个房间，每个人过来都安装一个门，每个人都有自己门的钥匙，大家都可以随意出入这个房间。<br>由于每个线程都可以随时进入方法，所以存在原子性问题；<br>但是因为每次都有加锁和解锁的操作，unlock操作会使其他缓存的变量失效，需要重新从主内存中加载变量的值，所以可以解决可见性问题。</li>
+</ul>
+<h3 id="004-互斥锁：如何用一把锁保护多个资源？"><a href="#004-互斥锁：如何用一把锁保护多个资源？" class="headerlink" title="004 互斥锁：如何用一把锁保护多个资源？"></a>004 互斥锁：如何用一把锁保护多个资源？</h3><ol>
+<li>代码演示<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">class Account {</span><br><span class="line">  // 锁：保护账户余额</span><br><span class="line">  private final Object balLock</span><br><span class="line">    = new Object();</span><br><span class="line"></span><br><span class="line">  private Integer balance;</span><br><span class="line">  // 锁：保护账户密码</span><br><span class="line">  private final Object pwLock</span><br><span class="line">    = new Object();</span><br><span class="line"></span><br><span class="line">  private String password;</span><br><span class="line"></span><br><span class="line">   void withdraw(Integer amt) {</span><br><span class="line">    synchronized(balLock) {</span><br><span class="line">      <span class="keyword">if</span> (this.balance > amt){</span><br><span class="line">        this.balance -= amt;</span><br><span class="line">      }</span><br><span class="line">    }</span><br><span class="line">  } </span><br><span class="line"> </span><br><span class="line">  Integer <span class="function"><span class="title">getBalance</span></span>() {</span><br><span class="line">    synchronized(balLock) {</span><br><span class="line">      <span class="built_in">return</span> balance;</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  void updatePassword(String pw){</span><br><span class="line">    synchronized(pwLock) {</span><br><span class="line">      this.password = pw;</span><br><span class="line">    }</span><br><span class="line">  } </span><br><span class="line"></span><br><span class="line">  String <span class="function"><span class="title">getPassword</span></span>() {</span><br><span class="line">    synchronized(pwLock) {</span><br><span class="line">      <span class="built_in">return</span> password;</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></li>
+</ol>
+<ul>
+<li>account有成员变量balance & password，设了两把锁balLock & pwLock.不同的资源用不同的锁。</li>
+<li>也可以用互斥锁来保护多个资源，e.g.可以用this管理账户里的所有资源，在这里即指余额和密码。实现：所有程序都加同步关键字synchronized。</li>
+<li>用一把锁性能又差，会导致上面四个操作都是串行的。所以用不同的锁对受保护资源进行精细化管理，能够提升性能，这种锁即是——细粒度锁。</li>
+</ul>
+<ol start="2">
+<li>保护有关联关系的多个资源<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class Account {</span><br><span class="line">  private int balance;</span><br><span class="line">  // 转账</span><br><span class="line">  synchronized void transfer(</span><br><span class="line">      Account target, int amt){</span><br><span class="line">    <span class="keyword">if</span> (this.balance > amt) {</span><br><span class="line">      this.balance -= amt;</span><br><span class="line">      target.balance += amt;</span><br><span class="line">    }</span><br><span class="line">  } </span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></li>
+</ol>
+<ul>
+<li>临界区有俩资源，转出账户的余额this.balance和转入账户的余额target.balance,并且用了一把锁this。</li>
+<li>错误之处在于：this这把锁只可以保护自己的余额this.balance,无法保护target.balance.<br>如图所示：<br><img src="../../images/thisbalance.png" alt="Alt text"></li>
+<li>假设ABC同时有200，A转B100，B转C100，那么：</li>
+</ul>
+<p>最终进入B的余额可能是：<br>（1）300：线程1后于2写入B.balance，线程2写的B.balance值被线程1覆盖；<br>（2）100：线程1先于2写入B.balance，线程1写的B.balance值被线程2覆盖；</p>
+<ol start="3">
+<li>正确用锁</li>
+</ol>
+<ul>
+<li>用一把锁来保护多个资源，要求锁能覆盖所有受保护资源。上个例子中的this是对象级别的锁，所以A对象和B对象都有自己的锁，那么如何使其共享？</li>
+</ul>
+<ol start="4">
+<li>共享方案——设细粒度更大的锁</li>
+</ol>
+<ul>
+<li><p>让所有对象都持有一个唯一性的对象，这个对象在创建Account时传入：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">class Account {</span><br><span class="line">    private Object lock;</span><br><span class="line">    private int balance;</span><br><span class="line">    private Account();</span><br><span class="line">    // 创建account时传入同一个lock对象</span><br><span class="line">    public Account(Object lock) {</span><br><span class="line">        this.lock = lock;</span><br><span class="line">    }</span><br><span class="line">    // 转账</span><br><span class="line">    void transfer(Account target, int amt) {</span><br><span class="line">        //此处检查所有对象共享的锁</span><br><span class="line">        synchronized(lock) {</span><br><span class="line">            <span class="keyword">if</span>(this.balance > amt) {</span><br><span class="line">                this.balance -= amt;</span><br><span class="line">                target.balance += amt;</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></li>
+<li><p>如上，将account默认构造函数变为private，同时增加一个带Object lock参数的构造函数，创建account对象时，传入相同的lock，这样所有的account对象都会共享这个lock，如下图所示：<br><img src="../../images/sharelock.png" alt="Alt text"></p>
+</li>
+<li><p>再解“原子性”：本质不是不可分割，不可分割只是外在表现，其本质是多个资源间有一致性的要求，操作的中间状态对外不可见。e.g.在 32 位的机器上写 long 型变量有中间状态（只写了 64 位中的 32 位），在银行转账的操作中也有中间状态（账户 A 减少了 100，账户 B 还没来得及发生变化）。所以解决原子性问题，是要保证中间状态对外不可见。</p>
+</li>
+</ul>
+<ol start="5">
+<li>思考<br>在第一个示例程序里，用了两把不同的锁来分别保护账户余额、账户密码，创建锁的时候，我们用的是：private final Object xxxLock = new Object();，如果账户余额用 this.balance 作为互斥锁，账户密码用 this.password 作为互斥锁，是否可以呢？</li>
+</ol>
+<ul>
+<li>都不行。不能用可变对象做锁。A线程取款进行this.balance-=amt时，this.balance对应的值已经发生变换，线程B再次取款时拿到的balance对应的值并不是A线程中的。</li>
+<li>不能用balance和password做为锁对象。这两个对象balance是Integer，password是String都是不可变变对象，一但对他们进行赋值就会变成新的对象，加的锁就失效了。</li>
+<li>举个例子，假如this.balance = 10 ，多个线程同时竞争同一把锁this.balance，此时只有一个线程拿到了锁，其他线程等待，拿到锁的线程进行this.balance -= 1操作，this.balance = 9。 该线程释放锁， 之前等待锁的线程继续竞争this.balance=10的锁，新加入的线程竞争this.balance=9的锁，导致多个锁对应一个资源。</li>
+<li>在account中添加一个静态object，通过锁这个object来实现一个锁保护多个资源：<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class Account {</span><br><span class="line">    private static Object lock = new Object()</span><br><span class="line">    private int balance;</span><br><span class="line">    // 转账</span><br><span class="line">    void transfer(Account target, int amt) {</span><br><span class="line">        synchronized(lock) {</span><br><span class="line">            <span class="keyword">if</span>(this.balance > amt) {</span><br><span class="line">                this.balance -= amt;</span><br><span class="line">                target.balance += amt;</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+这种方式比锁class更安全，因为这个缺是私有的，有些最佳实践必须这样做。</li>
+<li>引申到下一讲：然后感觉加锁的所有用户用同一个锁的粒度太大了，但如果每次转账操作，是不是可以同时加两个用户的锁，如果有先后顺序又可能有死锁问题。</li>
+</ul>
+<h3 id="005-死锁"><a href="#005-死锁" class="headerlink" title="005 死锁"></a>005 死锁</h3><ul>
+<li>之前一篇用Account.class作为互斥锁的方案虽然不存在并发问题，但是所有账户的转账操作都是串行的，性能太差。</li>
+</ul>
+<ol>
+<li>提升性能方案</li>
+</ol>
+<ul>
+<li>用两把锁：转出账本一把，转入账本另一把。如图：<br><img src="../../images/solvedeadlock.png" alt="Alt text"><br>在transfer()方法内部，首先锁定this(先把转出账本拿到)，然后尝试锁定转入账户target(再把转入账本拿到)，只有两者都成功时，才执行转账操作。</li>
+</ul>
+<ol start="2">
+<li>代码<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">class Account {</span><br><span class="line">    private transfer(Account target, int amt) {</span><br><span class="line">        // 锁定转出账户</span><br><span class="line">        synchronized(this) {           ①</span><br><span class="line">            // 锁定转入账户</span><br><span class="line">            synchronized(target) {     ②</span><br><span class="line">                <span class="keyword">if</span>(this.balance > amt) {</span><br><span class="line">                    this.balance -= amt;</span><br><span class="line">                    target.balance += amt;</span><br><span class="line">                }</span><br><span class="line">            }</span><br><span class="line"></span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+此例相对于用Account.class作为互斥锁，锁定的范围太大，而锁定俩个账户范围就小多了，这样的锁就是之前介绍的细粒度锁。细粒度锁可以提高并行度，是性能优化的重要手段。</li>
+</ol>
+<ul>
+<li>使用细粒度锁的代价——死锁<br>一组互相竞争资源的线程因互相等待，导致“永久”阻塞的现象<br>假设：线程T1：A转账B；线程T2: B转账A；当两线程执行完①时，T1拿到A的锁，T2拿到B的锁。之后俩线程执行②时，T1要B的锁发现B已被T2锁定，T2亦如是。这时就会无限等待下去。。。</li>
+</ul>
+<ol start="3">
+<li>预防</li>
+</ol>
+<ul>
+<li>出现原因：互斥（无法破坏，用锁的目的就是互斥）、占有且等待、不可抢占、循环等待。</li>
+<li>解决：</li>
+</ul>
+<p>3.1 对于“占有且等待”：可以一次性申请所有的资源。</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">class Allocator {</span><br><span class="line">    private List<Object> als =</span><br><span class="line">      new ArrayList<>();</span><br><span class="line">      // 一次申请所有资源</span><br><span class="line">      synchronized boolean apply(</span><br><span class="line">          Object from, Object to) {</span><br><span class="line">              <span class="keyword">if</span>(als.contains(from) ||</span><br><span class="line">              als.contains(to)){</span><br><span class="line">                  <span class="built_in">return</span> <span class="literal">false</span>;</span><br><span class="line">              } <span class="keyword">else</span> {</span><br><span class="line">                  als.add(from);</span><br><span class="line">                  als.add(to);</span><br><span class="line">              }</span><br><span class="line">              <span class="built_in">return</span> <span class="literal">true</span>;</span><br><span class="line">          }</span><br><span class="line">          // 归还资源</span><br><span class="line">          synchronized void free(</span><br><span class="line">              Object from, Object to){</span><br><span class="line">                  als.remove(from);</span><br><span class="line">                  als.remove(to);</span><br><span class="line">              }</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">class Account {</span><br><span class="line">    // actr 应为单例</span><br><span class="line">    private Allocator actr;</span><br><span class="line">    private int balance;</span><br><span class="line">    // 转账</span><br><span class="line">    void transfer(Account target, int amt) {</span><br><span class="line">        // 一次性申请转出账户和转入转入账户，直到成功</span><br><span class="line">        <span class="keyword">while</span>(!actr.apply(this, target))</span><br><span class="line">        ;</span><br><span class="line">        try{</span><br><span class="line">            // 锁定转出账户</span><br><span class="line">            synchronized(target){</span><br><span class="line">                // 锁定转入账户</span><br><span class="line">                synchronized(target){</span><br><span class="line">                    <span class="keyword">if</span> (this.balance > amt){</span><br><span class="line">                        this.balance -= amt;</span><br><span class="line">                        target.balance += amt;</span><br><span class="line">                    }</span><br><span class="line">                }</span><br><span class="line">            }</span><br><span class="line">        } finally {</span><br><span class="line">            actr.free(this, target)</span><br><span class="line">        }</span><br><span class="line">      </span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p>3.2 对于”不可抢占“：占用部分资源的线程申请其他资源而不得时主动释放它占有的资源。</p>
+<ul>
+<li>破坏不可抢占条件看上去很简单，核心是要能够主动释放它占有的资源，这一点 synchronized 是做不到的。原因是 synchronized 申请资源的时候，如果申请不到，线程直接进入阻塞状态了，而线程进入阻塞状态，啥都干不了，也释放不了线程已经占有的资源。Java 在语言层次没有解决这个问题，不过在 SDK 层面还是解决了的，java.util.concurrent 这个包下面提供的 Lock 是可以轻松解决这个问题的。关于这个话题，后面会详细讲。</li>
+</ul>
+<p>3.3 对于”循环等待“： 按序申请。</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">class Account {</span><br><span class="line">    private int id;</span><br><span class="line">    private int balance;</span><br><span class="line">    //转账</span><br><span class="line">    void transfer(Account target, int amt) {</span><br><span class="line">        Account left = this            ①</span><br><span class="line">        Account right = target;        ②</span><br><span class="line">        <span class="keyword">if</span> (this.id > target.id) {     ③</span><br><span class="line">            left = target;             ④</span><br><span class="line">            right = this;              ⑤</span><br><span class="line">        }</span><br><span class="line">        // 锁定序号小的账户</span><br><span class="line">        synchronized(left){</span><br><span class="line">            // 锁定序号大的账户</span><br><span class="line">            synchronized(right){</span><br><span class="line">                <span class="keyword">if</span>(this.balance > amt){</span><br><span class="line">                    this.balance -= amt;</span><br><span class="line">                    target.balance += amt;</span><br><span class="line">                }</span><br><span class="line">            }</span><br><span class="line">        }                              ⑥</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<ol start="4">
+<li>思考<br>上面提到：破坏占用且等待条件，也是锁了所有的账户，而且还是用了死循环 while(!actr.apply(this, target));这个方法，那它比 synchronized(Account.class) 有没有性能优势呢？</li>
+</ol>
+<ul>
+<li>synchronized(Account.class) 锁了Account类相关的所有操作。相当于文中说的包场了，只要与Account有关联，通通需要等待当前线程操作完成。while死循环的方式只锁定了当前操作的两个相关的对象。两种影响到的范围不同。</li>
+<li>while循环可以应该计入timeoout，避免一直阻塞。</li>
+<li>在实际开发中都是用数据库事务+乐观锁的方式进行解决。以上为例子，为了说明死锁原理。</li>
+<li>最常见的就是B转A的同时，A转账给B，那么先锁B再锁A，但是，另一个线程是先锁A再锁B，然而，如果两个线程同时执行，那么就是出现死锁的情况，线程T1锁了A请求锁B，此时线程T2锁了B请求锁A，都在等着对方释放锁，然而自己都不会释放锁，故死锁。<br>最简单的办法，就是无论哪个线程执行的时候，都按照顺序加锁，即按照A和B的id大小来加锁，这样，无论哪个线程执行的时候，都会先加锁A，再加锁B，A被加锁，则等待释放。这样就不会被死锁了。</li>
+</ul>
+<h3 id="006-“等待-通知”机制优化循环等待"><a href="#006-“等待-通知”机制优化循环等待" class="headerlink" title="006 “等待-通知”机制优化循环等待"></a>006 “等待-通知”机制优化循环等待</h3><ol>
+<li>回顾：破坏占用且等待条件时，如转出账本和转入账本不满足同时在文件架上这个条件，就用死循环的方式来循环等待，核心代码如下：<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 一次性申请转出账户和转入账户，直到成功</span><br><span class="line"><span class="keyword">while</span>(!actr.apply(this, target))</span><br><span class="line">  ；</span><br></pre></td></tr></tbody></table></figure>
+apply()操作耗时非常短且并发冲突量也不大时该方案可行，但耗时长&并发冲突量大时太消耗CPU了。</li>
+</ol>
+<ul>
+<li>解决方案：如果线程要求的条件（转出账本和转入账本同在文件架上）不满足，则线程阻塞自己，进入等待状态；当线程要求的条件（转出账本和转入账本同在文件架上）满足后，通知等待的线程重新执行。其中，使用线程阻塞的方式就能避免循环等待消耗 CPU 的问题。</li>
+</ul>
+<ol start="2">
+<li>synchronized 实现等待-通知机制</li>
+</ol>
+<ul>
+<li>synchronized配合wait(),notify(),notifyAll()实现。<br><img src="../../images/notify.png" alt="Alt text"></li>
+<li>wait()、notify()、notifyAll() 都是在 synchronized{}内部被调用的。如果在 synchronized{}外部调用，或者锁定的 this，而用 target.wait() 调用的话，JVM 会抛出一个运行时异常：<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.lang.IllegalMonitorStateException。</span><br></pre></td></tr></tbody></table></figure></li>
+</ul>
+<ol start="3">
+<li>等待-通知机制的四个要素：</li>
+</ol>
+<ul>
+<li>(1)互斥锁：上一篇提到 Allocator 需要是单例的，所以用 this 作为互斥锁。</li>
+<li>(2)线程要求的条件：转出账户和转入账户都没有被分配过。</li>
+<li>(3)何时等待：线程要求的条件不满足就等待。</li>
+<li>(4)何时通知：当有线程释放账户时就通知。<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(条件不满足) {</span><br><span class="line">  <span class="built_in">wait</span>();</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+利用该范式可以解决上面提到的条件曾经满足过这个问题。因为当 wait() 返回时，有可能条件已经发生变化了，曾经条件满足，但是现在已经不满足了，所以要重新检验条件是否满足。范式，意味着是经典做法，所以没有特殊理由不要换写法。后面在介绍“管程”的时候，会详细介绍这个经典做法的前世今生。<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">class Allocator {</span><br><span class="line">  private List<Object> als;</span><br><span class="line">  // 一次性申请所有资源</span><br><span class="line">  synchronized void apply(</span><br><span class="line">    Object from, Object to){</span><br><span class="line">    // 经典写法</span><br><span class="line">    <span class="keyword">while</span>(als.contains(from) ||</span><br><span class="line">         als.contains(to)){</span><br><span class="line">      try{</span><br><span class="line">        <span class="built_in">wait</span>();</span><br><span class="line">      }catch(Exception e){</span><br><span class="line">      }   </span><br><span class="line">    } </span><br><span class="line">    als.add(from);</span><br><span class="line">    als.add(to);  </span><br><span class="line">  }</span><br><span class="line">  // 归还资源</span><br><span class="line">  synchronized void free(</span><br><span class="line">    Object from, Object to){</span><br><span class="line">    als.remove(from);</span><br><span class="line">    als.remove(to);</span><br><span class="line">    notifyAll();</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+所以除非经过深思熟虑，否则尽量使用 notifyAll()。</li>
+</ul>
+<ol start="4">
+<li>wait() 方法和 sleep() 方法都能让当前线程挂起一段时间，那它们的区别是什么？</li>
+</ol>
+<ul>
+<li>wait与sleep区别在于：<br>wait会释放所有锁而sleep不会释放锁资源.<br>wait只能在同步方法和同步块中使用，而sleep任何地方都可以.<br>wait无需捕捉异常，而sleep需要.<br>sleep是Thread方法，wait是Object类方法；sleep调用时必须指定时间。<br>两者相同点：都会让渡CPU执行时间，等待再次调度！</li>
+<li>代码：<br>public class MyLock {<br>// 测试转账main方法<br>public static void main(String[] args) throws InterruptedException {<br>  Account src = new Account(10000);<br>  Account target = new Account(10000);<br>  CountDownLatch countDownLatch = new CountDownLatch(9999);<br>  for (int i = 0; i < 9999; i++) {<pre><code>new Thread(0->{
+  src.transactionToTarget(1,target);
+  countDownLatch.countDown();
+}).start();</code></pre>  }<br>  countDownLatch.await();<br>  System.out.println(“src=”+src.getBalance());<br>  System.out.println(“target=”+target.getBalance());<br>}<br>static class Account{//账户类<br>public Account(Integer balance){<br>  this.balance = balance;<br>}<br>private Integer balance;<br>public void transactionToTarget(Integer money,Account target){//转账方法<br>Allocator.getInstance().apply(this,target);<br>this.balance -= money;<br>target.setBalance(target.getBalance()+money);<br>Allocator.getInstance().release(this,target);<br>}<br>public Integer getBalance(){<br>  return balance;<br>}<br>public void setBalance(Integer balance){<br>  this.balance = balance;<br>}<br>}<br>static class Allocator{//单例锁类<br>private Allocator(){}<br>private List<account> locks = new ArrayList<>();<br>public synchronized void apply(Account src,Account tag){<br>  while (locks.contains(src)||locks.contains(tag)){<pre><code>try{
+  this.wait();
+} catch(InterruptedException e) {
+}</code></pre>  }<br>  locks.add(src);<br>  locks.add(tag);<br>}<br>public synchronized void release(Account src,Account tag){<br>  locks.remove(src);<br>  locks.remove(tag);<br>  this.notifyAll();<br>}<br>public static Allocator getInstance(){<br>  return AllocatorSingle.install;<br>}<br>static class AllocatorSingle{<br>  public static Allocator install = new Allocator();<br>}<br>}<br>}</account></li>
+</ul>
+<h3 id="007-安全、活跃、性能"><a href="#007-安全、活跃、性能" class="headerlink" title="007 安全、活跃、性能"></a>007 安全、活跃、性能</h3><h3 id="008-管程"><a href="#008-管程" class="headerlink" title="008 管程"></a>008 管程</h3><h3 id="009-Java线程"><a href="#009-Java线程" class="headerlink" title="009 Java线程"></a>009 Java线程</h3><ol>
+<li><p>线程的生命周期</p>
+</li>
+<li><p>创建多少线程合适</p>
+</li>
+<li><p>为什么局部变量是线程安全的</p>
+</li>
+</ol>
+<h3 id="10-如何用面向对象思想写好并发程序"><a href="#10-如何用面向对象思想写好并发程序" class="headerlink" title="10 如何用面向对象思想写好并发程序"></a>10 如何用面向对象思想写好并发程序</h3><h3 id="11-理论基础模块答疑"><a href="#11-理论基础模块答疑" class="headerlink" title="11 理论基础模块答疑"></a>11 理论基础模块答疑</h3></body></html>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"># java</a>
+              <a href="/tags/geekbang/" rel="tag"># geekbang</a>
+              <a href="/tags/concurrent/" rel="tag"># concurrent</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2020/01/15/Golang%20MVC%20Project/" rel="next" title="Golang MVC structure">
+                  <i class="fa fa-chevron-left"></i> Golang MVC structure
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#01-可见性、原子性、有序性：并发的bug源头"><span class="nav-number">1.</span> <span class="nav-text">01 可见性、原子性、有序性：并发的bug源头</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#long类型64位，所以在32位的机器上，对long类型的数据操作通常需要多条指令组合出来，无法保证原子性，所以并发的时候会出问题"><span class="nav-number"></span> <span class="nav-text">long类型64位，所以在32位的机器上，对long类型的数据操作通常需要多条指令组合出来，无法保证原子性，所以并发的时候会出问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#02-Java内存模型：看Java如何解决可见性和有序性问题"><span class="nav-number">1.</span> <span class="nav-text">02 Java内存模型：看Java如何解决可见性和有序性问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#03-互斥锁：解决原子性问题"><span class="nav-number">2.</span> <span class="nav-text">03 互斥锁：解决原子性问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#004-互斥锁：如何用一把锁保护多个资源？"><span class="nav-number">3.</span> <span class="nav-text">004 互斥锁：如何用一把锁保护多个资源？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#005-死锁"><span class="nav-number">4.</span> <span class="nav-text">005 死锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#006-“等待-通知”机制优化循环等待"><span class="nav-number">5.</span> <span class="nav-text">006 “等待-通知”机制优化循环等待</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#007-安全、活跃、性能"><span class="nav-number">6.</span> <span class="nav-text">007 安全、活跃、性能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#008-管程"><span class="nav-number">7.</span> <span class="nav-text">008 管程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#009-Java线程"><span class="nav-number">8.</span> <span class="nav-text">009 Java线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-如何用面向对象思想写好并发程序"><span class="nav-number">9.</span> <span class="nav-text">10 如何用面向对象思想写好并发程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-理论基础模块答疑"><span class="nav-number">10.</span> <span class="nav-text">11 理论基础模块答疑</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <img class="site-author-image" itemprop="image" alt="嘤嘤嘤"
+    src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">嘤嘤嘤</p>
+  <div class="site-description" itemprop="description">coding,marathon athlete,IELTS7。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="feed-link motion-element">
+    <a href="/atom.xml" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">嘤嘤嘤</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.5.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.getAttribute('pjax') !== null) {
+      element.setAttribute('pjax', '');
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+
+  
+
+  
+
+    </div>
+</body>
+</html>
