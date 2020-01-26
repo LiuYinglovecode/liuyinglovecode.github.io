@@ -205,11 +205,11 @@
       <category term="golang" scheme="http://yoursite.com/categories/golang/"/>
     
     
+      <category term="go" scheme="http://yoursite.com/tags/go/"/>
+    
       <category term="cobra" scheme="http://yoursite.com/tags/cobra/"/>
     
       <category term="cli" scheme="http://yoursite.com/tags/cli/"/>
-    
-      <category term="go" scheme="http://yoursite.com/tags/go/"/>
     
   </entry>
   

@@ -398,9 +398,9 @@ sum = sum + ftemp</code></pre> }<br> fmt.Printf(“sum of floating nums %s is %f
         <category>golang</category>
       </categories>
       <tags>
+        <tag>go</tag>
         <tag>cobra</tag>
         <tag>cli</tag>
-        <tag>go</tag>
       </tags>
   </entry>
   <entry>
