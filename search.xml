@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Java 1111</title>
-    <url>/2020/08/06/Java%E5%B9%B6%E5%8F%91%E7%AC%94%E8%AE%B0(%E4%BA%8C)/</url>
+    <title>Java并发编程笔记(二)</title>
+    <url>/2020/08/16/Java%E5%B9%B6%E5%8F%91%E7%AC%94%E8%AE%B0(%E4%BA%8C)/</url>
     <content><![CDATA[<html><head></head><body></body></html><html><head></head><body><h3 id="14-Lock和Condition："><a href="#14-Lock和Condition：" class="headerlink" title="14 Lock和Condition："></a>14 Lock和Condition：</h3><h4 id="monitor-in-Java-util-concurrent"><a href="#monitor-in-Java-util-concurrent" class="headerlink" title="monitor in Java.util.concurrent"></a>monitor in Java.util.concurrent</h4><p><img src="../../images/J.U.C_2.png" alt="Alt text"><br>并发两大问题:互斥&同步<br>Java SDK并发包通过Lock和Condition两个接口来实现管城,其中Lock用于解决互斥问题,Condition用于解决同步问题.<br>与synchronized无法解决死锁造成的”破坏不可抢占条件”相比,Lock的三个接口专门解决该问题:</p>
 <ol>
 <li><p>能够响应中断<br>synchronized的问题是,持有锁A后,如果尝试获取锁B失败,则线程进入阻塞状态,一旦死锁,就没有任何机会来唤醒阻塞的线程.但如果阻塞的线程能够响应中断信号从而被唤醒,那它就有机会释放锁A.<br>e.g.</p>
