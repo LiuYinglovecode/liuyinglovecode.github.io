@@ -373,4 +373,50 @@ func Manifest(c *gin.Context) {
 		"message": message,
 	})
 ```
-
+### 4 TEST METHOD
+(1) For test, use GET method to get the values from the tgz package, e.g. :
+``` bash
+curl -X GET "localhost:8080/1/helm/values?URL=https://kubernetes-charts.storage.googleapis.com/redis-9.3.0.tgz"
+```
+and you will get the parsed json in the console(the result is too long,so I cut it down):
+``` bash
+{
+        "cluster.enabled": true,
+        "cluster.slaveCount": 2,
+        "clusterDomain": "cluster.local",
+        "configmap": "# Enable AOF https://redis.io/topics/persistence#append-only-file\nappendonly yes\n# Disable RDB persistence, AOF persistence already enabled.\nsave \"\"",
+        "image.pullPolicy": "IfNotPresent",
+        "image.registry": "docker.io",
+        "image.repository": "bitnami/redis",
+        "image.tag": "5.0.5-debian-9-r141",
+        "master.affinity": {},
+        "master.command": "/run.sh",
+        "master.configmap": null,
+....
+}
+```
+and use POST method to get the final deployable yaml file, here, I use postman to test the api:
+![Alt text](../../images/manifest.png)
+and the final yaml file is(the result is too long, so I just shorten it):
+``` bash
+---
+# Source: redis/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: -redis
+  labels:
+    app: redis
+    chart: redis-9.3.0
+    release: ""
+    heritage: "Tiller"
+type: Opaque
+data:
+  redis-password: "N0dxdjRrTG5Saw=="---
+---
+.....
+---
+# Source: redis/templates/metrics-prometheus.yaml
+---
+{"message":"","status":"posted"}
+```
