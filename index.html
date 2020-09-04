@@ -212,6 +212,80 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/04/k8s/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="嘤嘤嘤">
+      <meta itemprop="description" content="coding,marathon athlete,IELTS7。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="liuying">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/09/04/k8s/" class="post-title-link" itemprop="url">Deploy kubernetes in Ubuntu 20.04</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-09-04 20:15:29 / Modified: 20:28:15" itemprop="dateCreated datePublished" datetime="2020-09-04T20:15:29+08:00">2020-09-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index">
+                    <span itemprop="name">Kubernetes</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <html><head></head><body></body></html><html><head></head><body><h3 id="Kubernetes-dashboard"><a href="#Kubernetes-dashboard" class="headerlink" title="Kubernetes dashboard"></a>Kubernetes dashboard</h3><p>As we see above the kubernetes-dashboard service in the kube-system namespace has a ClusterIP of 10.152.183.64 and listens on TCP port 443. The ClusterIP is randomly assigned, so if you follow these steps on your host, make sure you check the IP adress you got. Point your browser to <a target="_blank" rel="noopener" href="https://10.1.29.1:30000">https://10.1.29.1:30000</a> and you will see the kubernetes dashboard UI. To access the dashboard use the default token retrieved with:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">token=$(microk8s kubectl -n kube-system get secret | grep default-token | cut -d <span class="string">" "</span> -f1)</span><br><span class="line">microk8s kubectl -n kube-system describe secret <span class="variable">$token</span></span><br></pre></td></tr></tbody></table></figure>
+<p>then the terminal will show the token you need to fill in the website:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Name:         default-token-dv57v</span><br><span class="line">Namespace:    kube-system</span><br><span class="line">Labels:       <none></span><br><span class="line">Annotations:  kubernetes.io/service-account.name: default</span><br><span class="line">              kubernetes.io/service-account.uid: f7ab5770-3e0b-4dba-a431-a12a48fd3d8d</span><br><span class="line"></span><br><span class="line">Type:  kubernetes.io/service-account-token</span><br><span class="line"></span><br><span class="line">Data</span><br><span class="line">====</span><br><span class="line">ca.crt:     1103 bytes</span><br><span class="line">namespace:  11 bytes</span><br><span class="line">token:      eyJhbGciOiJSUzI1NiIsImtpZCI6IklpT0NEaXZ4YUpsQVBLTlNZUGNjdGE3dWJSN0xNbGE1MFFlUWFUY3NpVFUifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJkZWZhdWx0LXRva2VuLWR2NTd2Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImRlZmF1bHQiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJmN2FiNTc3MC0zZTBiLTRkYmEtYTQzMS1hMTJhNDhmZDNkOGQiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZS1zeXN0ZW06ZGVmYXVsdCJ9.JgECFOXY-hPmhzSCfqKbKxFM7cpngARzwKFqQwZNGZGDN7I3gpZhUcPyHhTJmjMAlAmexzoHHslll75L3mHIwQd-Fnew0m9eSqZuXRa9XGzDkBVqkmhn3FiA32gq7kN1Fwbly-bCC2eaXHyhXRA94dBI9BeNOirVaSbEOs4gQ0EHgBCLYHTtrEOC_SjJeVldCE1fYnWdjZZuKGYDdOEh4y5n6EEdSq2ZdwCUevYQ-ExL7Q4aVvIIY-d4LO-ODXTE_oY28B0QEf_sJZfSJ9BJJZOgHZrShfENFPqflA2UYWMWztwzVfXBGbeJW6OZmiQOrkMybxO9WnvRLlLB9T7XHQ</span><br></pre></td></tr></tbody></table></figure>
+<p>the dashboard will show:<br><img src="../../images/k8sdashboard.png" alt="Alt text"></p>
+</body></html>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/31/SpringBatch/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1425,112 +1499,11 @@ Hasen 模型、Hoare 模型和 MESA 模型的一个核心区别就是当条件�
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/15/Golang%20MVC%20Project/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="嘤嘤嘤">
-      <meta itemprop="description" content="coding,marathon athlete,IELTS7。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="liuying">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/01/15/Golang%20MVC%20Project/" class="post-title-link" itemprop="url">Golang MVC structure</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-01-15 11:25:33 / Modified: 19:49:26" itemprop="dateCreated datePublished" datetime="2020-01-15T11:25:33+08:00">2020-01-15</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/golang/" itemprop="url" rel="index">
-                    <span itemprop="name">golang</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <html><head></head><body></body></html><html><head></head><body><h3 id="This-MVC-doesn’t-use-any-golang-web-framework"><a href="#This-MVC-doesn’t-use-any-golang-web-framework" class="headerlink" title="This MVC doesn’t use any golang web framework"></a>This MVC doesn’t use any golang web framework</h3><p>   Use http for client and server communication, MUX for routing</p>
-<ol>
-<li>structure:<br>in the G:/go-work/src/mvc-example:</li>
-</ol>
-<ul>
-<li>app/controllers<br>home.go</li>
-<li>app/models<br>types.go</li>
-<li>app/route<br>route.go</li>
-<li>app/helpers</li>
-<li>config/.env</li>
-<li>app/<br>main.go</li>
-</ul>
-<ol start="2">
-<li><p>modify & create:<br>comment on app/controllers like this:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// <span class="string">"github.com/gorilla/mux"</span></span><br><span class="line">// <span class="string">"mvc_example/app/models"</span></span><br><span class="line">// <span class="string">"encoding/json"</span></span><br><span class="line">// <span class="built_in">log</span> <span class="string">"github.com/sirupsen/logrus"</span></span><br></pre></td></tr></tbody></table></figure>
-<p>create .env file that have key value pair of environment variable, and access that file using joho/godotenv package.add below key/value pair for test:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">site : <span class="string">"restapiexample.com"</span></span><br></pre></td></tr></tbody></table></figure>
-<p>Load the .env file into main function and access env variable using key ‘site’, that will return ‘restapiexample.com’.</p>
-</li>
-<li><p>codes</p>
-</li>
-</ol>
-<ul>
-<li>main:<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	<span class="string">"github.com/joho/godotenv"</span></span><br><span class="line">	<span class="built_in">log</span> <span class="string">"github.com/sirupsen/logrus"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"mvc_example/app/route"</span></span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func <span class="function"><span class="title">main</span></span>() {</span><br><span class="line">	log.Info(<span class="string">"Application has been started on : 8080"</span>)</span><br><span class="line">	err := godotenv.Load(os.ExpandEnv(<span class="string">"<span class="variable">$GOPATH</span>/src/mvc_example/app/config/.env"</span>))</span><br><span class="line">	<span class="keyword">if</span> err != nil {</span><br><span class="line">		log.Fatal(<span class="string">"Error loading .env file"</span>)</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	key := os.Getenv(<span class="string">"Site"</span>)</span><br><span class="line">	log.Info(key)</span><br><span class="line"></span><br><span class="line">	//creating instance of mux</span><br><span class="line">	routes := route.GetRoutes()</span><br><span class="line">	http.Handle(<span class="string">"/"</span>, routes)</span><br><span class="line">	log.Fatal(http.ListenAndServe(<span class="string">":8080"</span>, nil))</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></li>
-<li>controllers/home.go:<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">package controllers</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func Hello(w http.ResponseWriter, r *http.Request) {</span><br><span class="line">	fmt.Println(<span class="string">"Hello, I am home controller!"</span>)</span><br><span class="line">	w.WriteHeader(http.StatusOK)</span><br><span class="line">	fmt.Fprintf(w, <span class="string">"Hello, I am home controller"</span>)</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></li>
-<li>models/types.go:<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">package models</span><br><span class="line"> </span><br><span class="line"><span class="built_in">type</span> User struct {</span><br><span class="line">   Data struct {</span><br><span class="line">      ID        int    `json:<span class="string">"id"</span>`</span><br><span class="line">      FirstName string `json:<span class="string">"first_name"</span>`</span><br><span class="line">      LastName  string `json:<span class="string">"last_name"</span>`</span><br><span class="line">      Avatar    string `json:<span class="string">"avatar"</span>`</span><br><span class="line">   } `json:<span class="string">"data"</span>`</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></li>
-<li>route/route.go<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">package route</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	<span class="string">"github.com/gorilla/mux"</span></span><br><span class="line">	<span class="string">"mvc_example/app/controllers"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func GetRoutes() *mux.Router {</span><br><span class="line">	routes := mux.NewRouter().StrictSlash(<span class="literal">false</span>)</span><br><span class="line"></span><br><span class="line">	routers := routes.PathPrefix(<span class="string">"/api/v1"</span>).Subrouter()</span><br><span class="line"></span><br><span class="line">	routers.HandleFunc(<span class="string">"/hello"</span>, controllers.Hello).Methods(<span class="string">"GET"</span>)</span><br><span class="line"></span><br><span class="line">	<span class="built_in">return</span> routers</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
-
-
-</li>
-</ul>
-<p>Access rest call using “<a target="_blank" rel="noopener" href="http://localhost:8080/api/v1/hello"">http://localhost:8080/api/v1/hello"</a></p>
-</body></html>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1576,20 +1549,20 @@ Hasen 模型、Hoare 模型和 MESA 模型的一个核心区别就是当条件�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">42</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

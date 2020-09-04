@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Deploy kubernetes in Ubuntu 20.04</title>
+    <url>/2020/09/04/k8s/</url>
+    <content><![CDATA[<html><head></head><body></body></html><html><head></head><body><h3 id="Kubernetes-dashboard"><a href="#Kubernetes-dashboard" class="headerlink" title="Kubernetes dashboard"></a>Kubernetes dashboard</h3><p>As we see above the kubernetes-dashboard service in the kube-system namespace has a ClusterIP of 10.152.183.64 and listens on TCP port 443. The ClusterIP is randomly assigned, so if you follow these steps on your host, make sure you check the IP adress you got. Point your browser to <a href="https://10.1.29.1:30000">https://10.1.29.1:30000</a> and you will see the kubernetes dashboard UI. To access the dashboard use the default token retrieved with:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">token=$(microk8s kubectl -n kube-system get secret | grep default-token | cut -d <span class="string">" "</span> -f1)</span><br><span class="line">microk8s kubectl -n kube-system describe secret <span class="variable">$token</span></span><br></pre></td></tr></tbody></table></figure>
+<p>then the terminal will show the token you need to fill in the website:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">Name:         default-token-dv57v</span><br><span class="line">Namespace:    kube-system</span><br><span class="line">Labels:       <none></span><br><span class="line">Annotations:  kubernetes.io/service-account.name: default</span><br><span class="line">              kubernetes.io/service-account.uid: f7ab5770-3e0b-4dba-a431-a12a48fd3d8d</span><br><span class="line"></span><br><span class="line">Type:  kubernetes.io/service-account-token</span><br><span class="line"></span><br><span class="line">Data</span><br><span class="line">====</span><br><span class="line">ca.crt:     1103 bytes</span><br><span class="line">namespace:  11 bytes</span><br><span class="line">token:      eyJhbGciOiJSUzI1NiIsImtpZCI6IklpT0NEaXZ4YUpsQVBLTlNZUGNjdGE3dWJSN0xNbGE1MFFlUWFUY3NpVFUifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJkZWZhdWx0LXRva2VuLWR2NTd2Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImRlZmF1bHQiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJmN2FiNTc3MC0zZTBiLTRkYmEtYTQzMS1hMTJhNDhmZDNkOGQiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZS1zeXN0ZW06ZGVmYXVsdCJ9.JgECFOXY-hPmhzSCfqKbKxFM7cpngARzwKFqQwZNGZGDN7I3gpZhUcPyHhTJmjMAlAmexzoHHslll75L3mHIwQd-Fnew0m9eSqZuXRa9XGzDkBVqkmhn3FiA32gq7kN1Fwbly-bCC2eaXHyhXRA94dBI9BeNOirVaSbEOs4gQ0EHgBCLYHTtrEOC_SjJeVldCE1fYnWdjZZuKGYDdOEh4y5n6EEdSq2ZdwCUevYQ-ExL7Q4aVvIIY-d4LO-ODXTE_oY28B0QEf_sJZfSJ9BJJZOgHZrShfENFPqflA2UYWMWztwzVfXBGbeJW6OZmiQOrkMybxO9WnvRLlLB9T7XHQ</span><br></pre></td></tr></tbody></table></figure>
+<p>the dashboard will show:<br><img src="../../images/k8sdashboard.png" alt="Alt text"></p>
+</body></html>]]></content>
+      <categories>
+        <category>Kubernetes</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>Kubernetes</tag>
+        <tag>Ubuntu</tag>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>A simple example of Spring Batch</title>
     <url>/2020/08/31/SpringBatch/</url>
     <content><![CDATA[<html><head></head><body></body></html><html><head></head><body><h3 id="Flow-chart-of-Batch-processing"><a href="#Flow-chart-of-Batch-processing" class="headerlink" title="Flow chart of Batch processing"></a>Flow chart of Batch processing</h3><p><img src="../../images/springbatch.png" alt="Alt text"></p>
@@ -65,9 +84,9 @@
       </categories>
       <tags>
         <tag>go</tag>
+        <tag>k8s</tag>
         <tag>Helm</tag>
         <tag>yaml</tag>
-        <tag>k8s</tag>
       </tags>
   </entry>
   <entry>

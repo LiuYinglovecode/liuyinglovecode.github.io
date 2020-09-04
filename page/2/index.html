@@ -212,6 +212,107 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/15/Golang%20MVC%20Project/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="嘤嘤嘤">
+      <meta itemprop="description" content="coding,marathon athlete,IELTS7。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="liuying">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/01/15/Golang%20MVC%20Project/" class="post-title-link" itemprop="url">Golang MVC structure</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-01-15 11:25:33 / Modified: 19:49:26" itemprop="dateCreated datePublished" datetime="2020-01-15T11:25:33+08:00">2020-01-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/golang/" itemprop="url" rel="index">
+                    <span itemprop="name">golang</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <html><head></head><body></body></html><html><head></head><body><h3 id="This-MVC-doesn’t-use-any-golang-web-framework"><a href="#This-MVC-doesn’t-use-any-golang-web-framework" class="headerlink" title="This MVC doesn’t use any golang web framework"></a>This MVC doesn’t use any golang web framework</h3><p>   Use http for client and server communication, MUX for routing</p>
+<ol>
+<li>structure:<br>in the G:/go-work/src/mvc-example:</li>
+</ol>
+<ul>
+<li>app/controllers<br>home.go</li>
+<li>app/models<br>types.go</li>
+<li>app/route<br>route.go</li>
+<li>app/helpers</li>
+<li>config/.env</li>
+<li>app/<br>main.go</li>
+</ul>
+<ol start="2">
+<li><p>modify & create:<br>comment on app/controllers like this:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// <span class="string">"github.com/gorilla/mux"</span></span><br><span class="line">// <span class="string">"mvc_example/app/models"</span></span><br><span class="line">// <span class="string">"encoding/json"</span></span><br><span class="line">// <span class="built_in">log</span> <span class="string">"github.com/sirupsen/logrus"</span></span><br></pre></td></tr></tbody></table></figure>
+<p>create .env file that have key value pair of environment variable, and access that file using joho/godotenv package.add below key/value pair for test:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">site : <span class="string">"restapiexample.com"</span></span><br></pre></td></tr></tbody></table></figure>
+<p>Load the .env file into main function and access env variable using key ‘site’, that will return ‘restapiexample.com’.</p>
+</li>
+<li><p>codes</p>
+</li>
+</ol>
+<ul>
+<li>main:<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	<span class="string">"github.com/joho/godotenv"</span></span><br><span class="line">	<span class="built_in">log</span> <span class="string">"github.com/sirupsen/logrus"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"mvc_example/app/route"</span></span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func <span class="function"><span class="title">main</span></span>() {</span><br><span class="line">	log.Info(<span class="string">"Application has been started on : 8080"</span>)</span><br><span class="line">	err := godotenv.Load(os.ExpandEnv(<span class="string">"<span class="variable">$GOPATH</span>/src/mvc_example/app/config/.env"</span>))</span><br><span class="line">	<span class="keyword">if</span> err != nil {</span><br><span class="line">		log.Fatal(<span class="string">"Error loading .env file"</span>)</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	key := os.Getenv(<span class="string">"Site"</span>)</span><br><span class="line">	log.Info(key)</span><br><span class="line"></span><br><span class="line">	//creating instance of mux</span><br><span class="line">	routes := route.GetRoutes()</span><br><span class="line">	http.Handle(<span class="string">"/"</span>, routes)</span><br><span class="line">	log.Fatal(http.ListenAndServe(<span class="string">":8080"</span>, nil))</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></li>
+<li>controllers/home.go:<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">package controllers</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func Hello(w http.ResponseWriter, r *http.Request) {</span><br><span class="line">	fmt.Println(<span class="string">"Hello, I am home controller!"</span>)</span><br><span class="line">	w.WriteHeader(http.StatusOK)</span><br><span class="line">	fmt.Fprintf(w, <span class="string">"Hello, I am home controller"</span>)</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></li>
+<li>models/types.go:<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">package models</span><br><span class="line"> </span><br><span class="line"><span class="built_in">type</span> User struct {</span><br><span class="line">   Data struct {</span><br><span class="line">      ID        int    `json:<span class="string">"id"</span>`</span><br><span class="line">      FirstName string `json:<span class="string">"first_name"</span>`</span><br><span class="line">      LastName  string `json:<span class="string">"last_name"</span>`</span><br><span class="line">      Avatar    string `json:<span class="string">"avatar"</span>`</span><br><span class="line">   } `json:<span class="string">"data"</span>`</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure></li>
+<li>route/route.go<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">package route</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	<span class="string">"github.com/gorilla/mux"</span></span><br><span class="line">	<span class="string">"mvc_example/app/controllers"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func GetRoutes() *mux.Router {</span><br><span class="line">	routes := mux.NewRouter().StrictSlash(<span class="literal">false</span>)</span><br><span class="line"></span><br><span class="line">	routers := routes.PathPrefix(<span class="string">"/api/v1"</span>).Subrouter()</span><br><span class="line"></span><br><span class="line">	routers.HandleFunc(<span class="string">"/hello"</span>, controllers.Hello).Methods(<span class="string">"GET"</span>)</span><br><span class="line"></span><br><span class="line">	<span class="built_in">return</span> routers</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+
+</li>
+</ul>
+<p>Access rest call using “<a target="_blank" rel="noopener" href="http://localhost:8080/api/v1/hello"">http://localhost:8080/api/v1/hello"</a></p>
+</body></html>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/13/go-get-cmd/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -975,103 +1076,11 @@ sum = sum + ftemp</code></pre> }<br> fmt.Printf(“sum of floating nums %s is %f
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/28/http/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="嘤嘤嘤">
-      <meta itemprop="description" content="coding,marathon athlete,IELTS7。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="liuying">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/09/28/http/" class="post-title-link" itemprop="url">userinfo_interface</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-09-28 06:31:09" itemprop="dateCreated datePublished" datetime="2019-09-28T06:31:09+08:00">2019-09-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-12-24 16:50:18" itemprop="dateModified" datetime="2019-12-24T16:50:18+08:00">2019-12-24</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/web/" itemprop="url" rel="index">
-                    <span itemprop="name">web</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <html><head></head><body></body></html><html><head></head><body><h2 id="HTTP请求包"><a href="#HTTP请求包" class="headerlink" title="HTTP请求包"></a>HTTP请求包</h2><p>Request包分为3部分，依次为Request line,Request header, body.<br>HTTP协议与服务器交互的请求方法：GET,POST,PUT,DELETE.查增改删。</p>
-<h3 id="fiddler"><a href="#fiddler" class="headerlink" title="fiddler"></a>fiddler</h3><p>GET方法<br><img src="https://raw.githubusercontent.com/astaxie/build-web-application-with-golang/master/zh/images/3.1.http.png" alt></p>
-<p>POST方法<br><img src="https://raw.githubusercontent.com/astaxie/build-web-application-with-golang/master/zh/images/3.1.httpPOST.png" alt></p>
-<h3 id="HTTP响应包（服务器信息）"><a href="#HTTP响应包（服务器信息）" class="headerlink" title="HTTP响应包（服务器信息）"></a>HTTP响应包（服务器信息）</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 OK						//状态行</span><br><span class="line">Server: nginx/1.0.8					//服务器使用的WEB软件名及版本</span><br><span class="line">Date:Date: Tue, 30 Oct 2012 04:14:25 GMT		//发送时间</span><br><span class="line">Content-Type: text/html				//服务器发送信息的类型</span><br><span class="line">Transfer-Encoding: chunked			//表示发送HTTP包是分段发的</span><br><span class="line">Connection: keep-alive				//保持连接状态</span><br><span class="line">Content-Length: 90					//主体内容长度</span><br><span class="line">//空行 用来分割消息头和主体</span><br><span class="line"><!DOCTYPE html PUBLIC <span class="string">"-//W3C//DTD XHTML 1.0 Transitional//EN"</span>... //消息体</span><br></pre></td></tr></tbody></table></figure>
-<p>Response包中的第一行叫做状态行，由HTTP协议版本号， 状态码， 状态消息 三部分组成。</p>
-<p>状态码用来告诉HTTP客户端,HTTP服务器是否产生了预期的Response。HTTP/1.1协议中定义了5类状态码， 状态码由三位数字组成，第一个数字定义了响应的类别</p>
-<ol>
-<li>1XX 提示信息 - 表示请求已被成功接收，继续处理</li>
-<li>2XX 成功 - 表示请求已被成功接收，理解，接受</li>
-<li>3XX 重定向 - 要完成请求必须进行更进一步的处理</li>
-<li>4XX 客户端错误 - 请求有语法错误或请求无法实现</li>
-<li>5XX 服务器端错误 - 服务器未能实现合法的请求</li>
-</ol>
-<h3 id="HTTP协议是无状态的和Connection-keep-alive的区别"><a href="#HTTP协议是无状态的和Connection-keep-alive的区别" class="headerlink" title="HTTP协议是无状态的和Connection: keep-alive的区别"></a>HTTP协议是无状态的和Connection: keep-alive的区别</h3><p>无状态是指协议对于事务处理没有记忆能力，服务器不知道客户端是什么状态。从另一方面讲，打开一个服务器上的网页和你之前打开这个服务器上的网页之间没有任何联系。</p>
-<p>HTTP是一个无状态的面向连接的协议，无状态不代表HTTP不能保持TCP连接，更不能代表HTTP使用的是UDP协议（面对无连接）。</p>
-<p>从HTTP/1.1起，默认都开启了Keep-Alive保持连接特性，简单地说，当一个网页打开完成后，客户端和服务器之间用于传输HTTP数据的TCP连接不会关闭，如果客户端再次访问这个服务器上的网页，会继续使用这一条已经建立的TCP连接。</p>
-<p>Keep-Alive不会永久保持连接，它有一个保持时间，可以在不同服务器软件（如Apache）中设置这个时间。</p>
-</body></html>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1117,20 +1126,20 @@ sum = sum + ftemp</code></pre> }<br> fmt.Printf(“sum of floating nums %s is %f
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">42</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
