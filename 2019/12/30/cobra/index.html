@@ -1,0 +1,213 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>create cli by cobra | liuying</title><meta name="author" content="Liu Ying"><meta name="copyright" content="Liu Ying"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="installcd to ..&#x2F;golang.org&#x2F;x 12git clone https:&#x2F;&#x2F;github.com&#x2F;golang&#x2F;textgit clone https:&#x2F;&#x2F;github.com&#x2F;golang&#x2F;sys download github.com&#x2F;spf13&#x2F;cobra&#x2F;cobracd to its dirthen open cmd">
+<meta property="og:type" content="article">
+<meta property="og:title" content="create cli by cobra">
+<meta property="og:url" content="http://example.com/2019/12/30/cobra/index.html">
+<meta property="og:site_name" content="liuying">
+<meta property="og:description" content="installcd to ..&#x2F;golang.org&#x2F;x 12git clone https:&#x2F;&#x2F;github.com&#x2F;golang&#x2F;textgit clone https:&#x2F;&#x2F;github.com&#x2F;golang&#x2F;sys download github.com&#x2F;spf13&#x2F;cobra&#x2F;cobracd to its dirthen open cmd">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/articles/cobra.png">
+<meta property="article:published_time" content="2019-12-29T17:37:20.000Z">
+<meta property="article:modified_time" content="2022-12-25T09:48:59.289Z">
+<meta property="article:author" content="Liu Ying">
+<meta property="article:tag" content="go">
+<meta property="article:tag" content="cobra">
+<meta property="article:tag" content="cli">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/articles/cobra.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="http://example.com/2019/12/30/cobra/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'create cli by cobra',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-12-25 17:48:59'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">Loading...</div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (false) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.gif" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">22</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">48</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">13</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/pics/"><i class="fa-fw fas fa-image"></i><span> Pics</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/../../images/articles/cobra.png')"><nav id="nav"><span id="blog-info"><a href="/" title="liuying"><span class="site-name">liuying</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/pics/"><i class="fa-fw fas fa-image"></i><span> Pics</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">create cli by cobra</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2019-12-29T17:37:20.000Z" title="Created 2019-12-30 01:37:20">2019-12-30</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2022-12-25T09:48:59.289Z" title="Updated 2022-12-25 17:48:59">2022-12-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Golang/">Golang</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="create cli by cobra"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p><img src="/../../images/cobra.png" alt="Alt text"></p>
+<h3 id="install"><a href="#install" class="headerlink" title="install"></a>install</h3><p>cd to ..&#x2F;golang.org&#x2F;x</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/golang/text</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/golang/sys</span><br></pre></td></tr></table></figure>
+<p>download github.com&#x2F;spf13&#x2F;cobra&#x2F;cobra<br>cd to its dir<br>then open cmd &amp; type </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go install github.com/spf13/cobra/cobra</span><br></pre></td></tr></table></figure>
+<p>then use it:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cobra init mycalc</span><br></pre></td></tr></table></figure>
+<p>Cobra-based application structure:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">▾ appName/</span><br><span class="line">    ▾ cmd/</span><br><span class="line">        root.go</span><br><span class="line">    main.go</span><br></pre></td></tr></table></figure>
+<p>cobra main.go structure:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">  <span class="string">&quot;mycalc/cmd&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func <span class="function"><span class="title">main</span></span>() &#123;</span><br><span class="line">  cmd.Execute()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>when you run it, it will reports error:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">G:\go-work\bin\mycalc&gt;go run main.go</span><br><span class="line">main.go:18:8: cannot find package <span class="string">&quot;go-work/bin/my-calc/cmd&quot;</span> <span class="keyword">in</span> any of:</span><br><span class="line">        c:\go\src\go-work\bin\my-calc\cmd (from <span class="variable">$GOROOT</span>)</span><br><span class="line">        G:\go-work\src\go-work\bin\my-calc\cmd (from <span class="variable">$GOPATH</span>)</span><br></pre></td></tr></table></figure>
+<p>⚠️so you copy the whole package to $GOPATH, then </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">G:\go-work\bin\mycalc&gt;go install mycalc</span><br><span class="line">G:\go-work\bin\mycalc&gt;go run main.go</span><br><span class="line">Hello CLI</span><br><span class="line"></span><br><span class="line">G:\go-work\bin&gt;mycalc</span><br><span class="line">Hello CLI</span><br></pre></td></tr></table></figure>
+<p>the command in root.go is called rootCmd.</p>
+<h3 id="the-cli-flow"><a href="#the-cli-flow" class="headerlink" title="the cli flow"></a>the cli flow</h3><ol>
+<li>edit root.go<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">func <span class="function"><span class="title">init</span></span>() &#123;</span><br><span class="line">     fmt.Println(<span class="string">&quot;inside init&quot;</span>)</span><br><span class="line">     cobra.OnInitialize(initConfig)</span><br><span class="line">...</span><br></pre></td></tr></table></figure></li>
+<li>edit main.go<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">func <span class="function"><span class="title">main</span></span>() &#123;</span><br><span class="line">     fmt.Println(<span class="string">&quot;inside main&quot;</span>)</span><br><span class="line">     cmd.Execute()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+and it will shows this:<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">G:\go-work\bin&gt;mycalc</span><br><span class="line">inside init</span><br><span class="line">inside main</span><br><span class="line">inside initConfig</span><br><span class="line">inside initConfig</span><br><span class="line">Hello CLI</span><br></pre></td></tr></table></figure>
+Should notice two types of flags: Persistent flags &amp; Local flags</li>
+</ol>
+<h3 id="add-cli"><a href="#add-cli" class="headerlink" title="add cli:"></a>add cli:</h3><ol>
+<li>add num<br>create a command named add, navigate to the project <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">G:\go-work\src\mycalc&gt;cobra add add</span><br><span class="line">add created at G:\go-work\src\mycalc</span><br></pre></td></tr></table></figure>
+rebuild the binary using go install mycalc and run mycalc add.<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">G:\go-work\src\mycalc&gt;go install mycalc</span><br></pre></td></tr></table></figure></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">G:\go-work\bin&gt;mycalc add</span><br><span class="line">add called</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>modify it to add a series of numbers<br>to add numbers, fisrt have to convert the string into int then returan the result.<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">import (</span><br><span class="line">    ...</span><br><span class="line">    <span class="string">&quot;strconv&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure></li>
+<li>inside the add.go, create a new addInt function.<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">func addInt(args []string) &#123;</span><br><span class="line">    var <span class="built_in">sum</span> int</span><br><span class="line">    // the first <span class="built_in">return</span> value is index of args, we can omit it using _ </span><br><span class="line">    <span class="keyword">for</span> _, ival := range args &#123;</span><br><span class="line">    // strconv is the library used <span class="keyword">for</span> <span class="built_in">type</span> conversion, <span class="keyword">for</span> string</span><br><span class="line">    // to int conversion Atio method is udes.</span><br><span class="line">        itemp, err := strconv.Atoi(ival)</span><br><span class="line">        <span class="keyword">if</span> err != nil &#123;</span><br><span class="line">            fmt.Println(err)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">sum</span> = <span class="built_in">sum</span> + itemp</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Printf(<span class="string">&quot;Addition of numbers %s is %d, args, sum)</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure></li>
+<li>update RUN func<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">addInt(args)</span><br><span class="line">...</span><br></pre></td></tr></table></figure></li>
+<li>rebuild<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">G:\go-work\bin&gt;mycalc add a bc 8</span><br><span class="line">strconv.Atoi: parsing <span class="string">&quot;a&quot;</span>: invalid syntax</span><br><span class="line">strconv.Atoi: parsing <span class="string">&quot;bc&quot;</span>: invalid syntax</span><br><span class="line">Addition of numbers [a bc 8] is 8</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="achieve-float-calc-by-using-flag"><a href="#achieve-float-calc-by-using-flag" class="headerlink" title="achieve float calc by using flag"></a>achieve float calc by using flag</h3><ol>
+<li>create a local flag in init</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//add.go</span><br><span class="line">func <span class="function"><span class="title">init</span></span>() &#123;</span><br><span class="line">    rootCmd.AddCommand(addCmd)</span><br><span class="line">    addCmd.Flags().BoolP(<span class="string">&quot;float&quot;</span>, <span class="string">&quot;f&quot;</span>,<span class="literal">false</span>,<span class="string">&quot;Add Floating Numbers&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>create a addFloat func in add.go<br>&#x2F;&#x2F;add.go<br>func addFloat(args []string) {<br> var sum float64<br> for _, fval :&#x3D; range args {<br> ftemp, err :&#x3D; strconv.ParseFloat(fval,64)<br> if err !&#x3D; nil {<br>     fmt.Println(err)<br> }<br> sum &#x3D; sum + ftemp<br> }<br> fmt.Printf(“sum of floating nums %s is %f”, args,sum)<br>}<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">3. create a addFloat func in addCmd RUN func</span><br><span class="line">``` bash</span><br><span class="line">// add.go</span><br><span class="line">// addCmd</span><br><span class="line">Run: func(cmd *cobra.Command, args []string) &#123;</span><br><span class="line">    // get the flag value, its default value is false</span><br><span class="line">    fstatus, _ := cmd.Flags().GetBool(&quot;float&quot;)</span><br><span class="line">    if fstatus &#123;</span><br><span class="line">        addFloat(args)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        addInt(args)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="select-even-numbers-amp-add-them"><a href="#select-even-numbers-amp-add-them" class="headerlink" title="select even numbers &amp; add them"></a>select even numbers &amp; add them</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cobra add even</span><br></pre></td></tr></table></figure>
+<ol>
+<li>init in even.go<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//even.go</span><br><span class="line">func <span class="function"><span class="title">init</span></span>() &#123;</span><br><span class="line">    addCmd.AddCommand(evenCmd)</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>update evenCmd struct variable’s RUN method<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">//even.go</span><br><span class="line">Run: func(cmd *bobra.Command, args []string) &#123;</span><br><span class="line"></span><br><span class="line">    var evenSum int</span><br><span class="line">    <span class="keyword">for</span> _, ival := range args &#123;</span><br><span class="line">        itemp, _ := strconv.Atoi(ival)</span><br><span class="line">        <span class="keyword">if</span> itemp%2 == 0 &#123;</span><br><span class="line">            evenSum = evenSum + itemp</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Printf(<span class="string">&quot;the even addition of %s is %d&quot;</span>, args, evenSum)</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="select-old-numbers-amp-add-them"><a href="#select-old-numbers-amp-add-them" class="headerlink" title="select old numbers &amp; add them"></a>select old numbers &amp; add them</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//odd.go</span><br><span class="line">...</span><br><span class="line"><span class="keyword">if</span> itemp%2 != 0 </span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="http://example.com">Liu Ying</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="http://example.com/2019/12/30/cobra/">http://example.com/2019/12/30/cobra/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/go/">go</a><a class="post-meta__tags" href="/tags/cobra/">cobra</a><a class="post-meta__tags" href="/tags/cli/">cli</a></div><div class="post_share"><div class="social-share" data-image="/../../images/articles/cobra.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/01/03/WSL-Docker/" title="configure apache in docker while docker is in WSL"><img class="cover" src="/../../images/articles/apache.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info">configure apache in docker while docker is in WSL</div></div></a></div><div class="next-post pull-right"><a href="/2019/12/12/convertexceltodocx/" title="convertexceltodocx"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">convertexceltodocx</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2020/01/15/Golang%20MVC%20Project/" title="Golang MVC structure"><img class="cover" src="/../../images/articles/golang.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-15</div><div class="title">Golang MVC structure</div></div></a></div><div><a href="/2020/08/31/parsechart/" title="Parse helm chart to deployable yaml by Golang"><img class="cover" src="/../../images/articles/Helm.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-31</div><div class="title">Parse helm chart to deployable yaml by Golang</div></div></a></div><div><a href="/2019/12/11/rege/" title="regexp"><img class="cover" src="/../../images/articles/golang.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-11</div><div class="title">regexp</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.gif" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Liu Ying</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">22</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">48</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">13</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#install"><span class="toc-number">1.</span> <span class="toc-text">install</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#the-cli-flow"><span class="toc-number">2.</span> <span class="toc-text">the cli flow</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#add-cli"><span class="toc-number">3.</span> <span class="toc-text">add cli:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#achieve-float-calc-by-using-flag"><span class="toc-number">4.</span> <span class="toc-text">achieve float calc by using flag</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#select-even-numbers-amp-add-them"><span class="toc-number">5.</span> <span class="toc-text">select even numbers &amp; add them</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#select-old-numbers-amp-add-them"><span class="toc-number">6.</span> <span class="toc-text">select old numbers &amp; add them</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/04/12/questions/" title="interview questions"><img src="/../../images/articles/lock.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="interview questions"/></a><div class="content"><a class="title" href="/2022/04/12/questions/" title="interview questions">interview questions</a><time datetime="2022-04-12T14:35:32.000Z" title="Created 2022-04-12 22:35:32">2022-04-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/09/10/leetcode/" title="20-ValidParentheses"><img src="/../../images/articles/le20.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="20-ValidParentheses"/></a><div class="content"><a class="title" href="/2020/09/10/leetcode/" title="20-ValidParentheses">20-ValidParentheses</a><time datetime="2020-09-10T06:35:28.000Z" title="Created 2020-09-10 14:35:28">2020-09-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2020/09/09/Algorithms/" title="Percolation">Percolation</a><time datetime="2020-09-09T05:07:34.000Z" title="Created 2020-09-09 13:07:34">2020-09-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/09/04/k8s/" title="Deploy kubernetes in Ubuntu 20.04"><img src="/../../images/articles/Kubernetes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Deploy kubernetes in Ubuntu 20.04"/></a><div class="content"><a class="title" href="/2020/09/04/k8s/" title="Deploy kubernetes in Ubuntu 20.04">Deploy kubernetes in Ubuntu 20.04</a><time datetime="2020-09-04T12:15:29.000Z" title="Created 2020-09-04 20:15:29">2020-09-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/08/31/SpringBatch/" title="A simple example of Spring Batch"><img src="/../../images/articles/batch.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="A simple example of Spring Batch"/></a><div class="content"><a class="title" href="/2020/08/31/SpringBatch/" title="A simple example of Spring Batch">A simple example of Spring Batch</a><time datetime="2020-08-31T09:04:29.000Z" title="Created 2020-08-31 17:04:29">2020-08-31</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/../../images/articles/cobra.png')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By Liu Ying</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

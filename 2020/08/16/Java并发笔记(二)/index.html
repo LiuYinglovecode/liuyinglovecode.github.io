@@ -1,0 +1,208 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Java并发编程笔记(二) | liuying</title><meta name="author" content="Liu Ying"><meta name="copyright" content="Liu Ying"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="14 Lock和Condition：monitor in Java.util.concurrent并发两大问题:互斥&amp;同步Java SDK并发包通过Lock和Condition两个接口来实现管城,其中Lock用于解决互斥问题,Condition用于解决同步问题.与synchronized无法解决死锁造成的”破坏不可抢占条件”相比,Lock的三个接口专门解决该问题:  能够响应中断synch">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java并发编程笔记(二)">
+<meta property="og:url" content="http://example.com/2020/08/16/Java%E5%B9%B6%E5%8F%91%E7%AC%94%E8%AE%B0(%E4%BA%8C)/index.html">
+<meta property="og:site_name" content="liuying">
+<meta property="og:description" content="14 Lock和Condition：monitor in Java.util.concurrent并发两大问题:互斥&amp;同步Java SDK并发包通过Lock和Condition两个接口来实现管城,其中Lock用于解决互斥问题,Condition用于解决同步问题.与synchronized无法解决死锁造成的”破坏不可抢占条件”相比,Lock的三个接口专门解决该问题:  能够响应中断synch">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/avatar.gif">
+<meta property="article:published_time" content="2020-08-16T04:40:39.000Z">
+<meta property="article:modified_time" content="2022-12-25T09:48:59.289Z">
+<meta property="article:author" content="Liu Ying">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="geekbang">
+<meta property="article:tag" content="concurrent">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/avatar.gif"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="http://example.com/2020/08/16/Java%E5%B9%B6%E5%8F%91%E7%AC%94%E8%AE%B0(%E4%BA%8C)/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Java并发编程笔记(二)',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-12-25 17:48:59'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">Loading...</div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (false) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.gif" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">22</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">48</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">13</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/pics/"><i class="fa-fw fas fa-image"></i><span> Pics</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/interstellar.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="liuying"><span class="site-name">liuying</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/pics/"><i class="fa-fw fas fa-image"></i><span> Pics</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Java并发编程笔记(二)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2020-08-16T04:40:39.000Z" title="Created 2020-08-16 12:40:39">2020-08-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2022-12-25T09:48:59.289Z" title="Updated 2022-12-25 17:48:59">2022-12-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Java/">Java</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Java并发编程笔记(二)"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="14-Lock和Condition："><a href="#14-Lock和Condition：" class="headerlink" title="14 Lock和Condition："></a>14 Lock和Condition：</h3><h4 id="monitor-in-Java-util-concurrent"><a href="#monitor-in-Java-util-concurrent" class="headerlink" title="monitor in Java.util.concurrent"></a>monitor in Java.util.concurrent</h4><p><img src="/../../images/J.U.C_2.png" alt="Alt text"><br>并发两大问题:互斥&amp;同步<br>Java SDK并发包通过Lock和Condition两个接口来实现管城,其中Lock用于解决互斥问题,Condition用于解决同步问题.<br>与synchronized无法解决死锁造成的”破坏不可抢占条件”相比,Lock的三个接口专门解决该问题:</p>
+<ol>
+<li><p>能够响应中断<br>synchronized的问题是,持有锁A后,如果尝试获取锁B失败,则线程进入阻塞状态,一旦死锁,就没有任何机会来唤醒阻塞的线程.但如果阻塞的线程能够响应中断信号从而被唤醒,那它就有机会释放锁A.<br>e.g.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 支持中断的API</span><br><span class="line">void lockInterruptibly()</span><br><span class="line">    throws InterruptedException;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>支持超时<br>如果线程超时后没有获取锁不是进入阻塞状态,而是返回一个error,那这个线程也有机会释放锁,也能破坏不可抢占条件.<br>e.g.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">boolean tryLock(long time,TimeUnit unit)</span><br><span class="line">    throws InterruptedException;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<ul>
+<li><ol start="3">
+<li>非阻塞地获取锁<br>如果尝试获取锁失败并不进入阻塞状态而是直接返回,也有机会放锁.<br>e.g.<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boolean tryLock();</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ul>
+<h4 id="Java-SDK如何保证可见性"><a href="#Java-SDK如何保证可见性" class="headerlink" title="Java SDK如何保证可见性"></a>Java SDK如何保证可见性</h4><p> Java 里多线程的可见性是通过 Happens-Before 规则保证的，而 synchronized 之所以能够保证可见性，也是因为有一条 synchronized 相关的规则：synchronized 的解锁 Happens-Before 于后续对这个锁的加锁。那 Java SDK 里面 Lock 靠什么保证可见性呢？例如在下面的代码中，线程 T1 对 value 进行了 +&#x3D;1 操作，那后续的线程 T2 就能够看到 value 的正确结果<br>try{}finally{}示例:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">class X &#123;</span><br><span class="line">    private final Lock rtl =</span><br><span class="line">    new ReentrantLock();</span><br><span class="line">    int value;</span><br><span class="line">    public void <span class="function"><span class="title">addOne</span></span>() &#123;</span><br><span class="line">        // 获取锁</span><br><span class="line">        rtl.lock();</span><br><span class="line">        try &#123;</span><br><span class="line">            value +=1;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            // 保证锁能释放</span><br><span class="line">            rtl.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Java-SDK中锁的实现简要解释"><a href="#Java-SDK中锁的实现简要解释" class="headerlink" title="Java SDK中锁的实现简要解释"></a>Java SDK中锁的实现简要解释</h4><p>利用volatile相关的Happens-Before规则,Java SDK里的ReentrantLock内部持有一个volatile的成员变量state,获取锁或者解锁的时候会读写state的值,据相关Happens-Before规则:</p>
+<ol>
+<li>顺序性规则：对于线程 T1，value+&#x3D;1 Happens-Before 释放锁的操作 unlock()；</li>
+<li>volatile 变量规则：由于 state &#x3D; 1 会先读取 state，所以线程 T1 的 unlock() 操作 Happens-Before 线程 T2 的 lock() 操作；</li>
+<li>传递性规则：线程 T1 的 value+&#x3D;1  Happens-Before 线程 T2 的 lock() 操作。<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class SampleLock &#123;</span><br><span class="line">  volatile int state;</span><br><span class="line">  // 加锁</span><br><span class="line">  <span class="function"><span class="title">lock</span></span>() &#123;</span><br><span class="line">    // 省略代码无数</span><br><span class="line">    state = 1;</span><br><span class="line">  &#125;</span><br><span class="line">  // 解锁</span><br><span class="line">  <span class="function"><span class="title">unlock</span></span>() &#123;</span><br><span class="line">    // 省略代码无数</span><br><span class="line">    state = 0;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+第二节Java内存模型中有详细解释</li>
+</ol>
+<h3 id="可重入锁ReentrantLock"><a href="#可重入锁ReentrantLock" class="headerlink" title="可重入锁ReentrantLock"></a>可重入锁ReentrantLock</h3><p>定义:指的是线程可以重复获取同一把锁。例如下面代码中，当线程 T1 执行到 ① 处时，已经获取到了锁 rtl ，当在 ① 处调用 get() 方法时，会在 ② 再次对锁 rtl 执行加锁操作。此时，如果锁 rtl 是可重入的，那么线程 T1 可以再次加锁成功；如果锁 rtl 是不可重入的，那么线程 T1 此时会被阻塞。如下:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">class X &#123;</span><br><span class="line">    private final Lock rtl =</span><br><span class="line">    new ReentrantLock();</span><br><span class="line">    int value;</span><br><span class="line">    public int <span class="function"><span class="title">get</span></span>() &#123;</span><br><span class="line">        //get lock</span><br><span class="line">        rtl.lock();            b</span><br><span class="line">        try &#123;</span><br><span class="line">            <span class="built_in">return</span> value;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            // ensure the lock is open</span><br><span class="line">            rtl.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    public void <span class="function"><span class="title">addOne</span></span>() &#123;</span><br><span class="line">        // get lock</span><br><span class="line">        rtl.lock();</span><br><span class="line">        try &#123;</span><br><span class="line">            value = 1 + get(); a</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            // ensure the lock the is open</span><br><span class="line">            rtl.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="公平锁与非公平锁"><a href="#公平锁与非公平锁" class="headerlink" title="公平锁与非公平锁"></a>公平锁与非公平锁</h4><p>在使用ReentrantLock的时候,有两个构造函数,一个无参,一个传fair参数.fair为公平策略,如果传true就需要构造一个公平锁,反之则表示构造非公平锁.关于非公平锁的应用场景,在线程释放锁之后,如果来了一个线程获取锁,不必去排队直接获取到,不会入队.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// unfair lock</span><br><span class="line">public <span class="function"><span class="title">ReentrantLock</span></span>() &#123;</span><br><span class="line">    <span class="built_in">sync</span> = new NonfairSync();</span><br><span class="line">&#125;</span><br><span class="line">// create lock according to fair strategy</span><br><span class="line">public ReentrantLock(boolean fair)&#123;</span><br><span class="line">    <span class="built_in">sync</span> = fair ? new FairSync()</span><br><span class="line">                : new NonfairSync();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="锁实践"><a href="#锁实践" class="headerlink" title="锁实践"></a>锁实践</h4><p>Doug Lea《Java 并发编程：设计原则与模式》一书中，推荐的三个用锁的最佳实践：</p>
+<ol>
+<li>永远只在更新对象的成员变量时加锁</li>
+<li>永远只在访问可变的成员变量时加锁</li>
+<li>永远不在调用其他对象的方法时加锁</li>
+</ol>
+<h4 id="总结与思考"><a href="#总结与思考" class="headerlink" title="总结与思考"></a>总结与思考</h4><p>Java SDK 并发包里的 Lock 接口里面的每个方法都是经过深思熟虑的。除了支持类似 synchronized 隐式加锁的 lock() 方法外，还支持超时、非阻塞、可中断的方式获取锁.判断下列代码是否死锁:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">class Account &#123;</span><br><span class="line">  private int balance;</span><br><span class="line">  private final Lock lock</span><br><span class="line">          = new ReentrantLock();</span><br><span class="line">  // transfer money</span><br><span class="line">  void transfer(Account tar, int amt)&#123;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">      <span class="keyword">if</span>(this.lock.tryLock()) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">          <span class="keyword">if</span> (tar.lock.tryLock()) &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">              this.balance -= amt;</span><br><span class="line">              tar.balance += amt;</span><br><span class="line">            &#125; finally &#123;</span><br><span class="line">              tar.lock.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;//if</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">          this.lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;//if</span><br><span class="line">    &#125;//while</span><br><span class="line">  &#125;//transfer</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>这个会造成活锁,两个线程同时执行,线程A获取了u1.trylock,线程B获取了u2.trylock,线程A尝试获取u2.trylock,不能成功,线程A结束,同时线程B尝试获取u1.trylock,不能成功,线程B结束,又开始新一轮.A,B俩账户互相转账,各自持有自己的lock的锁,都一直尝试获取对方的锁,形成了活锁.如果在单机单核场景,活锁的可能性很小,可以接受.<br>改良:<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">class Account &#123;</span><br><span class="line">  private int balance;</span><br><span class="line">  private final Lock lock</span><br><span class="line">          = new ReentrantLock();</span><br><span class="line">  // transfer</span><br><span class="line">  void transfer(Account tar, int amt)&#123;</span><br><span class="line">boolean flag = <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">while</span> (flag) &#123;</span><br><span class="line">      <span class="keyword">if</span>(this.lock.tryLock(随机数，NANOSECONDS)) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">          <span class="keyword">if</span> (tar.lock.tryLock(随机数，NANOSECONDS)) &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">              this.balance -= amt;</span><br><span class="line">              tar.balance += amt;</span><br><span class="line">flag = <span class="literal">false</span>;</span><br><span class="line">            &#125; finally &#123;</span><br><span class="line">              tar.lock.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;//if</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">          this.lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;//if</span><br><span class="line">    &#125;//while</span><br><span class="line">  &#125;//transfer</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="15-Lock和Condition："><a href="#15-Lock和Condition：" class="headerlink" title="15 Lock和Condition："></a>15 Lock和Condition：</h3><h4 id="how-Dubbo-achieve-transferring-asynchronous-to-synchronous-by-using-monitor"><a href="#how-Dubbo-achieve-transferring-asynchronous-to-synchronous-by-using-monitor" class="headerlink" title="how Dubbo achieve transferring asynchronous to synchronous by using monitor"></a>how Dubbo achieve transferring asynchronous to synchronous by using monitor</h4><ul>
+<li>condition实现了管程模型里的条件变量<br>Java 语言内置的管程里只有一个条件变量，而 Lock&amp;Condition 实现的管程是支持多个条件变量的，这是二者的一个重要区别。在很多并发场景下，支持多个条件变量能够让我们的并发程序可读性更好，实现起来也更容易。例如，实现一个阻塞队列，就需要两个条件变量。</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="http://example.com">Liu Ying</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="http://example.com/2020/08/16/Java%E5%B9%B6%E5%8F%91%E7%AC%94%E8%AE%B0(%E4%BA%8C)/">http://example.com/2020/08/16/Java%E5%B9%B6%E5%8F%91%E7%AC%94%E8%AE%B0(%E4%BA%8C)/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/java/">java</a><a class="post-meta__tags" href="/tags/geekbang/">geekbang</a><a class="post-meta__tags" href="/tags/concurrent/">concurrent</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.gif" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/08/31/parsechart/" title="Parse helm chart to deployable yaml by Golang"><img class="cover" src="/../../images/articles/Helm.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info">Parse helm chart to deployable yaml by Golang</div></div></a></div><div class="next-post pull-right"><a href="/2020/03/03/windows-credentials/" title="凭据"><img class="cover" src="/../../images/articles/git.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">凭据</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2020/01/29/Java%E5%B9%B6%E5%8F%91%E7%AC%94%E8%AE%B0/" title="Java并发编程笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-29</div><div class="title">Java并发编程笔记</div></div></a></div><div><a href="/2020/09/09/Algorithms/" title="Percolation"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-09</div><div class="title">Percolation</div></div></a></div><div><a href="/2020/08/31/SpringBatch/" title="A simple example of Spring Batch"><img class="cover" src="/../../images/articles/batch.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-31</div><div class="title">A simple example of Spring Batch</div></div></a></div><div><a href="/2020/02/06/Nginx/" title="Nginx"><img class="cover" src="/../../images/articles/nginx.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-02-06</div><div class="title">Nginx</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.gif" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Liu Ying</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">22</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">48</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">13</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#14-Lock%E5%92%8CCondition%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">14 Lock和Condition：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#monitor-in-Java-util-concurrent"><span class="toc-number">1.1.</span> <span class="toc-text">monitor in Java.util.concurrent</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Java-SDK%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E5%8F%AF%E8%A7%81%E6%80%A7"><span class="toc-number">1.2.</span> <span class="toc-text">Java SDK如何保证可见性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Java-SDK%E4%B8%AD%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%AE%80%E8%A6%81%E8%A7%A3%E9%87%8A"><span class="toc-number">1.3.</span> <span class="toc-text">Java SDK中锁的实现简要解释</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81ReentrantLock"><span class="toc-number">2.</span> <span class="toc-text">可重入锁ReentrantLock</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%AC%E5%B9%B3%E9%94%81%E4%B8%8E%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81"><span class="toc-number">2.1.</span> <span class="toc-text">公平锁与非公平锁</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%94%81%E5%AE%9E%E8%B7%B5"><span class="toc-number">2.2.</span> <span class="toc-text">锁实践</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%E4%B8%8E%E6%80%9D%E8%80%83"><span class="toc-number">2.3.</span> <span class="toc-text">总结与思考</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-Lock%E5%92%8CCondition%EF%BC%9A"><span class="toc-number">3.</span> <span class="toc-text">15 Lock和Condition：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#how-Dubbo-achieve-transferring-asynchronous-to-synchronous-by-using-monitor"><span class="toc-number">3.1.</span> <span class="toc-text">how Dubbo achieve transferring asynchronous to synchronous by using monitor</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/04/12/questions/" title="interview questions"><img src="/../../images/articles/lock.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="interview questions"/></a><div class="content"><a class="title" href="/2022/04/12/questions/" title="interview questions">interview questions</a><time datetime="2022-04-12T14:35:32.000Z" title="Created 2022-04-12 22:35:32">2022-04-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/09/10/leetcode/" title="20-ValidParentheses"><img src="/../../images/articles/le20.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="20-ValidParentheses"/></a><div class="content"><a class="title" href="/2020/09/10/leetcode/" title="20-ValidParentheses">20-ValidParentheses</a><time datetime="2020-09-10T06:35:28.000Z" title="Created 2020-09-10 14:35:28">2020-09-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2020/09/09/Algorithms/" title="Percolation">Percolation</a><time datetime="2020-09-09T05:07:34.000Z" title="Created 2020-09-09 13:07:34">2020-09-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/09/04/k8s/" title="Deploy kubernetes in Ubuntu 20.04"><img src="/../../images/articles/Kubernetes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Deploy kubernetes in Ubuntu 20.04"/></a><div class="content"><a class="title" href="/2020/09/04/k8s/" title="Deploy kubernetes in Ubuntu 20.04">Deploy kubernetes in Ubuntu 20.04</a><time datetime="2020-09-04T12:15:29.000Z" title="Created 2020-09-04 20:15:29">2020-09-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/08/31/SpringBatch/" title="A simple example of Spring Batch"><img src="/../../images/articles/batch.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="A simple example of Spring Batch"/></a><div class="content"><a class="title" href="/2020/08/31/SpringBatch/" title="A simple example of Spring Batch">A simple example of Spring Batch</a><time datetime="2020-08-31T09:04:29.000Z" title="Created 2020-08-31 17:04:29">2020-08-31</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/interstellar.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By Liu Ying</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

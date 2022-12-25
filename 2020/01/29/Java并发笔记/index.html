@@ -1,0 +1,617 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Java并发编程笔记 | liuying</title><meta name="author" content="Liu Ying"><meta name="copyright" content="Liu Ying"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="01 可见性、原子性、有序性：并发的bug源头 在 32 位的机器上对 long 型变量进行加减操作存在并发隐患？ long类型64位，所以在32位的机器上，对long类型的数据操作通常需要多条指令组合出来，无法保证原子性，所以并发的时候会出问题    进程与线程进程不占有CPU。操作系统会把CPU分配给线程。分到CPU的线程就能执行。并行，是同一时刻，两个线程都在执行。并发，是同一时刻，只有">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java并发编程笔记">
+<meta property="og:url" content="http://example.com/2020/01/29/Java%E5%B9%B6%E5%8F%91%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="liuying">
+<meta property="og:description" content="01 可见性、原子性、有序性：并发的bug源头 在 32 位的机器上对 long 型变量进行加减操作存在并发隐患？ long类型64位，所以在32位的机器上，对long类型的数据操作通常需要多条指令组合出来，无法保证原子性，所以并发的时候会出问题    进程与线程进程不占有CPU。操作系统会把CPU分配给线程。分到CPU的线程就能执行。并行，是同一时刻，两个线程都在执行。并发，是同一时刻，只有">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/avatar.gif">
+<meta property="article:published_time" content="2020-01-29T01:18:20.000Z">
+<meta property="article:modified_time" content="2022-12-25T09:48:59.289Z">
+<meta property="article:author" content="Liu Ying">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="geekbang">
+<meta property="article:tag" content="concurrent">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/avatar.gif"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="http://example.com/2020/01/29/Java%E5%B9%B6%E5%8F%91%E7%AC%94%E8%AE%B0/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Java并发编程笔记',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-12-25 17:48:59'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">Loading...</div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+
+if (false) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.gif" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">22</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">48</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">13</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/pics/"><i class="fa-fw fas fa-image"></i><span> Pics</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/interstellar.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="liuying"><span class="site-name">liuying</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> List</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/pics/"><i class="fa-fw fas fa-image"></i><span> Pics</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Java并发编程笔记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2020-01-29T01:18:20.000Z" title="Created 2020-01-29 09:18:20">2020-01-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2022-12-25T09:48:59.289Z" title="Updated 2022-12-25 17:48:59">2022-12-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Java/">Java</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Java并发编程笔记"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+
+<h3 id="01-可见性、原子性、有序性：并发的bug源头"><a href="#01-可见性、原子性、有序性：并发的bug源头" class="headerlink" title="01 可见性、原子性、有序性：并发的bug源头"></a>01 可见性、原子性、有序性：并发的bug源头</h3><ol>
+<li>在 32 位的机器上对 long 型变量进行加减操作存在并发隐患？<br><br> long类型64位，所以在32位的机器上，对long类型的数据操作通常需要多条指令组合出来，无法保证原子性，所以并发的时候会出问题</li>
+</ol>
+<hr>
+<ol start="2">
+<li>进程与线程<br>进程不占有CPU。操作系统会把CPU分配给线程。分到CPU的线程就能执行。<br>并行，是同一时刻，两个线程都在执行。并发，是同一时刻，只有一个执行，但是一个时间段内，两个线程都执行了。</li>
+</ol>
+<hr>
+<ol start="3">
+<li>volatile</li>
+</ol>
+<ul>
+<li>volatile 是一个类型修饰符。作为指令关键字，确保本条指令不会因编译器的优化而省略。</li>
+<li>volatile 的特性:(1) 保证了不同线程对这个变量进行操作时的可见性，即一个线程修改了某个变量的值，这新值对其他线程来说是立即可见的。(2) 禁止进行指令重排序。（实现有序性）(3) volatile 只能保证对单次读&#x2F;写的原子性。i++ 这种操作不能保证原子性。</li>
+<li>volatile 的实现原理:(1) 变量的内存可见性是基于内存屏障（Memory Barrier）实现。内存屏障，又称内存栅栏，是一个 CPU 指令。<br>在程序运行时，为了提高执行性能，编译器和处理器会对指令进行重排序，JMM 为了保证在不同的编译器和 CPU 上有相同的结果，通过插入特定类型的内存屏障来禁止特定类型的编译器重排序和处理器重排序，插入一条内存屏障会告诉编译器和 CPU：不管什么指令都不能和这条 Memory Barrier 指令重排序。</li>
+</ul>
+<h3 id="02-Java内存模型：看Java如何解决可见性和有序性问题"><a href="#02-Java内存模型：看Java如何解决可见性和有序性问题" class="headerlink" title="02 Java内存模型：看Java如何解决可见性和有序性问题"></a>02 Java内存模型：看Java如何解决可见性和有序性问题</h3><ol>
+<li>什么是Java内存模型<br>Java 内存模型规范了 JVM 如何提供按需禁用缓存和编译优化的方法。具体来说，这些方法包括 volatile、synchronized 和 final 三个关键字，以及六项 Happens-Before 规则，这也正是本期的重点内容<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class VolatileExample &#123;</span><br><span class="line">  int x = 0;</span><br><span class="line">  volatile boolean v = <span class="literal">false</span>;</span><br><span class="line">  public void <span class="function"><span class="title">writer</span></span>() &#123;</span><br><span class="line">    x = 42;</span><br><span class="line">    v = <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  public void <span class="function"><span class="title">reader</span></span>() &#123;</span><br><span class="line">    <span class="keyword">if</span> (v == <span class="literal">true</span>) &#123;</span><br><span class="line">      // 这里x会是多少呢？</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<ul>
+<li>以上例子中，线程A执行writer方法并将V&#x3D;true写入内存，B执行reader方法从内存中读取变量v,如果B看到v&#x3D;&#x3D;true，那B看到的x是多少？<br>在1.5之前可能会出现x&#x3D;0，因为CPU缓存的可见性问题。1.5之后已解决。具体就是对volatile的语义进行了增强——Happens-before规则。</li>
+</ul>
+<ol start="2">
+<li>Happens-Before 规则：<br>前面一个操作的结果对后续操作是可见的。共有6项：(1) 程序的顺序性规则；（2） volatile 变量规则 （3） 传递性 （4） 管程中锁的规则：管程在java中指synchronized，指synchronized对Java里对管程的实现；<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">synchronized (this) &#123; //此处自动加锁</span><br><span class="line">  // x是共享变量,初始值=10</span><br><span class="line">  <span class="keyword">if</span> (this.x &lt; 12) &#123;</span><br><span class="line">    this.x = 12; </span><br><span class="line">  &#125;  </span><br><span class="line">&#125; //此处自动解锁</span><br></pre></td></tr></table></figure>
+如上，管程中的锁在java里为隐式实现，在进入同步块前会自动加锁，执行完会自动释放锁，加锁和释放锁都是编译器实现的。所以结合规则 4——管程中锁的规则，可以这样理解：假设 x 的初始值是 10，线程 A 执行完代码块后 x 的值会变成 12（执行完自动释放锁），线程 B 进入代码块时，能够看到线程 A 对 x 的写操作，也就是线程 B 能够看到 x&#x3D;&#x3D;12。这个也是符合直觉的。<br>（5） 线程start() 规则：主线程A启动子线程B后，子线程B可以看到主线程在启动子线程B前的操作。 （6） 线程join() 规则：主线程通过调用子线程B的join()并成功返回，主线程能看到子线程的操作。</li>
+</ol>
+<ul>
+<li>被忽视的final规则</li>
+<li>final 修饰变量时，初衷是告诉编译器：这个变量生而不变，可以优化。</li>
+</ul>
+<ol start="3">
+<li>有一个共享变量 abc，在一个线程里设置了 abc 的值 abc&#x3D;3，思考一下，有哪些办法可以让其他线程能够看到abc&#x3D;&#x3D;3？<br>（1） 声明共享变量abc，并使用volatile关键字修饰abc；<br>（2） 声明共享变量abc，在synchronized关键字对abc的赋值代码块加锁，由于happen-before管程锁的规则，可以使得后续线程看到abc的值。<br>（3） A线程启动后，使用A.JOIN()方法来完成运行，后续线程再启动。</li>
+</ol>
+<ul>
+<li>Java 内存模型主要分为两部分，一部分面向编写并发程序的应用开发人员，另一部分是面向 JVM 的实现人员的，也就是和编写并发程序相关的部分，这部分内容的核心就是 Happens-Before 规则。</li>
+</ul>
+<h3 id="03-互斥锁：解决原子性问题"><a href="#03-互斥锁：解决原子性问题" class="headerlink" title="03 互斥锁：解决原子性问题"></a>03 互斥锁：解决原子性问题</h3><p>如下图：<br><img src="/../../images/3lock.png" alt="Alt text"></p>
+<ul>
+<li>保护资源R就得为它创建一把锁LR；</li>
+<li>针对这把锁LR，需在进出临界区时添入加锁操作和解锁操作。</li>
+</ul>
+<ol>
+<li>Java提供的锁技术：synchronized</li>
+</ol>
+<ul>
+<li><p>synchronized可以用来修饰代码块：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">class X &#123;</span><br><span class="line">  // 修饰非静态方法</span><br><span class="line">  synchronized void <span class="function"><span class="title">foo</span></span>() &#123;</span><br><span class="line">    // 临界区</span><br><span class="line">  &#125;</span><br><span class="line">  // 修饰静态方法</span><br><span class="line">  synchronized static void <span class="function"><span class="title">bar</span></span>() &#123;</span><br><span class="line">    // 临界区</span><br><span class="line">  &#125;</span><br><span class="line">  // 修饰代码块</span><br><span class="line">  Object obj = new Object()；</span><br><span class="line">  void <span class="function"><span class="title">baz</span></span>() &#123;</span><br><span class="line">    synchronized(obj) &#123;</span><br><span class="line">      // 临界区</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
+<p>上式看到修饰静态方法的时候锁定了一个obj对象。此处有一个Java隐式规则：</p>
+</li>
+<li><p>当修饰静态方法的时候，锁定的是当前类的Class对象，在上面的例子即为Class X;当修饰非静态方法的时候，锁定的是当前实例对象this。</p>
+</li>
+<li><p>synchronized 修饰静态方法相当于：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">class X &#123;</span><br><span class="line">    //修饰静态方法</span><br><span class="line">    synchronized(X.class) static void <span class="function"><span class="title">bar</span></span>() &#123;</span><br><span class="line">        //临界区</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>修饰非静态方法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">class X &#123;</span><br><span class="line">    // 修饰非静态方法</span><br><span class="line">    synchronized(this) void <span class="function"><span class="title">foo</span></span>() &#123;</span><br><span class="line">        //临界区</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="2">
+<li>用synchronized解决count+&#x3D;1 问题<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">class SafeCalc &#123;</span><br><span class="line">    long value = 0L;</span><br><span class="line">    long <span class="function"><span class="title">get</span></span>() &#123;</span><br><span class="line">        <span class="built_in">return</span> value;</span><br><span class="line">    &#125;</span><br><span class="line">    synchronized void <span class="function"><span class="title">addOne</span></span>() &#123;</span><br><span class="line">        value += 1;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<ul>
+<li>addOne()方法被修饰后，无论单核&amp;多核CPU，只有一个线程能够执行它，所以可以保证原子操作。</li>
+<li>由此引出的可见性问题，可以参考之前的Happens-Before，即前一个线程在临界区修改的共享变量（该操作在解锁之前），对后续进入临界区（该操作在加锁之后）的线程是可见的。所以多个线程同时执行addOne()方法是可以保证可见性的。</li>
+<li>get()方法可见性是无法保证的。管程中锁的规则，是只保证后续对这个锁的加锁的可见性，而get()方法并没有加锁操作，解决方案：get()方法也synchronized：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">class SafeCalc &#123;</span><br><span class="line">    long value = 0L;</span><br><span class="line">    synchronized long <span class="function"><span class="title">get</span></span>() &#123;</span><br><span class="line">        <span class="built_in">return</span> value;</span><br><span class="line">    &#125;</span><br><span class="line">    synchronized void <span class="function"><span class="title">addOne</span></span>() &#123;</span><br><span class="line">        value += 1;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="3">
+<li><p>锁与受保护资源的关系</p>
+</li>
+<li><p>下面的代码用 synchronized 修饰代码块来尝试解决并发问题，这个使用方式正确吗？有哪些问题呢？能解决可见性和原子性问题吗？</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">class SafeCalc &#123;</span><br><span class="line">  long value = 0L;</span><br><span class="line">  long <span class="function"><span class="title">get</span></span>() &#123;</span><br><span class="line">    synchronized (new Object()) &#123;</span><br><span class="line">      <span class="built_in">return</span> value;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  void <span class="function"><span class="title">addOne</span></span>() &#123;</span><br><span class="line">    synchronized (new Object()) &#123;</span><br><span class="line">      value += 1;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>答：</p>
+</li>
+</ol>
+<ul>
+<li>加锁本质就是在锁对象的对象头中写入当前线程id，但是new object每次在内存中都是新对象，所以加锁无效。</li>
+<li>sync锁的对象monitor指针指向一个ObjectMonitor对象，所有线程加入他的entrylist里面，去cas抢锁，更改state加1拿锁，执行完代码，释放锁state减1，和aqs机制差不多，只是所有线程不阻塞，cas抢锁，没有队列，属于非公平锁。<br>wait的时候，线程进waitset休眠，等待notify唤醒</li>
+<li>两把不同的锁，不能保护临界资源。而且这种new出来只在一个地方使用的对象，其它线程不能对它解锁，这个锁会被编译器优化掉。和没有syncronized代码块效果是相同的</li>
+<li>不正确<br>使用锁保护资源时，对资源的所有操作应该使用同一个锁，这样才能起到保护的作用。<br>课后题中每个线程对资源的操作都是用的是各自的锁，不存在互斥和竞争的情况。<br>这就相当于有一个房间，每个人过来都安装一个门，每个人都有自己门的钥匙，大家都可以随意出入这个房间。<br>由于每个线程都可以随时进入方法，所以存在原子性问题；<br>但是因为每次都有加锁和解锁的操作，unlock操作会使其他缓存的变量失效，需要重新从主内存中加载变量的值，所以可以解决可见性问题。</li>
+</ul>
+<h3 id="04-互斥锁：如何用一把锁保护多个资源？"><a href="#04-互斥锁：如何用一把锁保护多个资源？" class="headerlink" title="04 互斥锁：如何用一把锁保护多个资源？"></a>04 互斥锁：如何用一把锁保护多个资源？</h3><ol>
+<li>代码演示<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">class Account &#123;</span><br><span class="line">  // 锁：保护账户余额</span><br><span class="line">  private final Object balLock</span><br><span class="line">    = new Object();</span><br><span class="line"></span><br><span class="line">  private Integer balance;</span><br><span class="line">  // 锁：保护账户密码</span><br><span class="line">  private final Object pwLock</span><br><span class="line">    = new Object();</span><br><span class="line"></span><br><span class="line">  private String password;</span><br><span class="line"></span><br><span class="line">   void withdraw(Integer amt) &#123;</span><br><span class="line">    synchronized(balLock) &#123;</span><br><span class="line">      <span class="keyword">if</span> (this.balance &gt; amt)&#123;</span><br><span class="line">        this.balance -= amt;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; </span><br><span class="line"> </span><br><span class="line">  Integer <span class="function"><span class="title">getBalance</span></span>() &#123;</span><br><span class="line">    synchronized(balLock) &#123;</span><br><span class="line">      <span class="built_in">return</span> balance;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  void updatePassword(String pw)&#123;</span><br><span class="line">    synchronized(pwLock) &#123;</span><br><span class="line">      this.password = pw;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; </span><br><span class="line"></span><br><span class="line">  String <span class="function"><span class="title">getPassword</span></span>() &#123;</span><br><span class="line">    synchronized(pwLock) &#123;</span><br><span class="line">      <span class="built_in">return</span> password;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<ul>
+<li>account有成员变量balance &amp; password，设了两把锁balLock &amp; pwLock.不同的资源用不同的锁。</li>
+<li>也可以用互斥锁来保护多个资源，e.g.可以用this管理账户里的所有资源，在这里即指余额和密码。实现：所有程序都加同步关键字synchronized。</li>
+<li>用一把锁性能又差，会导致上面四个操作都是串行的。所以用不同的锁对受保护资源进行精细化管理，能够提升性能，这种锁即是——细粒度锁。</li>
+</ul>
+<ol start="2">
+<li>保护有关联关系的多个资源<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class Account &#123;</span><br><span class="line">  private int balance;</span><br><span class="line">  // 转账</span><br><span class="line">  synchronized void transfer(</span><br><span class="line">      Account target, int amt)&#123;</span><br><span class="line">    <span class="keyword">if</span> (this.balance &gt; amt) &#123;</span><br><span class="line">      this.balance -= amt;</span><br><span class="line">      target.balance += amt;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<ul>
+<li>临界区有俩资源，转出账户的余额this.balance和转入账户的余额target.balance,并且用了一把锁this。</li>
+<li>错误之处在于：this这把锁只可以保护自己的余额this.balance,无法保护target.balance.<br>如图所示：<br><img src="/../../images/thisbalance.png" alt="Alt text"></li>
+<li>假设ABC同时有200，A转B100，B转C100，那么：</li>
+</ul>
+<p>最终进入B的余额可能是：<br>（1）300：线程1后于2写入B.balance，线程2写的B.balance值被线程1覆盖；<br>（2）100：线程1先于2写入B.balance，线程1写的B.balance值被线程2覆盖；</p>
+<ol start="3">
+<li>正确用锁</li>
+</ol>
+<ul>
+<li>用一把锁来保护多个资源，要求锁能覆盖所有受保护资源。上个例子中的this是对象级别的锁，所以A对象和B对象都有自己的锁，那么如何使其共享？</li>
+</ul>
+<ol start="4">
+<li>共享方案——设细粒度更大的锁</li>
+</ol>
+<ul>
+<li><p>让所有对象都持有一个唯一性的对象，这个对象在创建Account时传入：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">class Account &#123;</span><br><span class="line">    private Object lock;</span><br><span class="line">    private int balance;</span><br><span class="line">    private Account();</span><br><span class="line">    // 创建account时传入同一个lock对象</span><br><span class="line">    public Account(Object lock) &#123;</span><br><span class="line">        this.lock = lock;</span><br><span class="line">    &#125;</span><br><span class="line">    // 转账</span><br><span class="line">    void transfer(Account target, int amt) &#123;</span><br><span class="line">        //此处检查所有对象共享的锁</span><br><span class="line">        synchronized(lock) &#123;</span><br><span class="line">            <span class="keyword">if</span>(this.balance &gt; amt) &#123;</span><br><span class="line">                this.balance -= amt;</span><br><span class="line">                target.balance += amt;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>如上，将account默认构造函数变为private，同时增加一个带Object lock参数的构造函数，创建account对象时，传入相同的lock，这样所有的account对象都会共享这个lock，如下图所示：<br><img src="/../../images/sharelock.png" alt="Alt text"></p>
+</li>
+<li><p>再解“原子性”：本质不是不可分割，不可分割只是外在表现，其本质是多个资源间有一致性的要求，操作的中间状态对外不可见。e.g.在 32 位的机器上写 long 型变量有中间状态（只写了 64 位中的 32 位），在银行转账的操作中也有中间状态（账户 A 减少了 100，账户 B 还没来得及发生变化）。所以解决原子性问题，是要保证中间状态对外不可见。</p>
+</li>
+</ul>
+<ol start="5">
+<li>思考<br>在第一个示例程序里，用了两把不同的锁来分别保护账户余额、账户密码，创建锁的时候，我们用的是：private final Object xxxLock &#x3D; new Object();，如果账户余额用 this.balance 作为互斥锁，账户密码用 this.password 作为互斥锁，是否可以呢？</li>
+</ol>
+<ul>
+<li>都不行。不能用可变对象做锁。A线程取款进行this.balance-&#x3D;amt时，this.balance对应的值已经发生变换，线程B再次取款时拿到的balance对应的值并不是A线程中的。</li>
+<li>不能用balance和password做为锁对象。这两个对象balance是Integer，password是String都是不可变变对象，一但对他们进行赋值就会变成新的对象，加的锁就失效了。</li>
+<li>举个例子，假如this.balance &#x3D; 10 ，多个线程同时竞争同一把锁this.balance，此时只有一个线程拿到了锁，其他线程等待，拿到锁的线程进行this.balance -&#x3D; 1操作，this.balance &#x3D; 9。 该线程释放锁， 之前等待锁的线程继续竞争this.balance&#x3D;10的锁，新加入的线程竞争this.balance&#x3D;9的锁，导致多个锁对应一个资源。</li>
+<li>在account中添加一个静态object，通过锁这个object来实现一个锁保护多个资源：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class Account &#123;</span><br><span class="line">    private static Object lock = new Object()</span><br><span class="line">    private int balance;</span><br><span class="line">    // 转账</span><br><span class="line">    void transfer(Account target, int amt) &#123;</span><br><span class="line">        synchronized(lock) &#123;</span><br><span class="line">            <span class="keyword">if</span>(this.balance &gt; amt) &#123;</span><br><span class="line">                this.balance -= amt;</span><br><span class="line">                target.balance += amt;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+这种方式比锁class更安全，因为这个缺是私有的，有些最佳实践必须这样做。</li>
+<li>引申到下一讲：然后感觉加锁的所有用户用同一个锁的粒度太大了，但如果每次转账操作，是不是可以同时加两个用户的锁，如果有先后顺序又可能有死锁问题。</li>
+</ul>
+<h3 id="05-死锁"><a href="#05-死锁" class="headerlink" title="05 死锁"></a>05 死锁</h3><ul>
+<li>之前一篇用Account.class作为互斥锁的方案虽然不存在并发问题，但是所有账户的转账操作都是串行的，性能太差。</li>
+</ul>
+<ol>
+<li>提升性能方案</li>
+</ol>
+<ul>
+<li>用两把锁：转出账本一把，转入账本另一把。如图：<br><img src="/../../images/solvedeadlock.png" alt="Alt text"><br>在transfer()方法内部，首先锁定this(先把转出账本拿到)，然后尝试锁定转入账户target(再把转入账本拿到)，只有两者都成功时，才执行转账操作。</li>
+</ul>
+<ol start="2">
+<li>代码<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">class Account &#123;</span><br><span class="line">    private transfer(Account target, int amt) &#123;</span><br><span class="line">        // 锁定转出账户</span><br><span class="line">        synchronized(this) &#123;           ①</span><br><span class="line">            // 锁定转入账户</span><br><span class="line">            synchronized(target) &#123;     ②</span><br><span class="line">                <span class="keyword">if</span>(this.balance &gt; amt) &#123;</span><br><span class="line">                    this.balance -= amt;</span><br><span class="line">                    target.balance += amt;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+此例相对于用Account.class作为互斥锁，锁定的范围太大，而锁定俩个账户范围就小多了，这样的锁就是之前介绍的细粒度锁。细粒度锁可以提高并行度，是性能优化的重要手段。</li>
+</ol>
+<ul>
+<li>使用细粒度锁的代价——死锁<br>一组互相竞争资源的线程因互相等待，导致“永久”阻塞的现象<br>假设：线程T1：A转账B；线程T2: B转账A；当两线程执行完①时，T1拿到A的锁，T2拿到B的锁。之后俩线程执行②时，T1要B的锁发现B已被T2锁定，T2亦如是。这时就会无限等待下去。。。</li>
+</ul>
+<ol start="3">
+<li>预防</li>
+</ol>
+<ul>
+<li>出现原因：互斥（无法破坏，用锁的目的就是互斥）、占有且等待、不可抢占、循环等待。</li>
+<li>解决：<br>3.1 对于“占有且等待”：可以一次性申请所有的资源。<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">class Allocator &#123;</span><br><span class="line">    private List&lt;Object&gt; als =</span><br><span class="line">      new ArrayList&lt;&gt;();</span><br><span class="line">      // 一次申请所有资源</span><br><span class="line">      synchronized boolean apply(</span><br><span class="line">          Object from, Object to) &#123;</span><br><span class="line">              <span class="keyword">if</span>(als.contains(from) ||</span><br><span class="line">              als.contains(to))&#123;</span><br><span class="line">                  <span class="built_in">return</span> <span class="literal">false</span>;</span><br><span class="line">              &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                  als.add(from);</span><br><span class="line">                  als.add(to);</span><br><span class="line">              &#125;</span><br><span class="line">              <span class="built_in">return</span> <span class="literal">true</span>;</span><br><span class="line">          &#125;</span><br><span class="line">          // 归还资源</span><br><span class="line">          synchronized void free(</span><br><span class="line">              Object from, Object to)&#123;</span><br><span class="line">                  als.remove(from);</span><br><span class="line">                  als.remove(to);</span><br><span class="line">              &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Account &#123;</span><br><span class="line">    // actr 应为单例</span><br><span class="line">    private Allocator actr;</span><br><span class="line">    private int balance;</span><br><span class="line">    // 转账</span><br><span class="line">    void transfer(Account target, int amt) &#123;</span><br><span class="line">        // 一次性申请转出账户和转入转入账户，直到成功</span><br><span class="line">        <span class="keyword">while</span>(!actr.apply(this, target))</span><br><span class="line">        ;</span><br><span class="line">        try&#123;</span><br><span class="line">            // 锁定转出账户</span><br><span class="line">            synchronized(target)&#123;</span><br><span class="line">                // 锁定转入账户</span><br><span class="line">                synchronized(target)&#123;</span><br><span class="line">                    <span class="keyword">if</span> (this.balance &gt; amt)&#123;</span><br><span class="line">                        this.balance -= amt;</span><br><span class="line">                        target.balance += amt;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            actr.free(this, target)</span><br><span class="line">        &#125;</span><br><span class="line">      </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+3.2 对于”不可抢占“：占用部分资源的线程申请其他资源而不得时主动释放它占有的资源。</li>
+<li>破坏不可抢占条件看上去很简单，核心是要能够主动释放它占有的资源，这一点 synchronized 是做不到的。原因是 synchronized 申请资源的时候，如果申请不到，线程直接进入阻塞状态了，而线程进入阻塞状态，啥都干不了，也释放不了线程已经占有的资源。Java 在语言层次没有解决这个问题，不过在 SDK 层面还是解决了的，java.util.concurrent 这个包下面提供的 Lock 是可以轻松解决这个问题的。关于这个话题，后面会详细讲。</li>
+</ul>
+<p>3.3 对于”循环等待“： 按序申请。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">class Account &#123;</span><br><span class="line">    private int <span class="built_in">id</span>;</span><br><span class="line">    private int balance;</span><br><span class="line">    //转账</span><br><span class="line">    void transfer(Account target, int amt) &#123;</span><br><span class="line">        Account left = this            ①</span><br><span class="line">        Account right = target;        ②</span><br><span class="line">        <span class="keyword">if</span> (this.id &gt; target.id) &#123;     ③</span><br><span class="line">            left = target;             ④</span><br><span class="line">            right = this;              ⑤</span><br><span class="line">        &#125;</span><br><span class="line">        // 锁定序号小的账户</span><br><span class="line">        synchronized(left)&#123;</span><br><span class="line">            // 锁定序号大的账户</span><br><span class="line">            synchronized(right)&#123;</span><br><span class="line">                <span class="keyword">if</span>(this.balance &gt; amt)&#123;</span><br><span class="line">                    this.balance -= amt;</span><br><span class="line">                    target.balance += amt;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;                              ⑥</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>思考<br>上面提到：破坏占用且等待条件，也是锁了所有的账户，而且还是用了死循环 while(!actr.apply(this, target));这个方法，那它比 synchronized(Account.class) 有没有性能优势呢？</li>
+</ol>
+<ul>
+<li>synchronized(Account.class) 锁了Account类相关的所有操作。相当于文中说的包场了，只要与Account有关联，通通需要等待当前线程操作完成。while死循环的方式只锁定了当前操作的两个相关的对象。两种影响到的范围不同。</li>
+<li>while循环可以应该计入timeoout，避免一直阻塞。</li>
+<li>在实际开发中都是用数据库事务+乐观锁的方式进行解决。以上为例子，为了说明死锁原理。</li>
+<li>最常见的就是B转A的同时，A转账给B，那么先锁B再锁A，但是，另一个线程是先锁A再锁B，然而，如果两个线程同时执行，那么就是出现死锁的情况，线程T1锁了A请求锁B，此时线程T2锁了B请求锁A，都在等着对方释放锁，然而自己都不会释放锁，故死锁。<br>最简单的办法，就是无论哪个线程执行的时候，都按照顺序加锁，即按照A和B的id大小来加锁，这样，无论哪个线程执行的时候，都会先加锁A，再加锁B，A被加锁，则等待释放。这样就不会被死锁了。</li>
+</ul>
+<h3 id="06-“等待-通知”机制优化循环等待"><a href="#06-“等待-通知”机制优化循环等待" class="headerlink" title="06 “等待-通知”机制优化循环等待"></a>06 “等待-通知”机制优化循环等待</h3><ol>
+<li>回顾：破坏占用且等待条件时，如转出账本和转入账本不满足同时在文件架上这个条件，就用死循环的方式来循环等待，核心代码如下：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 一次性申请转出账户和转入账户，直到成功</span><br><span class="line"><span class="keyword">while</span>(!actr.apply(this, target))</span><br><span class="line">  ；</span><br></pre></td></tr></table></figure>
+apply()操作耗时非常短且并发冲突量也不大时该方案可行，但耗时长&amp;并发冲突量大时太消耗CPU了。</li>
+</ol>
+<ul>
+<li>解决方案：如果线程要求的条件（转出账本和转入账本同在文件架上）不满足，则线程阻塞自己，进入等待状态；当线程要求的条件（转出账本和转入账本同在文件架上）满足后，通知等待的线程重新执行。其中，使用线程阻塞的方式就能避免循环等待消耗 CPU 的问题。</li>
+</ul>
+<ol start="2">
+<li>synchronized 实现等待-通知机制</li>
+</ol>
+<ul>
+<li>synchronized配合wait(),notify(),notifyAll()实现。<br><img src="/../../images/notify.png" alt="Alt text"></li>
+<li>wait()、notify()、notifyAll() 都是在 synchronized{}内部被调用的。如果在 synchronized{}外部调用，或者锁定的 this，而用 target.wait() 调用的话，JVM 会抛出一个运行时异常：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.lang.IllegalMonitorStateException。</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="3">
+<li>等待-通知机制的四个要素：</li>
+</ol>
+<ul>
+<li>(1)互斥锁：上一篇提到 Allocator 需要是单例的，所以用 this 作为互斥锁。</li>
+<li>(2)线程要求的条件：转出账户和转入账户都没有被分配过。</li>
+<li>(3)何时等待：线程要求的条件不满足就等待。</li>
+<li>(4)何时通知：当有线程释放账户时就通知。<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(条件不满足) &#123;</span><br><span class="line">  <span class="built_in">wait</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+利用该范式可以解决上面提到的条件曾经满足过这个问题。因为当 wait() 返回时，有可能条件已经发生变化了，曾经条件满足，但是现在已经不满足了，所以要重新检验条件是否满足。范式，意味着是经典做法，所以没有特殊理由不要换写法。后面在介绍“管程”的时候，会详细介绍这个经典做法的前世今生。<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">class Allocator &#123;</span><br><span class="line">  private List&lt;Object&gt; als;</span><br><span class="line">  // 一次性申请所有资源</span><br><span class="line">  synchronized void apply(</span><br><span class="line">    Object from, Object to)&#123;</span><br><span class="line">    // 经典写法</span><br><span class="line">    <span class="keyword">while</span>(als.contains(from) ||</span><br><span class="line">         als.contains(to))&#123;</span><br><span class="line">      try&#123;</span><br><span class="line">        <span class="built_in">wait</span>();</span><br><span class="line">      &#125;catch(Exception e)&#123;</span><br><span class="line">      &#125;   </span><br><span class="line">    &#125; </span><br><span class="line">    als.add(from);</span><br><span class="line">    als.add(to);  </span><br><span class="line">  &#125;</span><br><span class="line">  // 归还资源</span><br><span class="line">  synchronized void free(</span><br><span class="line">    Object from, Object to)&#123;</span><br><span class="line">    als.remove(from);</span><br><span class="line">    als.remove(to);</span><br><span class="line">    notifyAll();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+所以除非经过深思熟虑，否则尽量使用 notifyAll()。</li>
+</ul>
+<ol start="4">
+<li>wait() 方法和 sleep() 方法都能让当前线程挂起一段时间，那它们的区别是什么？</li>
+</ol>
+<ul>
+<li>wait与sleep区别在于：<br>wait会释放所有锁而sleep不会释放锁资源.<br>wait只能在同步方法和同步块中使用，而sleep任何地方都可以.<br>wait无需捕捉异常，而sleep需要.<br>sleep是Thread方法，wait是Object类方法；sleep调用时必须指定时间。<br>两者相同点：都会让渡CPU执行时间，等待再次调度！</li>
+<li>代码：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">public class MyLock &#123;</span><br><span class="line">  // 测试转账main方法</span><br><span class="line">  public static void main(String[] args) throws InterruptedException &#123;</span><br><span class="line">    Account src = new Account(10000);</span><br><span class="line">    Account target = new Account(10000);</span><br><span class="line">    CountDownLatch countDownLatch = new CountDownLatch(9999);</span><br><span class="line">    <span class="keyword">for</span> (int i = 0; i &lt; 9999; i++) &#123;</span><br><span class="line">      new Thread(0-&gt;&#123;</span><br><span class="line">        src.transactionToTarget(1,target);</span><br><span class="line">        countDownLatch.countDown();</span><br><span class="line">      &#125;).start();</span><br><span class="line">    &#125;</span><br><span class="line">    countDownLatch.await();</span><br><span class="line">    System.out.println(<span class="string">&quot;src=&quot;</span>+src.getBalance());</span><br><span class="line">    System.out.println(<span class="string">&quot;target=&quot;</span>+target.getBalance());</span><br><span class="line">  &#125;</span><br><span class="line">  static class Account&#123;//账户类</span><br><span class="line">  public Account(Integer balance)&#123;</span><br><span class="line">    this.balance = balance;</span><br><span class="line">  &#125;</span><br><span class="line">  private Integer balance;</span><br><span class="line">  public void transactionToTarget(Integer money,Account target)&#123;//转账方法</span><br><span class="line">  Allocator.getInstance().apply(this,target);</span><br><span class="line">  this.balance -= money;</span><br><span class="line">  target.setBalance(target.getBalance()+money);</span><br><span class="line">  Allocator.getInstance().release(this,target);</span><br><span class="line">  &#125;</span><br><span class="line">  public Integer <span class="function"><span class="title">getBalance</span></span>()&#123;</span><br><span class="line">    <span class="built_in">return</span> balance;</span><br><span class="line">  &#125;</span><br><span class="line">  public void setBalance(Integer balance)&#123;</span><br><span class="line">    this.balance = balance;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">static class Allocator&#123;//单例锁类</span><br><span class="line">  private <span class="function"><span class="title">Allocator</span></span>()&#123;&#125;</span><br><span class="line">  private List&lt;Account&gt; locks = new ArrayList&lt;&gt;();</span><br><span class="line">  public synchronized void apply(Account src,Account tag)&#123;</span><br><span class="line">    <span class="keyword">while</span> (locks.contains(src)||locks.contains(tag))&#123;</span><br><span class="line">      try&#123;</span><br><span class="line">        this.wait();</span><br><span class="line">      &#125; catch(InterruptedException e) &#123;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    locks.add(src);</span><br><span class="line">    locks.add(tag);</span><br><span class="line">  &#125;</span><br><span class="line">  public synchronized void release(Account src,Account tag)&#123;</span><br><span class="line">    locks.remove(src);</span><br><span class="line">    locks.remove(tag);</span><br><span class="line">    this.notifyAll();</span><br><span class="line">  &#125;</span><br><span class="line">  public static Allocator <span class="function"><span class="title">getInstance</span></span>()&#123;</span><br><span class="line">    <span class="built_in">return</span> AllocatorSingle.install;</span><br><span class="line">  &#125;</span><br><span class="line">  static class AllocatorSingle&#123;</span><br><span class="line">    public static Allocator install = new Allocator();</span><br><span class="line">  &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="07-安全、活跃、性能"><a href="#07-安全、活跃、性能" class="headerlink" title="07 安全、活跃、性能"></a>07 安全、活跃、性能</h3><ol>
+<li>安全性问题</li>
+</ol>
+<ul>
+<li>现实中，必须共享会发生变化的数据。<br>当多个线程同时访问同一数据并至少有一个线程会写这个数据的时候，若不采取措施就会导致并发bug，即数据竞争（data race).<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public class Test &#123;</span><br><span class="line">  private long count = 0;</span><br><span class="line">  synchronized long <span class="function"><span class="title">get</span></span>()&#123;</span><br><span class="line">    <span class="built_in">return</span> count;</span><br><span class="line">  &#125;</span><br><span class="line">  synchronized void <span class="built_in">set</span>(long v)&#123;</span><br><span class="line">    count = v;</span><br><span class="line">  &#125;</span><br><span class="line">  void <span class="function"><span class="title">add10K</span></span>() &#123;</span><br><span class="line">    int idx = 0;</span><br><span class="line">    <span class="keyword">while</span>(idx++ &lt; 10000) &#123;</span><br><span class="line">      <span class="built_in">set</span>(get()+1)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>竟态条件(race condition)<br>指程序的执行结果以来线程执行的顺序。如：<br>当两个线程同时执行get()时，get()方法会返回相同的值0(假设count&#x3D;0),再执行get()+1操作，结果都是1，本来期望2，而结果都是1。<br>在并发环境里，线程的执行顺序时不确定的，如果存在竟态条件问题，那就意味着程序的执行的结果是不确定的。<br>解决数据竞争和竟态条件问题，需要：锁。</li>
+</ul>
+<ol start="2">
+<li><p>活跃性问题<br>活跃性指的是某个操作无法执行下去，包括：死锁、活锁、饥饿。活锁指的是俩线程“谦让”，每次谦让的条件相同，导致又相遇。解决方案就是设立随机时间等待。饥饿指的是线程因无法访问所需资源而无法执行下去的情况（线程优先级低）。解决方法：公平锁。</p>
+</li>
+<li><p>性能问题</p>
+</li>
+</ol>
+<ul>
+<li>锁的使用会带来性能问题。<br>过度使用锁会导致串行范围过大，这样就不能发挥多线程的优势了。所以要尽量减少串行。</li>
+<li>阿姆达尔Amdahl公式<br>代表了处理器并行运行之后效率提升的能力：<br> $$S&#x3D;\frac{1}{(1-p)+\frac{p}{n}}$$<br> n为cpu核数，p为并行百分比，(1-p)为串行百分比（即5%），再假设cpu核数无穷大，那加速比s的极限就是20，所以，如果串行率是5%，那么无论采用什么技术，最高也就提升20倍的性能。</li>
+<li>方案<br> （1）既然使用锁会带来性能问题，那最好的方案就是使用无锁的算法和数据结构。相关技术：线程本地存储(Thread Local Storage,TLS)、写入时复制(Copy-on-write)、乐观锁等；Java并发包里面的原子类也是一种无锁的数据结构；Disruptor则是一个无锁的内存队列，性能非常好。<br> (2) 减少锁持有的时间。互斥锁本质上是将并行的程序串行化，所以要增加并行度，一定要减少持有锁的时间。实现技术：使用细粒度的锁，一个典型的例子就是Java并发包里的ConcurrentHashMap，它使用了所谓分段锁的技术（这个技术后面会详细介绍);还可以使用读写锁，也就是读是无锁的，只有写的时候才会互斥。</li>
+<li>性能指标：<br> (1) 吞吐量：指单位时间内能处理的请求数量。<br> (2) 延迟：指的是从发出请求到收到响应的时间。<br> (3) 并发量：同时处理的请求数量。</li>
+</ul>
+<ol start="4">
+<li><p>总结<br>并发编程是一个复杂的技术领域，微观上涉及到原子性问题、可见性问题和有序性问题，宏观则表现为安全性、活跃性以及性能问题。我们在设计并发程序的时候，主要是从宏观出发，也就是要重点关注它的安全性、活跃性以及性能。安全性方面要注意数据竞争和竞态条件，活跃性方面需要注意死锁、活锁、饥饿等问题，性能方面我们虽然介绍了两个方案，但是遇到具体问题，你还是要具体分析，根据特定的场景选择合适的数据结构和算法。要解决问题，首先要把问题分析清楚。同样，要写好并发程序，首先要了解并发程序相关的问题，</p>
+</li>
+<li><p>思考<br>Java语言提供的vector是一个线程安全的容器，判断：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">void addIfNotExist(Vector v,</span><br><span class="line">    Object o) &#123;</span><br><span class="line">      <span class="keyword">if</span>(!v.contains(o))&#123;</span><br><span class="line">        v.add(o);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<ul>
+<li>vector 是线程安全，指的是其方法执行时么有并发正确性问题，并不代表其操作组合在一起没问题，此程序有竟态条件问题。</li>
+<li>vector实现线程安全是通过给主要的写方法加了synchronized，类似contains这样的读方法并没有synchronized，该题的问题出在不是线程安全的contains方法，两个线程如果同时执行到if(!v.contains(o))是可以通过的，这时就会执行两次add方法，重复添加，即竟态条件。</li>
+<li>串行百分比可以这么理解：临界区都是串行的，非临界区都是并行的，用单线程执行临界区的时间&#x2F;用单线程执行（临界区+非临界区）的时间就时串行百分比。</li>
+<li>修改：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">void addIfNotExist(Vector v,</span><br><span class="line">    Object o)&#123;</span><br><span class="line">      synchronized(v)&#123;</span><br><span class="line">        <span class="keyword">if</span>(!v.contains(o))&#123;</span><br><span class="line">          v.add(o);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="08-管程"><a href="#08-管程" class="headerlink" title="08 管程"></a>08 管程</h3><ol>
+<li>什么是管程<br>管程(monitor)是管理共享变量以及对共享变量的操作过程，让他们支持并发。在Java中即为管理类的成员变量和成员方法，让这个类是线程安全的。那管程是如何管理的呢？</li>
+<li>MESA 模型<br>有三种管程模型：Hasen、Hoare、MESA模型。Java用的是MESA。</li>
+</ol>
+<p>在并发编程领域，有两大核心：互斥&amp;同步。互斥即同一个时刻只允许一个线程访问共享资源；同步即线程之间如何通信、协作。这两大问题都是管程要解决的。</p>
+<ul>
+<li>互斥问题：</li>
+</ul>
+<p>管程的解决思路：将共享变量&amp;对共享变量的操作统一封装起来。<br>如下图所示：<br><img src="/../../images/monitor.png" alt="Alt text"><br>上图中管程X将共享变量queue这个队列和相关操作入队 enq()、出队 deq() 都封装起来；线程A和线程B如果想访问共享变量queue,只能通过调用管程提供的 enq(),deq()方法来实现；而这俩方法可以保证互斥，只允许一个线程进入管程。前面的互斥锁用法原型也是它。</p>
+<ul>
+<li>同步问题：</li>
+</ul>
+<p><img src="/../../images/mesamonitor.png" alt="Alt text"><br>在管程模型中，共享变量及其操作都是被封装起来的，图中最外层就是代表封装的意思。入口等待队列只允许一个线程进入。条件变量A,B都有自己的等待队列。这里的条件变量和等待队列就是用来解决同步问题的。</p>
+<p>e.g. 线程a要执行出队操作，但队列不能为空，所以就进入其等待队列等，该操作由wait()实现。等有b线程入队了，此时b就通知a，该操作由notify()完成，当a得到消息后即出队。出对后重新进入到入口等待队列。(类似验血完重新回来找大夫分诊)</p>
+<ul>
+<li>阻塞队列的代码实现<br>该队列有两个入队出队操作，都是先获取互斥锁，类比管程模型的入口：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">public class BlockedQueue&lt;T&gt;&#123;</span><br><span class="line">  final Lock lock = </span><br><span class="line">    new ReentrantLock();</span><br><span class="line">    // 条件变量：队列不满</span><br><span class="line">    final Condition notFull = </span><br><span class="line">      lock.newCondition();</span><br><span class="line">      // 条件变量：队列不变</span><br><span class="line">      final Condition notEmpty =</span><br><span class="line">        lock.newCondion();</span><br><span class="line"></span><br><span class="line">        // 入队</span><br><span class="line">        void enq(T x) &#123;</span><br><span class="line">          lock.lock();</span><br><span class="line">          try &#123;</span><br><span class="line">            <span class="keyword">while</span> (队列已满)&#123;</span><br><span class="line">              //等待队列不满</span><br><span class="line">              notFull.await();</span><br><span class="line">            &#125;</span><br><span class="line">            // 省略入队操作。。。</span><br><span class="line">            // 入队后，通知出队</span><br><span class="line">            notEmpty.signal();</span><br><span class="line">          &#125;finally &#123;</span><br><span class="line">            lock.unlock();</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        // 出队</span><br><span class="line">        void <span class="function"><span class="title">deq</span></span>()&#123;</span><br><span class="line">          lock.lock();</span><br><span class="line">          try &#123;</span><br><span class="line">            <span class="keyword">while</span> (队列已空)&#123;</span><br><span class="line">              //等待队列不空</span><br><span class="line">              notEmpty.await();</span><br><span class="line">            &#125;</span><br><span class="line">            // 省略出队操作...</span><br><span class="line">            // 出队后，通知入队</span><br><span class="line">            notFull.signal();</span><br><span class="line">          &#125;finally &#123;</span><br><span class="line">            lock.unlock();</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+在以上代码中，用了Java并发包里的Lock和Condition。在这里await() &#x3D; wait();signal()&#x3D;notify()。</li>
+</ul>
+<ol start="3">
+<li>wait() 的正确姿势<br>对于MESA 管程来说，需要在while循环里调用wait()。<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(条件不满足)&#123;</span><br><span class="line">  <span class="built_in">wait</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+Hasen 模型、Hoare 模型和 MESA 模型的一个核心区别就是当条件满足后，如何通知相关线程。管程要求同一时刻只允许一个线程执行，那当线程 T2 的操作使线程 T1 等待的条件满足时，T1 和 T2 究竟谁可以执行呢？</li>
+</ol>
+<ul>
+<li><p>Hasen 模型里面，要求 notify() 放在代码的最后，这样 T2 通知完 T1 后，T2 就结束了，然后 T1 再执行，这样就能保证同一时刻只有一个线程执行。</p>
+</li>
+<li><p>Hoare 模型里面，T2 通知完 T1 后，T2 阻塞，T1 马上执行；等 T1 执行完，再唤醒 T2，也能保证同一时刻只有一个线程执行。但是相比 Hasen 模型，T2 多了一次阻塞唤醒操作。</p>
+</li>
+<li><p>MESA 管程里面，T2 通知完 T1 后，T2 还是会接着执行，T1 并不立即执行，仅仅是从条件变量的等待队列进到入口等待队列里面。这样做的好处是 notify() 不用放到代码的最后，T2 也没有多余的阻塞唤醒操作。但是也有个副作用，就是当 T1 再次执行的时候，可能曾经满足的条件，现在已经不满足了，所以需要以循环方式检验条件变量。</p>
+</li>
+</ul>
+<ol start="4">
+<li>notify() 何时用<br>还有一个需要注意的地方，就是 notify() 和 notifyAll() 的使用，除非经过深思熟虑，否则尽量使用 notifyAll()。那什么时候可以使用 notify() 呢？需要满足以下三个条件：<br>(1) 所有等待线程拥有相同的等待条件；<br>(2) 所有等待线程被唤醒后，执行相同的操作；<br>(3) 只需要唤醒一个线程。</li>
+</ol>
+<p>比如上面阻塞队列的例子中，对于“队列不满”这个条件变量，其阻塞队列里的线程都是在等待“队列不满”这个条件，反映在代码里就是下面这 3 行代码。对所有等待线程来说，都是执行这 3 行代码，重点是 while 里面的等待条件是完全相同的。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (队列已满)&#123;</span><br><span class="line">  //等待队列不满</span><br><span class="line">  notFull.await();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>所有等待线程被唤醒后执行的操作也是相同的，都是：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//省略入队操作。。。</span><br><span class="line">//入队后，通知可出队</span><br><span class="line">notEmpty.signal();</span><br></pre></td></tr></table></figure>
+<p>同时也满足第3条，只需要唤醒一个线程。所以上面阻塞队列的代码，使用signal() 是可以的。</p>
+<ol start="5">
+<li>思考<br>wait()方法，在Hasen模型和Hoare模型里都是没有参数的，而在MESA模型里面，增加了超时参数，这个参数有必要加吗？</li>
+</ol>
+<ul>
+<li><p>有必要 hasen是执行完再去唤醒另外一个线程，能够保证线程的执行；Hoare是中断当前线程唤醒另外一个线程，执行完再去唤醒，也能够保证完成。而MESA是进入等待队列，不一定有机会能够执行。</p>
+</li>
+<li><p>管程MESA模型，刚开始一直在想线程T1执行出队是什么意思？到底是哪个队列，是入口等待队列，还是条件等待队列，后来理解了都不是。这个队列应该理解为JDK里面的阻塞队列，里面存在的是共享数据，线程T1,T2分别去操作里面的共享数据，执行数据的入队，出队操作，当然这些操作是阻塞操作。当线程T1对阻塞队列执行数据出队操作时，进入管程，发现阻塞队列为空，此时线程T1进入阻塞队列不为空这个条件的条件等待队列，此时，其他线程还是可以进入管程的，比如T2进来了，对阻塞队列执行数据插入操作，这时就会致使线程T1从条件等待队列出来，进入入口等待队列，准备再一次进入管程……至于wait方法的参数，还是有必要的，因为可能线程需要的条件可能一直无法满足！</p>
+</li>
+<li><p>在java中，每个加锁的对象都绑定着一个管程（监视器）。线程访问加锁对象，就是去拥有一个监视器的过程。如一个病人去门诊室看医生，医生是共享资源，门锁锁定医生，病人去看医生，就是访问医生这个共享资源，门诊室其实是监视器（管程）。所有线程访问共享资源，都需要先拥有监视器。就像所有病人看病都需要先拥有进入门诊室的资格。监视器至少有两个等待队列。一个是进入监视器的等待队列一个是条件变量对应的等待队列。后者可以有多个。就像一个病人进入门诊室诊断后，需要去验血，那么它需要去抽血室排队等待。另外一个病人心脏不舒服，需要去拍胸片，去拍摄室等待。监视器要求的条件满足后，位于条件变量下等待的线程需要重新在门诊室门外排队，等待进入监视器。就像抽血的那位，抽完后，拿到了化验单，然后，重新回到门诊室等待，然后进入看病，然后退出，医生通知下一位进入。</p>
+</li>
+</ul>
+<p>总结起来就是，管程就是一个对象监视器。任何线程想要访问该资源，就要排队进入监控范围。进入之后，接受检查，不符合条件，则要继续等待，直到被通知，然后继续进入监视器。</p>
+<ul>
+<li>java用两种方式实现了管程：(1) synchronized+wait、notify、notifyAll;(2) lock+内部的condition，第一种只支持一个条件变量，即wait，调用wait时会将其加到等待队列中，被notify时，会随机通知一个线程加到获取锁的等待队列中;第二种condition支持中断和增加了时间的等待，lock需要自己进行加锁解锁，更加灵活，两个都是可重入锁，但是lock支持公平和非公平锁，synchronized支持非公平锁。</li>
+</ul>
+<hr>
+<h3 id="09-Java线程"><a href="#09-Java线程" class="headerlink" title="09 Java线程"></a>09 Java线程</h3><ol>
+<li>线程的生命周期<br>(1) 通用的线程生命周期<br><img src="/../../images/threadlife.png" alt="Alt text"></li>
+</ol>
+<ul>
+<li><p>初始状态：指的是线程已经被创建(编程语言层面)，但仍不允许分配CPU执行(操作系统层面真正的线程还未被创建)。</p>
+</li>
+<li><p>可运行状态：线程可以分配CPU执行（即真正的操作系统线程已经被成功创建）。</p>
+</li>
+<li><p>运行状态：处于可运行状态的线程被分配了CPU。</p>
+</li>
+<li><p>休眠状态：运行状态的线程如果调用一个阻塞的API（例如以阻塞方式读文件）或者等待某个事件（例如条件变量），那么线程的状态就会转换到休眠状态，同时释放CPU使用权，休眠状态的线程没有机会获得CPU使用权。当等待事件出现线程就会从休眠状态转到可运行状态。</p>
+</li>
+<li><p>终止状态：线程执行完或抛异常就会进入终止，此时该线程的生命周期结束。</p>
+</li>
+<li><ul>
+<li>五种状态在不同语言里会有简化合并。Java语言里则把可运行状态和运行状态合并了，这俩状态在操作系统层面有用，而JVM层面不关心这俩状态，因为JVM把线程调度交给操作系统处理了。此外，Java里还细化了休眠状态。</li>
+</ul>
+</li>
+</ul>
+<p>(2) Java中线程的生命周期</p>
+<ul>
+<li>Java线程有6种：NEW（初始化状态）、 RUNNABLE（可运行&#x2F;运行状态）、 BLOCKED（阻塞状态）、 WAITING（无限时等待）、 TIMED_WAITING（有限时等待）、TERMINATED（终止状态）。<br><img src="/../../images/javathreadlife.png" alt="Alt text"></li>
+</ul>
+<p>(3) RUNNABLE 与 BLOCKED 的状态转换</p>
+<ul>
+<li>只有一种场景，即线程等待synchronized的隐式锁。因为synchronized是单线程。当等待的线程获得synchronized隐式锁时就会从BLOCKED转换到RUNNABLE状态。</li>
+<li>线程调用阻塞式 API 时，是否会转换到 BLOCKED 状态呢？在操作系统层面，线程是会转换到休眠状态的，但是在 JVM 层面，Java 线程的状态不会发生变化，也就是说 Java 线程的状态会依然保持 RUNNABLE 状态。JVM 层面并不关心操作系统调度相关的状态，因为在 JVM 看来，等待 CPU 使用权（操作系统层面此时处于可执行状态）与等待 I&#x2F;O（操作系统层面此时处于休眠状态）没有区别，都是在等待某个资源，所以都归入了 RUNNABLE 状态。而我们平时所谓的 Java 在调用阻塞式 API 时，线程会阻塞，指的是操作系统线程的状态，并不是 Java 线程的状态。</li>
+</ul>
+<p>(4) RUNNABLE 与 WAITING 的状态转换</p>
+<ul>
+<li>有三种场景会触发：</li>
+</ul>
+<p>（一）获得synchronized隐式锁的线程，调用无参数的Object.wait()方法。</p>
+<p>（二）调用无参数的Thread.join()方法。其中join()是一种线程同步方法，</p>
+<p>（三） 调用LockSupport.park()方法。调用此方法时当前线程阻塞，从RUNNABLE到WAITING。调用LockSupport.unpark(Thread thread)可唤醒目标线程，目标线程从等待到可运行。</p>
+<p>(5) RUNNABLE 与 TIMED_WAITING 的状态转换</p>
+<ul>
+<li>与waiting相对，仅仅是触发条件多了超时参数。如调用带超时参数的Thread.sleep(long millis)\Object.wait(long timeout)\Thread.join(long millis)\LockSupport.parkNanos(Object blocker, long deadline)\LockSupport.parkUntil(long deadline)等等。</li>
+</ul>
+<p>(6) 从NEW 到 RUNNABLE 状态<br>Java刚创建出来的Thread对象就是NEW状态，而创建Thread对象主要有两种方法。</p>
+<ul>
+<li><p>（一）继承Thread对象，重写run()方法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// 自定义线程对象</span><br><span class="line">class MyThread extends Thread &#123;</span><br><span class="line">  public void <span class="function"><span class="title">run</span></span>() &#123;</span><br><span class="line">    // 线程需要执行的代码</span><br><span class="line">    。。。</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">// 创建线程对象</span><br><span class="line">MyThread myThread = new MyThread();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>(二) 实现Runnable接口，重写run()方法，并将该实现类作为创建Thread对象的参数：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// 实现Runnable接口</span><br><span class="line">class Runner implements Runnable &#123;</span><br><span class="line">  @Override void <span class="function"><span class="title">run</span></span>() &#123;</span><br><span class="line">    // 线程需要执行的代码</span><br><span class="line">    。。。。</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">// 创建线程对象</span><br><span class="line">Thread thread = new Thread(new Runner());</span><br></pre></td></tr></table></figure>
+<p>NEW状态的线程，不会被操作系统调度，因此不会执行。Java线程要执行，就必须转换到RUNNABLE状态。从NEW状态转换到RUNNABLE状态很简单，只要调用线程对象的start()方法就可以了，如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">MyThread myThread = new MyThread();</span><br><span class="line">// 从NEW状态转换到RUNNABLE状态</span><br><span class="line">myThread.start();</span><br></pre></td></tr></table></figure>
+<p>(7) 从 RUNNABLE 到 TERMINATED 状态<br>线程执行完run()后或者抛异常时，就会自动转到TERMINATED状态。有时需要强制中断run()方法的执行，此时调用interrupt()方法。interrupt()方法通知线程，线程有机会执行一些后续操作，同时也可以无视这个通知。</p>
+</li>
+<li><p>被 interrupt 的线程，是怎么收到通知的呢？一种是异常，另一种是主动检测。</p>
+</li>
+</ul>
+<p>当线程 A 处于 WAITING、TIMED_WAITING 状态时，如果其他线程调用线程 A 的 interrupt() 方法，会使线程 A 返回到 RUNNABLE 状态，同时线程 A 的代码会触发 InterruptedException 异常。上面我们提到转换到 WAITING、TIMED_WAITING 状态的触发条件，都是调用了类似 wait()、join()、sleep() 这样的方法，我们看这些方法的签名，发现都会 throws InterruptedException 这个异常。</p>
+<p>这个异常的触发条件就是：其他线程调用了该线程的 interrupt() 方法。当线程 A 处于 RUNNABLE 状态时，并且阻塞在 java.nio.channels.InterruptibleChannel 上时，如果其他线程调用线程 A 的 interrupt() 方法，线程 A 会触发 java.nio.channels.ClosedByInterruptException 这个异常；而阻塞在 java.nio.channels.Selector 上时，如果其他线程调用线程 A 的 interrupt() 方法，线程 A 的 java.nio.channels.Selector 会立即返回。</p>
+<p>上面这两种情况属于被中断的线程通过异常的方式获得了通知。还有一种是主动检测，如果线程处于 RUNNABLE 状态，并且没有阻塞在某个 I&#x2F;O 操作上，例如中断计算圆周率的线程 A，这时就得依赖线程 A 主动检测中断状态了。如果其他线程调用线程 A 的 interrupt() 方法，那么线程 A 可以通过 isInterrupted() 方法，检测是不是自己被中断了。</p>
+<p>(8) 总结</p>
+<ul>
+<li>多线程程序很难调试，出了bug基本只能靠日志，靠线程dump跟踪问题，分析线程dump的一个基本功就是分析线程状态，大部分死锁、饥饿、活锁问题都需要跟踪分析线程的状态。</li>
+</ul>
+<p>可以通过jstack命令或者Java visualVM等可视化工具将JVM所有线程栈信息导出，完整的线程栈信息不仅包括线程的当前状态、调用栈、还包括了锁的信息。如下：<br><img src="/../../images/deadlock.png" alt="Alt text"></p>
+<ul>
+<li>以上导出的线程明确告知了死锁，并将死锁的调用栈信息也显示出来了。</li>
+</ul>
+<p>(9) 思考</p>
+<ul>
+<li><p>这块代码意为当前线程被中断后退出 while(true),是否正确？</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Thread th = Thread.currentThread();</span><br><span class="line"><span class="keyword">while</span>(<span class="literal">true</span>) &#123;</span><br><span class="line">  <span class="keyword">if</span>(th.isInterrupted()) &#123;</span><br><span class="line">    <span class="built_in">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  // 省略业务代码无数</span><br><span class="line">  try &#123;</span><br><span class="line">    Thread.<span class="built_in">sleep</span>(100);</span><br><span class="line">  &#125;catch (InterruptedException e)&#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>当发起中断后，Thread.sleep(100) 会抛出InterruptedException异常，而抛出这个异常会清除当前线程的中断标识，导致th.isInterrupted()一直返回false。InterruptedException - if any thread has interrupted the current thread. The interrupted status of the current thread is cleared when this exception is thrown.</p>
+</li>
+<li><p>所以需要加中断标识：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">catch (InterruptedException e)&#123;</span><br><span class="line">  Thread.currentThread().interrupt();</span><br><span class="line">  e.printStackTrace();</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<ol start="2">
+<li>创建多少线程合适</li>
+</ol>
+<ul>
+<li><p>性能指标：降低延迟；提高吞吐量</p>
+</li>
+<li><p>方法：优化算法；将硬件性能发挥到极致。<br>提升性能本质：提升I&#x2F;O的利用率和CPU的利用率。</p>
+</li>
+<li><p>这里需要解决CPU和I&#x2F;O设备综合利用率的问题——多线程给。</p>
+</li>
+<li><p>如果程序只有CPU计算，没有I&#x2F;O操作的话，多线程会使性能更差，因为增加了线程切换的成本。但多核时代即使纯计算程序也可以利用多线程来提升性能，因为这可以降低响应时间。</p>
+</li>
+<li><p>下面分两种情形来说明计算最佳线程数的方法：</p>
+</li>
+<li><p>(一) 对于CPU密集型计算</p>
+</li>
+</ul>
+<p>多线程对于CPU密集型计算,其本质是提升多核CPU的利用率，所以对于4核CPU理论上创建4个线程即可，再多创建只会增加线程切换成本。所以在这种情形下：线程数 &#x3D; CPU 核数。但在工程上一般为CPU + 1，保证CPU利用率。</p>
+<ul>
+<li>(二) 对于I&#x2F;O密集型计算</li>
+</ul>
+<p>如果CPU计算和I&#x2F;O操作的耗时是1:2,三个线程合适，如下图,这样I&#x2F;O和CPU利用率都是100%。：<br><img src="/../../images/IODENSE.png" alt="Alt text"><br>由此得到公式:<br>单核：<br>最佳线程数 &#x3D; 1 + (I&#x2F;O &#x2F; CPU 耗时)<br>多核：前面乘以核数即可。</p>
+<ol start="3">
+<li>为什么局部变量是线程安全的<br>e.g.<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// 返回斐波那契数列</span><br><span class="line">int[] fibonacci(int n) &#123;</span><br><span class="line">  // 创建结果数组</span><br><span class="line">  int[] r = new int[n];</span><br><span class="line">  //初始化第一、第二个数</span><br><span class="line">  r[0] = r[1] = 1; // ①</span><br><span class="line">  // 计算2...n</span><br><span class="line">  <span class="keyword">for</span>(int i = 2; i &lt; n; i++) &#123;</span><br><span class="line">    r[i] = r[i-2] + r[i-1];</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">return</span> r;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<ul>
+<li>局部变量并不存在数据竞争<br>原因：从编译器实现者的角度思考方法到指令的转换</li>
+</ul>
+<h4 id="（一）方法是如何被执行的"><a href="#（一）方法是如何被执行的" class="headerlink" title="（一）方法是如何被执行的"></a>（一）方法是如何被执行的</h4><p>调用Fibonacci()方法时，CPU要先找到该方法的地址，然后跳到该方法去执行，执行完再返回方法下一条语句的地址，再执行。参考下图：<br><img src="/../../images/Fibonacci.png" alt="Alt text"><br>CPU通过它的堆栈寄存器找调用方法的参数和地址。CPU是一种栈结构，先入后出（弹夹）。因为这个栈是和方法调用相关的，所以称为调用栈。<br><img src="/../../images/stack.png" alt="Alt text"><br>上图所示A-&gt;B-&gt;C，每个方法再调用栈里都有自己的独立空间————栈帧，每个战阵都有对应方法需要的参数和返回地址。当调用方法时，会创建新的栈帧，并压入调用栈；当方法返回时，对应的栈帧就会被自动弹出。所以，栈帧和方法是同生共死的。</p>
+<p>利用栈结构来支持方法调用这个方案非常普遍，以至于CPU内置了栈寄存器。各种编程语言都是靠栈结构解决的。</p>
+<h4 id="（二）局部变量存哪里"><a href="#（二）局部变量存哪里" class="headerlink" title="（二）局部变量存哪里"></a>（二）局部变量存哪里</h4><p><img src="/../../images/localvariable.png" alt="Alt text"><br>局部变量的作用域是方法内部，也就是说方法执行完局部变量就没用了，局部变量和方法同生共死。如上，调用栈的栈帧就是和方法同生共死的，所以局部变量放到调用栈里那儿是相当合理。所以调用栈结构就如上图所示。<br>学Java时，new出来的对象再堆里，局部变量在栈里。就是因为局部变量和方法时同生共死的，一个变量如果想跨越方法的边界，就必须创建在栈里。</p>
+<h4 id="（三）调用栈和线程"><a href="#（三）调用栈和线程" class="headerlink" title="（三）调用栈和线程"></a>（三）调用栈和线程</h4><p><img src="/../../images/threadstack.png" alt="Alt text"></p>
+<h4 id="（四）线程封闭"><a href="#（四）线程封闭" class="headerlink" title="（四）线程封闭"></a>（四）线程封闭</h4><p>方法里的局部变量因为不会和其他线程共享，所以也没有并发问题，这叫线程封闭。例子很多，如：从数据库连接池里获取的连接connection，在JDBC规范里并没有要求这个connection必须是线程安全的。数据库连接池通过线程封闭技术，保证一个connection一旦被一个线程获取之后，在这个线程关闭Connection之前的这段时间里，不会再分配给其他线程，从而保证了connection不会有并发问题。</p>
+<h4 id="（五）思考"><a href="#（五）思考" class="headerlink" title="（五）思考"></a>（五）思考</h4><p>递归调用太深可能导致栈溢出，为什么？解决方案？</p>
+<p>栈溢出原因：<br>因为每调用一个方法就会在栈上创建一个栈帧，方法调用结束后就会弹出该栈帧，而栈的大小不是无限的，所以递归调用次数过多的话就会导致栈溢出。而递归调用的特点是每递归一次，就要创建一个新的栈帧，而且还要保留之前的环境（栈帧），直到遇到结束条件。所以递归调用一定要明确好结束条件，不要出现死循环，而且要避免栈太深。<br>解决方法：</p>
+<ol>
+<li>简单粗暴，不要使用递归，使用循环替代。缺点：代码逻辑不够清晰；</li>
+<li>限制递归次数；</li>
+<li>使用尾递归，尾递归是指在方法返回时只调用自己本身，且不能包含表达式。编译器或解释器会把尾递归做优化，使递归方法不论调用多少次，都只占用一个栈帧，所以不会出现栈溢出。然鹅，Java没有尾递归优化。</li>
+</ol>
+<hr>
+<h3 id="10-如何用面向对象思想写好并发程序"><a href="#10-如何用面向对象思想写好并发程序" class="headerlink" title="10 如何用面向对象思想写好并发程序"></a>10 如何用面向对象思想写好并发程序</h3><h4 id="一、封装共享变量"><a href="#一、封装共享变量" class="headerlink" title="一、封装共享变量"></a>一、封装共享变量</h4><p>面向对象的重要思想就是封装，即将属性和实现细节封装在对象内部，外界对象只能通过目标对象提供的公共方法来间接访问这些内部属性。</p>
+<p>利用面向对象写并发程序，其实就是：将共享变量作为对象属性封装在内部，对所有公共方法指定并发访问策略。<br>代码：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public class Counter &#123;</span><br><span class="line">  private long value;</span><br><span class="line">  synchronized long <span class="function"><span class="title">get</span></span>() &#123;</span><br><span class="line">    <span class="built_in">return</span> value;</span><br><span class="line">  &#125;</span><br><span class="line">  synchronized long <span class="function"><span class="title">addOne</span></span>() &#123;</span><br><span class="line">    <span class="built_in">return</span> ++value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上计数器程序共享变量只有一个：value。把它作为Counter类的属性，并且将两个公共方法get(),addOne()声明为同步方法，这样Counter类就是一个线程安全的类了。</p>
+<ul>
+<li>很多共享变量的值是不变的，例如信用卡卡号、姓名、身份证。。。对于不会发生变化的共享变量，用final修饰。</li>
+</ul>
+<h4 id="二、识别共享变量间的约束条件"><a href="#二、识别共享变量间的约束条件" class="headerlink" title="二、识别共享变量间的约束条件"></a>二、识别共享变量间的约束条件</h4><p>因为约束条件决定了并发访问策略。如库存管理里面酉哥合理库存的概念，库存量不能太高，也不能太低，有一个上限和下限。如下类SafeWM中，变量upper,lower用了AtomicLong这个原子类，原子类是线程安全的，所以这俩成员变量的set方法就不需要同步了。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class SafeWM &#123;</span><br><span class="line">  // 库存上限</span><br><span class="line">  private final AtomicLong upper =</span><br><span class="line">        new AtomicLong(0);</span><br><span class="line">  // 库存下限</span><br><span class="line">  private final AtomicLong lower = </span><br><span class="line">        new AtomicLong(0);</span><br><span class="line">  // 设置库存上限</span><br><span class="line">  void setUpper(long v)&#123;</span><br><span class="line">    upper.set(v);</span><br><span class="line">  &#125;</span><br><span class="line">  // 设置库存下限</span><br><span class="line">  void setLower(long v)&#123;</span><br><span class="line">    lower.set(v);</span><br><span class="line">  &#125;</span><br><span class="line">  // 省略其他业务代码 </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面忽视了约束条件：库存下限要小于库存上限，所以改进：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">// 设置库存上限</span><br><span class="line">void setUpper(long v)&#123;</span><br><span class="line">  // 检查参数合法性</span><br><span class="line">  <span class="keyword">if</span> (v &lt; lower.get()) &#123;</span><br><span class="line">    throw new IllegalArgumentException();</span><br><span class="line">  &#125;</span><br><span class="line">  lower.set(v);</span><br><span class="line">&#125;</span><br><span class="line">  // 设置下限</span><br><span class="line">  void setLower(long v) &#123;</span><br><span class="line">    //检查参数合法性</span><br><span class="line">    <span class="keyword">if</span> (v &gt; upper.get()) &#123;</span><br><span class="line">      throw new IllegalArgumentException();</span><br><span class="line">    &#125;</span><br><span class="line">    lower.set(v);</span><br><span class="line">  &#125;</span><br><span class="line">  // 省略其他业务代码</span><br><span class="line">。。。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>假设库存的下限和上限分别是（2，10），线程A.setUpper(5),B.setLower(7),此时AB线程同时执行，则A可以通过参数校验，因为下限还未被B设置，还是2；当然同理B也能通过参数校验。当AB同时通过参数校验后，库存的下限上限就设置成了（7，5）了。</li>
+</ul>
+<h4 id="三、制定并发访问策略"><a href="#三、制定并发访问策略" class="headerlink" title="三、制定并发访问策略"></a>三、制定并发访问策略</h4><ol>
+<li><p>避免共享：主要利于线程本地存储以及为每个任务分配独立的线程。</p>
+</li>
+<li><p>不变模式：在Java领域应用很少，其他领域多：Actor模式、CSP模式、函数式编程的基础都是不变模式。</p>
+</li>
+<li><p>管程及其他同步工具： Java领域的万能解决方案。但对于其它特定场景使用JAVA并发包提供的读写锁、并发容器等同步工具会更好。</p>
+</li>
+</ol>
+<h4 id="宏观原则"><a href="#宏观原则" class="headerlink" title="宏观原则"></a>宏观原则</h4><ol>
+<li>优先使用成熟的工具类</li>
+<li>迫不得已再使用低级的同步原语</li>
+<li>避免过早优化</li>
+</ol>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>对共享变量进行封装要避免“逸出”，即共享变量逃逸到对象外面，如02|Java内存模型：看Java如何解决可见性和有序性问题中的this“逸出”。</p>
+<h4 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h4><p>修改SafeWM不满足库存下限小于库存上限这个约束条件</p>
+<ul>
+<li><p>setUpper(),setLower()都加上“synchronized”关键字。</p>
+</li>
+<li><p>将lower，upper两个变量封装到一个类中：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class Boundary&#123;</span><br><span class="line">  private final lower;</span><br><span class="line">  private final upper;</span><br><span class="line"></span><br><span class="line">  public Boundary(long lower,long upper) &#123;</span><br><span class="line">    <span class="keyword">if</span>(lower &gt;= upper) &#123;</span><br><span class="line">      // throw exception</span><br><span class="line">    &#125;</span><br><span class="line">    this.lower = lower;</span><br><span class="line">    this.upper = upper;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>移除SafeWM的setUpper()setLower()方法，增加setBoundary(Boundary boundary)方法。</p>
+</li>
+<li><p>不能用volatile，因为其只可保证内存可见性，不能保证原子性，还得枷锁保证互斥。</p>
+</li>
+<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">···········</span><br><span class="line">volatile AtomicReference&lt;Inventory&gt; inventory = new AtomicReference&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    static class Inventory &#123;</span><br><span class="line">        private volatile long upper = 0;</span><br><span class="line"></span><br><span class="line">        private volatile long lower = 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    void setUpper(long v) &#123;</span><br><span class="line">        long low;</span><br><span class="line">        Inventory oldObj;</span><br><span class="line">        Inventory newObj;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            oldObj = inventory.get();</span><br><span class="line">            <span class="keyword">if</span> (v &gt;= (low = oldObj.lower)) &#123;</span><br><span class="line">                throw new IllegalArgumentException();</span><br><span class="line">            &#125;</span><br><span class="line">            newObj = new Inventory();</span><br><span class="line">            newObj.lower = low;</span><br><span class="line">            newObj.upper = v;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">while</span> (inventory.compareAndSet(oldObj, newObj));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    void setLower(long v) &#123;</span><br><span class="line">        long upp;</span><br><span class="line">        Inventory oldObj;</span><br><span class="line">        Inventory newObj;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            oldObj = inventory.get();</span><br><span class="line">            <span class="keyword">if</span> (v &lt;= (upp = oldObj.upper)) &#123;</span><br><span class="line">                throw new IllegalArgumentException();</span><br><span class="line">            &#125;</span><br><span class="line">            newObj = new Inventory();</span><br><span class="line">            newObj.lower = v;</span><br><span class="line">            newObj.upper = upp;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">while</span> (inventory.compareAndSet(oldObj, newObj));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h3 id="11-理论基础模块答疑"><a href="#11-理论基础模块答疑" class="headerlink" title="11 理论基础模块答疑"></a>11 理论基础模块答疑</h3><h4 id="1-第一部分总结"><a href="#1-第一部分总结" class="headerlink" title="1 第一部分总结"></a>1 第一部分总结</h4><p><img src="/../../images/firstpart.png" alt="Alt text"></p>
+<h4 id="2-用锁的最佳实践"><a href="#2-用锁的最佳实践" class="headerlink" title="2 用锁的最佳实践"></a>2 用锁的最佳实践</h4><p>一个受保护资源与锁的关联关系应为N:1<br>Integer String类型的对象不适合做锁，因其对象类型再JVM里面是可能被重用的。所以锁是私有的，不可变的，不可重用的。</p>
+<h4 id="3-竟态条件需要格外关注"><a href="#3-竟态条件需要格外关注" class="headerlink" title="3 竟态条件需要格外关注"></a>3 竟态条件需要格外关注</h4><p>在07|安全性活跃性以及性能问题中的思考题是一种典型的竟态条件问题，如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">void addIfNotExist(Vector v,</span><br><span class="line">Object o) &#123;</span><br><span class="line">  <span class="keyword">if</span>(!v.contains(o)) &#123;</span><br><span class="line">    v.add(o);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上代码里contains和add都是线程安全的，但合在一起就不是了，解决方法参考12讲中的将共享变量v封装在对象内部，然后控制并发访问路径，这样就能阻止对Vector v变量的滥用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">class SafeVector&#123;</span><br><span class="line">  private Vector v;</span><br><span class="line">  //所有公共方法增加同步控制</span><br><span class="line">  synchronized</span><br><span class="line">  void addIfNotExist(Object o)&#123;</span><br><span class="line">    <span class="keyword">if</span>(!v.contains(o))&#123;</span><br><span class="line">      v.add(o);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="4-方法调用是先计算参数"><a href="#4-方法调用是先计算参数" class="headerlink" title="4 方法调用是先计算参数"></a>4 方法调用是先计算参数</h4><ul>
+<li>方法的调用，是先计算参数，然后将参数压入调用栈之后才会执行方法体，方法调用见11章。</li>
+</ul>
+<h4 id="5-InterruptedException-异常处理需小心"><a href="#5-InterruptedException-异常处理需小心" class="headerlink" title="5 InterruptedException 异常处理需小心"></a>5 InterruptedException 异常处理需小心</h4><p>在9讲中，在调用对象的wait()方法或者线程的sleep()方法时，需要捕获并处理InterruptedException异常，在如下例子中本意是通过isInterrrupted()检查线程是否被中断，如果中断就退出while循环。当其他线程通过调用th.interrupted().来中断th线程时，会设置th线程的中断标志位，从而使th.isInterrupted()返回true，这样就能退出while循环：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Thread th = Thread.currentThread();</span><br><span class="line"><span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">  <span class="keyword">if</span>(th.isInterrupted())&#123;</span><br><span class="line">    <span class="built_in">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  // 省略业务代码</span><br><span class="line">  try &#123;</span><br><span class="line">    Thread.<span class="built_in">sleep</span>(100);</span><br><span class="line">  &#125; catch (InterruptedException e)&#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但实际中断th线程时大概率会触发InterruptedException异常，同时JVM会同时把线程的中断标志位清除，所以这个时候th.isInterrupted()返回的是false。所以：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">//重新中断标志位</span><br><span class="line">th.interrupt();</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h4 id="6-理论值和经验值"><a href="#6-理论值和经验值" class="headerlink" title="6 理论值和经验值"></a>6 理论值和经验值</h4><p>实际中，不同的I&#x2F;O模型对最佳线程数的影响非常大，例如Nginx用的是非阻塞I&#x2F;O，采用的是多进程单线程结构，Nginx本来是一个I&#x2F;O密集型系统，但是最佳进程数设置的却是CPU核数，完全参考了CPU密集型的算法。</p>
+<h4 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h4><p>阅读材料：Java安全编码标准<br><a target="_blank" rel="noopener" href="https://wiki.sei.cmu.edu/confluence/display/java/2+Rules">https://wiki.sei.cmu.edu/confluence/display/java/2+Rules</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="http://example.com">Liu Ying</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="http://example.com/2020/01/29/Java%E5%B9%B6%E5%8F%91%E7%AC%94%E8%AE%B0/">http://example.com/2020/01/29/Java%E5%B9%B6%E5%8F%91%E7%AC%94%E8%AE%B0/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/java/">java</a><a class="post-meta__tags" href="/tags/geekbang/">geekbang</a><a class="post-meta__tags" href="/tags/concurrent/">concurrent</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.gif" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/02/06/Nginx/" title="Nginx"><img class="cover" src="/../../images/articles/nginx.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info">Nginx</div></div></a></div><div class="next-post pull-right"><a href="/2020/01/15/Golang%20MVC%20Project/" title="Golang MVC structure"><img class="cover" src="/../../images/articles/golang.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">Golang MVC structure</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2020/08/16/Java%E5%B9%B6%E5%8F%91%E7%AC%94%E8%AE%B0(%E4%BA%8C)/" title="Java并发编程笔记(二)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-16</div><div class="title">Java并发编程笔记(二)</div></div></a></div><div><a href="/2020/09/09/Algorithms/" title="Percolation"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-09</div><div class="title">Percolation</div></div></a></div><div><a href="/2020/08/31/SpringBatch/" title="A simple example of Spring Batch"><img class="cover" src="/../../images/articles/batch.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-31</div><div class="title">A simple example of Spring Batch</div></div></a></div><div><a href="/2020/02/06/Nginx/" title="Nginx"><img class="cover" src="/../../images/articles/nginx.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-02-06</div><div class="title">Nginx</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.gif" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Liu Ying</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">22</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">48</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">13</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#01-%E5%8F%AF%E8%A7%81%E6%80%A7%E3%80%81%E5%8E%9F%E5%AD%90%E6%80%A7%E3%80%81%E6%9C%89%E5%BA%8F%E6%80%A7%EF%BC%9A%E5%B9%B6%E5%8F%91%E7%9A%84bug%E6%BA%90%E5%A4%B4"><span class="toc-number">1.</span> <span class="toc-text">01 可见性、原子性、有序性：并发的bug源头</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#02-Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%EF%BC%9A%E7%9C%8BJava%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E5%8F%AF%E8%A7%81%E6%80%A7%E5%92%8C%E6%9C%89%E5%BA%8F%E6%80%A7%E9%97%AE%E9%A2%98"><span class="toc-number">2.</span> <span class="toc-text">02 Java内存模型：看Java如何解决可见性和有序性问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#03-%E4%BA%92%E6%96%A5%E9%94%81%EF%BC%9A%E8%A7%A3%E5%86%B3%E5%8E%9F%E5%AD%90%E6%80%A7%E9%97%AE%E9%A2%98"><span class="toc-number">3.</span> <span class="toc-text">03 互斥锁：解决原子性问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#04-%E4%BA%92%E6%96%A5%E9%94%81%EF%BC%9A%E5%A6%82%E4%BD%95%E7%94%A8%E4%B8%80%E6%8A%8A%E9%94%81%E4%BF%9D%E6%8A%A4%E5%A4%9A%E4%B8%AA%E8%B5%84%E6%BA%90%EF%BC%9F"><span class="toc-number">4.</span> <span class="toc-text">04 互斥锁：如何用一把锁保护多个资源？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#05-%E6%AD%BB%E9%94%81"><span class="toc-number">5.</span> <span class="toc-text">05 死锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#06-%E2%80%9C%E7%AD%89%E5%BE%85-%E9%80%9A%E7%9F%A5%E2%80%9D%E6%9C%BA%E5%88%B6%E4%BC%98%E5%8C%96%E5%BE%AA%E7%8E%AF%E7%AD%89%E5%BE%85"><span class="toc-number">6.</span> <span class="toc-text">06 “等待-通知”机制优化循环等待</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#07-%E5%AE%89%E5%85%A8%E3%80%81%E6%B4%BB%E8%B7%83%E3%80%81%E6%80%A7%E8%83%BD"><span class="toc-number">7.</span> <span class="toc-text">07 安全、活跃、性能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#08-%E7%AE%A1%E7%A8%8B"><span class="toc-number">8.</span> <span class="toc-text">08 管程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#09-Java%E7%BA%BF%E7%A8%8B"><span class="toc-number">9.</span> <span class="toc-text">09 Java线程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%88%E4%B8%80%EF%BC%89%E6%96%B9%E6%B3%95%E6%98%AF%E5%A6%82%E4%BD%95%E8%A2%AB%E6%89%A7%E8%A1%8C%E7%9A%84"><span class="toc-number">9.1.</span> <span class="toc-text">（一）方法是如何被执行的</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%88%E4%BA%8C%EF%BC%89%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E5%AD%98%E5%93%AA%E9%87%8C"><span class="toc-number">9.2.</span> <span class="toc-text">（二）局部变量存哪里</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%88%E4%B8%89%EF%BC%89%E8%B0%83%E7%94%A8%E6%A0%88%E5%92%8C%E7%BA%BF%E7%A8%8B"><span class="toc-number">9.3.</span> <span class="toc-text">（三）调用栈和线程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%88%E5%9B%9B%EF%BC%89%E7%BA%BF%E7%A8%8B%E5%B0%81%E9%97%AD"><span class="toc-number">9.4.</span> <span class="toc-text">（四）线程封闭</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%88%E4%BA%94%EF%BC%89%E6%80%9D%E8%80%83"><span class="toc-number">9.5.</span> <span class="toc-text">（五）思考</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-%E5%A6%82%E4%BD%95%E7%94%A8%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E6%80%9D%E6%83%B3%E5%86%99%E5%A5%BD%E5%B9%B6%E5%8F%91%E7%A8%8B%E5%BA%8F"><span class="toc-number">10.</span> <span class="toc-text">10 如何用面向对象思想写好并发程序</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%B0%81%E8%A3%85%E5%85%B1%E4%BA%AB%E5%8F%98%E9%87%8F"><span class="toc-number">10.1.</span> <span class="toc-text">一、封装共享变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E8%AF%86%E5%88%AB%E5%85%B1%E4%BA%AB%E5%8F%98%E9%87%8F%E9%97%B4%E7%9A%84%E7%BA%A6%E6%9D%9F%E6%9D%A1%E4%BB%B6"><span class="toc-number">10.2.</span> <span class="toc-text">二、识别共享变量间的约束条件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%88%B6%E5%AE%9A%E5%B9%B6%E5%8F%91%E8%AE%BF%E9%97%AE%E7%AD%96%E7%95%A5"><span class="toc-number">10.3.</span> <span class="toc-text">三、制定并发访问策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%8F%E8%A7%82%E5%8E%9F%E5%88%99"><span class="toc-number">10.4.</span> <span class="toc-text">宏观原则</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">10.5.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%9D%E8%80%83"><span class="toc-number">10.6.</span> <span class="toc-text">思考</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9D%97%E7%AD%94%E7%96%91"><span class="toc-number">11.</span> <span class="toc-text">11 理论基础模块答疑</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%E6%80%BB%E7%BB%93"><span class="toc-number">11.1.</span> <span class="toc-text">1 第一部分总结</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E7%94%A8%E9%94%81%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="toc-number">11.2.</span> <span class="toc-text">2 用锁的最佳实践</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E7%AB%9F%E6%80%81%E6%9D%A1%E4%BB%B6%E9%9C%80%E8%A6%81%E6%A0%BC%E5%A4%96%E5%85%B3%E6%B3%A8"><span class="toc-number">11.3.</span> <span class="toc-text">3 竟态条件需要格外关注</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8%E6%98%AF%E5%85%88%E8%AE%A1%E7%AE%97%E5%8F%82%E6%95%B0"><span class="toc-number">11.4.</span> <span class="toc-text">4 方法调用是先计算参数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-InterruptedException-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E9%9C%80%E5%B0%8F%E5%BF%83"><span class="toc-number">11.5.</span> <span class="toc-text">5 InterruptedException 异常处理需小心</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-%E7%90%86%E8%AE%BA%E5%80%BC%E5%92%8C%E7%BB%8F%E9%AA%8C%E5%80%BC"><span class="toc-number">11.6.</span> <span class="toc-text">6 理论值和经验值</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BB%93-1"><span class="toc-number">11.7.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/04/12/questions/" title="interview questions"><img src="/../../images/articles/lock.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="interview questions"/></a><div class="content"><a class="title" href="/2022/04/12/questions/" title="interview questions">interview questions</a><time datetime="2022-04-12T14:35:32.000Z" title="Created 2022-04-12 22:35:32">2022-04-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/09/10/leetcode/" title="20-ValidParentheses"><img src="/../../images/articles/le20.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="20-ValidParentheses"/></a><div class="content"><a class="title" href="/2020/09/10/leetcode/" title="20-ValidParentheses">20-ValidParentheses</a><time datetime="2020-09-10T06:35:28.000Z" title="Created 2020-09-10 14:35:28">2020-09-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2020/09/09/Algorithms/" title="Percolation">Percolation</a><time datetime="2020-09-09T05:07:34.000Z" title="Created 2020-09-09 13:07:34">2020-09-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/09/04/k8s/" title="Deploy kubernetes in Ubuntu 20.04"><img src="/../../images/articles/Kubernetes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Deploy kubernetes in Ubuntu 20.04"/></a><div class="content"><a class="title" href="/2020/09/04/k8s/" title="Deploy kubernetes in Ubuntu 20.04">Deploy kubernetes in Ubuntu 20.04</a><time datetime="2020-09-04T12:15:29.000Z" title="Created 2020-09-04 20:15:29">2020-09-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/08/31/SpringBatch/" title="A simple example of Spring Batch"><img src="/../../images/articles/batch.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="A simple example of Spring Batch"/></a><div class="content"><a class="title" href="/2020/08/31/SpringBatch/" title="A simple example of Spring Batch">A simple example of Spring Batch</a><time datetime="2020-08-31T09:04:29.000Z" title="Created 2020-08-31 17:04:29">2020-08-31</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/interstellar.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By Liu Ying</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
