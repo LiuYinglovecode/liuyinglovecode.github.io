@@ -7,4 +7,6 @@ date: 2022-12-25 02:18:30
 ![](/pics/photos/STScI-01G8GZR18A6CBS9TGJS8JE9CM4.png)
 ![](/pics/photos/01671c5e2992211.webp)
 ![](/pics/photos/e017dce465db513.webp)
+![](/pics/photos/DSC_9005.JPG)
+![](/pics/photos/DSC_9116.JPG)
 {% endgallery %}
