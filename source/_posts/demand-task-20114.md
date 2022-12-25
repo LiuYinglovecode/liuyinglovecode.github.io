@@ -1,11 +1,6 @@
 ---
 title: Demand delete interface
 date: 2020-2-18 22:30:29
-password: duliwancheng
-abstract: This article contains sensitive information
-message: 请输入密码
-wrong_pass_message: 密码错误
-wrong_hash_message: 抱歉, 这个文章不能被校验, 不过您还是能看看解密后的内容.
 tags:
 - spring
 - controller
