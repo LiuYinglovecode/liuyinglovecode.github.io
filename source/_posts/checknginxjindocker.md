@@ -7,7 +7,7 @@ tags:
 - error
 categories:
 - nginx
-cover: ../../images/articles/nginx.jpg
+cover: ../../images/articles/nginx.png
 ---
 
 ### check error log

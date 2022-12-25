@@ -6,6 +6,7 @@ tags:
 - geekbang
 categories:
 - nginx
+cover: ../../images/articles/nginx.png
 ---
 
 ## 01 大概
