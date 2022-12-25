@@ -8,6 +8,7 @@ tags:
 - interface
 categories:
 - Java
+cover: ../../images/articles/api.jpg
 ---
 ## 接口
 ## 一般需要写5个文件：controller + model + service + serviceImpl + DAO

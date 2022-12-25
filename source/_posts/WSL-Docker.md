@@ -7,6 +7,7 @@ tags:
 - apache
 categories:
 - WSL
+cover: ../../images/articles/apache.jpg
 ---
 ### Apache
 ``` bash
