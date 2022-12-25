@@ -6,6 +6,7 @@ tags:
 - 
 categories:
 - interview
+cover: ../../images/articles/lock.png
 ---
 ## redis during
 

@@ -5,6 +5,7 @@ tags:
 - mysql
 categories:
 - sql
+cover: ../../images/articles/mysql.png
 ---
 ### mysql upgrade(from 5.6 to 8.0.18)
 1. find installation location

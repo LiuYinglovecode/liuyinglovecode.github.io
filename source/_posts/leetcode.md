@@ -1,11 +1,12 @@
 ---
-title: 20ValidParentheses
+title: 20-ValidParentheses
 date: 2020-9-10 14:35:28
 tags:
 - leetcode
 - easy
 categories:
 - leetcode
+cover: ../../images/articles/le20.jpg
 ---  
 Here is the [Original Post](https://leetcode-cn.com/problems/valid-parentheses/solution/valid-parentheses-fu-zhu-zhan-fa-by-jin407891080/)
 

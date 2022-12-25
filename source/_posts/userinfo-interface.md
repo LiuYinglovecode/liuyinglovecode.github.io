@@ -5,8 +5,9 @@ tags:
 - DAO
 - service
 - controller
-categories:
 - interface
+categories:
+- Java
 ---
 ## 接口
 ## 一般需要写5个文件：controller + model + service + serviceImpl + DAO

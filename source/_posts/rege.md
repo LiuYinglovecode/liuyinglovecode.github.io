@@ -6,7 +6,8 @@ tags:
 - go
 - verification
 categories:
-- go
+- Golang
+cover: ../../images/articles/golang.png
 ---
 
 ## Go inputs verification

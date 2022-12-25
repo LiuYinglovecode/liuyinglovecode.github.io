@@ -5,7 +5,7 @@ tags:
 - go get
 - cmd
 categories:
-- golang
+- Golang
 ---
 ### go get cmd
 1. go get

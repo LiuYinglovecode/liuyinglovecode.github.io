@@ -7,6 +7,7 @@ tags:
 - maven
 categories:
 - Java
+cover: ../../images/articles/batch.png
 ---
 
 ### Flow chart of Batch processing

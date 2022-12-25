@@ -6,6 +6,7 @@ tags:
 - 凭据
 categories:
 - Windows
+cover: ../../images/articles/git.png
 ---
 ### 更改git账号
 ![Alt text](../../images/credentials1.png)

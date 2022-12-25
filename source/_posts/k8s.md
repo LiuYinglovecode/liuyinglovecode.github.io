@@ -8,6 +8,7 @@ tags:
 - Linux
 categories:
 - Kubernetes
+cover: ../../images/articles/Kubernetes.png
 ---
 
 ### Kubernetes dashboard

@@ -7,8 +7,8 @@ tags:
 - k8s
 - go
 categories:
-- kubernetes
-- golang
+- Kubernetes
+cover: ../../images/articles/Helm.png
 ---
 
 ![Alt text](../../images/k8slogo.jpg)

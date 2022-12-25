@@ -6,7 +6,8 @@ tags:
 - cli
 - go
 categories:
-- golang
+- Golang
+cover: ../../images/articles/cobra.png
 ---
 
 ![Alt text](../../images/cobra.png)

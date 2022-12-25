@@ -6,7 +6,8 @@ tags:
 - web
 - MVC
 categories:
-- golang
+- Golang
+cover: ../../images/articles/golang.png
 ---
 ### This MVC doesn't use any golang web framework
    Use http for client and server communication, MUX for routing
